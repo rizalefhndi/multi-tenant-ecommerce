@@ -6,12 +6,14 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import FlashMessage from '@/Components/FlashMessage.vue';
 
 const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
     <div>
+        <FlashMessage />
         <div class="min-h-screen bg-gray-100">
             <nav
                 class="border-b border-gray-100 bg-white"
@@ -38,6 +40,19 @@ const showingNavigationDropdown = ref(false);
                                     :active="route().current('dashboard')"
                                 >
                                     Dashboard
+                                </NavLink>
+                                <NavLink :href="route('products.index')" :active="route().current('products.*')">
+                                    Products
+                                </NavLink>
+                                <NavLink :href="route('cart.index')" :active="route().current('cart.*')" class="relative">
+                                    Cart
+                                    <!-- Cart Badge (optional - butuh state management) -->
+                                    <span
+                                        v-if="$page.props.cart && $page.props.cart.total_items > 0"
+                                        class="absolute -top-2 -end-3 inline-flex items-center rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white"
+                                    >
+                                        {{ $page.props.cart.total_items }}
+                                    </span>
                                 </NavLink>
                             </div>
                         </div>
