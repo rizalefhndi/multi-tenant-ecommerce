@@ -22,7 +22,7 @@ class CartController extends Controller
         // Load cart items dengan product relationship
         $cart->load(['items.product']);
 
-        return Inertia::render('Cart/Index', [
+        return Inertia::render('Carts/Index', [
             'cart' => [
                 'id' => $cart->id,
                 'status' => $cart->status,

@@ -35,25 +35,51 @@ const showingNavigationDropdown = ref(false);
                             <div
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    Dashboard
-                                </NavLink>
-                                <NavLink :href="route('products.index')" :active="route().current('products.*')">
-                                    Products
-                                </NavLink>
-                                <NavLink :href="route('cart.index')" :active="route().current('cart.*')" class="relative">
-                                    Cart
-                                    <!-- Cart Badge (optional - butuh state management) -->
-                                    <span
-                                        v-if="$page.props.cart && $page.props.cart.total_items > 0"
-                                        class="absolute -top-2 -end-3 inline-flex items-center rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white"
+                                <!-- Landlord Navigation (only on localhost without tenant subdomain) -->
+                                <template v-if="$page.url.startsWith('/landlord') || (!$page.url.includes('://') && route().current('landlord.*'))">
+                                    <NavLink
+                                        :href="route('landlord.dashboard')"
+                                        :active="route().current('landlord.dashboard')"
                                     >
-                                        {{ $page.props.cart.total_items }}
-                                    </span>
-                                </NavLink>
+                                        Landlord
+                                    </NavLink>
+
+                                    <NavLink
+                                        :href="route('landlord.tenants.index')"
+                                        :active="route().current('landlord.tenants.*')"
+                                    >
+                                        Tenants
+                                    </NavLink>
+                                </template>
+
+                                <!-- Tenant Navigation (only on tenant domains or non-landlord routes) -->
+                                <template v-else>
+                                    <NavLink
+                                        :href="route('dashboard')"
+                                        :active="route().current('dashboard')"
+                                    >
+                                        Dashboard
+                                    </NavLink>
+                                    <NavLink
+                                        :href="route('products.index')"
+                                        :active="route().current('products.*')"
+                                    >
+                                        Products
+                                    </NavLink>
+                                    <NavLink
+                                        :href="route('cart.index')"
+                                        :active="route().current('cart.*')"
+                                        class="relative"
+                                    >
+                                        Cart
+                                        <span
+                                            v-if="$page.props.cart && $page.props.cart.total_items > 0"
+                                            class="absolute -top-2 -end-3 inline-flex items-center rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white"
+                                        >
+                                            {{ $page.props.cart.total_items }}
+                                        </span>
+                                    </NavLink>
+                                </template>
                             </div>
                         </div>
 
@@ -155,12 +181,43 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
+                        <!-- Landlord Responsive Navigation -->
+                        <template v-if="$page.url.startsWith('/landlord') || (!$page.url.includes('://') && route().current('landlord.*'))">
+                            <ResponsiveNavLink
+                                :href="route('landlord.dashboard')"
+                                :active="route().current('landlord.dashboard')"
+                            >
+                                Landlord
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('landlord.tenants.index')"
+                                :active="route().current('landlord.tenants.*')"
+                            >
+                                Tenants
+                            </ResponsiveNavLink>
+                        </template>
+
+                        <!-- Tenant Responsive Navigation -->
+                        <template v-else>
+                            <ResponsiveNavLink
+                                :href="route('dashboard')"
+                                :active="route().current('dashboard')"
+                            >
+                                Dashboard
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('products.index')"
+                                :active="route().current('products.*')"
+                            >
+                                Products
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('cart.index')"
+                                :active="route().current('cart.*')"
+                            >
+                                Cart
+                            </ResponsiveNavLink>
+                        </template>
                     </div>
 
                     <!-- Responsive Settings Options -->
