@@ -13,7 +13,6 @@ class ProductController extends Controller
     /**
      * Display a listing of products
      *
-     * Menampilkan semua produk dengan pagination dan search
      */
     public function index(Request $request): Response
     {

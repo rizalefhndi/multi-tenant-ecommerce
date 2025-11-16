@@ -18,13 +18,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Laptop gaming dengan performa tinggi, prosesor Intel Core i7 Gen 12, RAM 16GB, SSD 512GB, GPU RTX 3060',
                 'price' => 18500000,
                 'stock' => 15,
-                'is_active' => true,
-            ],
-            [
-                'name' => 'iPhone 15 Pro Max',
-                'description' => 'Smartphone flagship Apple dengan chipset A17 Pro, kamera 48MP, layar 6.7 inch Super Retina XDR',
-                'price' => 21999000,
-                'stock' => 25,
+                'image' => 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500',
                 'is_active' => true,
             ],
             [
@@ -32,6 +26,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Smartphone Android flagship dengan S Pen, kamera 200MP, Snapdragon 8 Gen 3, RAM 12GB',
                 'price' => 19999000,
                 'stock' => 20,
+                'image' => 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500',
                 'is_active' => true,
             ],
             [
@@ -39,6 +34,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Laptop tipis dan ringan dengan chip M3, RAM 8GB, SSD 256GB, layar Retina 13.6 inch',
                 'price' => 16999000,
                 'stock' => 10,
+                'image' => 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500',
                 'is_active' => true,
             ],
             [
@@ -46,6 +42,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Headphone wireless dengan Active Noise Cancellation terbaik, kualitas audio premium',
                 'price' => 5499000,
                 'stock' => 30,
+                'image' => 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500',
                 'is_active' => true,
             ],
             [
@@ -53,6 +50,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Tablet profesional dengan chip M2, layar Liquid Retina XDR, support Apple Pencil Gen 2',
                 'price' => 17999000,
                 'stock' => 12,
+                'image' => 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500',
                 'is_active' => true,
             ],
             [
@@ -60,6 +58,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Mouse wireless premium untuk produktivitas, sensor 8K DPI, baterai tahan hingga 70 hari',
                 'price' => 1599000,
                 'stock' => 50,
+                'image' => 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500',
                 'is_active' => true,
             ],
             [
@@ -67,6 +66,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Mechanical keyboard wireless dengan hot-swappable switch, RGB backlight, support Mac & Windows',
                 'price' => 2199000,
                 'stock' => 35,
+                'image' => 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500',
                 'is_active' => true,
             ],
             [
@@ -74,6 +74,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Monitor gaming 144Hz, response time 1ms, resolusi QHD 2560x1440, support G-Sync',
                 'price' => 4999000,
                 'stock' => 18,
+                'image' => 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500',
                 'is_active' => true,
             ],
             [
@@ -81,6 +82,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Mouse gaming wireless dengan sensor Focus Pro 30K, baterai 90 jam, bobot 63 gram',
                 'price' => 2499000,
                 'stock' => 40,
+                'image' => 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500',
                 'is_active' => true,
             ],
             [
@@ -88,6 +90,7 @@ class ProductSeeder extends Seeder
                 'description' => 'SSD NVMe Gen 4 dengan kecepatan read 7000 MB/s, cocok untuk gaming dan content creation',
                 'price' => 2299000,
                 'stock' => 45,
+                'image' => 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=500',
                 'is_active' => true,
             ],
             [
@@ -95,13 +98,7 @@ class ProductSeeder extends Seeder
                 'description' => 'RAM DDR5 32GB (2x16GB) 6000MHz dengan RGB lighting, optimized untuk gaming',
                 'price' => 3199000,
                 'stock' => 28,
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Canon EOS R6 Mark II',
-                'description' => 'Kamera mirrorless full frame 24MP, IBIS 8-stop, video 4K 60fps, perfect untuk foto & video',
-                'price' => 39999000,
-                'stock' => 5,
+                'image' => 'https://images.unsplash.com/photo-1562976540-1502c2145186?w=500',
                 'is_active' => true,
             ],
             [
@@ -109,6 +106,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Drone compact dengan kamera 4K, gimbal 3-axis, obstacle sensing, flight time 34 menit',
                 'price' => 12999000,
                 'stock' => 8,
+                'image' => 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=500',
                 'is_active' => true,
             ],
             [
@@ -116,6 +114,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Console gaming next-gen dengan SSD ultra-cepat, ray tracing, support game 4K 120fps',
                 'price' => 7499000,
                 'stock' => 0, // Out of stock
+                'image' => 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=500',
                 'is_active' => true,
             ],
         ];

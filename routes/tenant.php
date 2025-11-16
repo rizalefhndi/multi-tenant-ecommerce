@@ -15,12 +15,6 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |--------------------------------------------------------------------------
 | Tenant Routes
 |--------------------------------------------------------------------------
-|
-| Here you can register the tenant routes for your application.
-| These routes are loaded by the TenantRouteServiceProvider.
-|
-| Feel free to customize them however you want. Good luck!
-|
 */
 
 Route::middleware([
@@ -29,15 +23,12 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
 
-    // Public routes (tidak perlu login)
     Route::get('/', function () {
-        return Inertia::render('Welcome');
+        return redirect()->route('login');
     })->name('home');
 
-    // Auth routes (Breeze default)
     require __DIR__.'/auth.php';
 
-    // Protected routes (perlu login)
     Route::middleware(['auth', 'verified'])->group(function () {
 
         // Dashboard
@@ -45,7 +36,6 @@ Route::middleware([
             return Inertia::render('Dashboard');
         })->name('dashboard');
 
-        // Profile routes (dari Breeze)
         Route::prefix('profile')->name('profile.')->group(function () {
             Route::get('/', [ProfileController::class, 'edit'])->name('edit');
             Route::patch('/', [ProfileController::class, 'update'])->name('update');
@@ -55,7 +45,6 @@ Route::middleware([
         // Product routes
         Route::resource('products', ProductController::class);
 
-        // Toggle product status
         Route::patch('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])
             ->name('products.toggle-status');
 
@@ -73,11 +62,9 @@ Route::middleware([
             // Checkout
             Route::post('/checkout', [CartController::class, 'checkout'])->name('checkout');
 
-            // Cart summary (AJAX)
             Route::get('/summary', [CartController::class, 'summary'])->name('summary');
         });
 
-        // Cart Item routes (granular control)
         Route::prefix('cart-items')->name('cart-items.')->group(function () {
             // Increment/Decrement
             Route::post('/{cartItem}/increment', [CartItemController::class, 'increment'])

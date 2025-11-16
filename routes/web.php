@@ -10,19 +10,12 @@ use Inertia\Inertia;
 |--------------------------------------------------------------------------
 | Landlord (Central) Routes
 |--------------------------------------------------------------------------
-|
-| Routes untuk Central/Landlord domain (localhost)
-| Digunakan untuk manajemen tenant
-|
 */
 
-// Redirect root ke login atau dashboard
+// Redirect root ke login
 Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect()->route('landlord.dashboard');
-    }
     return redirect()->route('login');
-});
+})->name('home');
 
 // Auth routes (Breeze)
 require __DIR__.'/auth.php';
