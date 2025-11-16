@@ -235,24 +235,14 @@ php artisan test
 ### Run Specific Test Suites
 
 ```bash
-# Multi-tenant isolation tests only
-php artisan test --filter MultiTenantIsolationTest
-
-# Unit tests for models
-php artisan test --filter ProductTest
-php artisan test --filter CartTest
-php artisan test --filter CartItemTest
-php artisan test --filter UserTest
-
-# Feature tests
+# tenant isolation test
 php artisan test --filter TenantIsolationTest
-php artisan test --filter ProductCRUDTest
-php artisan test --filter CartFunctionalityTest
+
 ```
 
 ### Test Coverage
 
-**Multi-Tenant Isolation Tests (7 tests, 42 assertions)**
+**Tenant Isolation Tests (7 tests, 42 assertions)**
 - ✅ `test_tenant_databases_are_isolated_products` - Verifies product data isolation
 - ✅ `test_tenant_databases_are_isolated_users` - Verifies user data isolation
 - ✅ `test_multiple_tenants_can_have_same_user_email_in_different_databases` - Tests email uniqueness per tenant
@@ -261,22 +251,11 @@ php artisan test --filter CartFunctionalityTest
 - ✅ `test_central_database_remains_separate_from_tenant_data` - Confirms central/tenant separation
 - ✅ `test_tenant_switch_maintains_data_integrity` - Tests context switching reliability
 
-**Unit Tests**
-- ProductTest (7 tests) - Model creation, scopes, relationships, formatted prices
-- CartTest (13 tests) - Cart operations, totals calculation, business methods
-- CartItemTest (14 tests) - Cart item management, quantity operations
-- UserTest (10 tests) - User model, cart relationships, authentication
-
-**Feature Tests**
-- TenantIsolationTest (6 tests) - Cross-tenant data access prevention
-- ProductCRUDTest (11 tests) - Product management workflows
-- CartFunctionalityTest (16 tests) - End-to-end shopping cart operations
 
 ### Test Documentation
 
 Detailed test documentation available in:
-- `docs/MULTI_TENANT_ISOLATION_TESTS.md` - Multi-tenant testing guide
-- `docs/TENANT_ISOLATION_TESTS.md` - Original isolation test documentation
+- `docs/MULTI_TENANT_ISOLATION_TESTS.md` - tenant testing isolation
 
 ---
 
@@ -331,20 +310,14 @@ multi-tenant-ecommerce/
 │   └── auth.php                   # Authentication routes
 ├── tests/
 │   ├── Feature/
-│   │   ├── MultiTenantIsolationTest.php
+│   │   ├── TenantIsolationTest.php
 │   │   ├── TenantIsolationTest.php
 │   │   ├── ProductCRUDTest.php
 │   │   └── CartFunctionalityTest.php
 │   └── Unit/
-│       └── Models/
-│           ├── ProductTest.php
-│           ├── CartTest.php
-│           ├── CartItemTest.php
-│           └── UserTest.php
+│   │   ├── Example.php
 └── docs/
-    ├── MULTI_TENANT_ISOLATION_TESTS.md
-    ├── TENANT_ISOLATION_TESTS.md
-    └── LANDLORD_AUTH_FIX.md
+    └── TENANT_ISOLATION_TESTS.md
 ```
 
 ---
