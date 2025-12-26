@@ -8,8 +8,6 @@ const props = defineProps({
     cart: Object,
 });
 
-const isCheckingOut = ref(false);
-
 const clearCart = () => {
     if (confirm('Are you sure you want to clear your cart?')) {
         router.delete(route('cart.clear'), {
@@ -18,15 +16,9 @@ const clearCart = () => {
     }
 };
 
-const checkout = () => {
-    if (confirm(`Proceed with checkout?\n\nTotal: ${props.cart.formatted_total}`)) {
-        isCheckingOut.value = true;
-        router.post(route('cart.checkout'), {}, {
-            onFinish: () => {
-                isCheckingOut.value = false;
-            },
-        });
-    }
+// Checkout sekarang redirect ke halaman checkout
+const goToCheckout = () => {
+    router.visit(route('checkout.index'));
 };
 </script>
 
@@ -104,13 +96,12 @@ const checkout = () => {
                                 </div>
                             </div>
 
-                            <button
-                                @click="checkout"
-                                :disabled="isCheckingOut"
-                                class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mb-3"
+                            <Link
+                                :href="route('checkout.index')"
+                                class="w-full block text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mb-3"
                             >
-                                {{ isCheckingOut ? 'Processing...' : 'Proceed to Checkout' }}
-                            </button>
+                                Proceed to Checkout
+                            </Link>
 
                             <Link
                                 :href="route('products.index')"

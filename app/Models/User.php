@@ -67,4 +67,85 @@ class User extends Authenticatable
 
         return $cart;
     }
+
+    // ==========================================
+    // ORDER & ADDRESS RELATIONSHIPS
+    // ==========================================
+
+    /**
+     * Relationship: User memiliki banyak Address
+     */
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(UserAddress::class);
+    }
+
+    /**
+     * Relationship: User memiliki satu default address
+     */
+    public function defaultAddress(): HasOne
+    {
+        return $this->hasOne(UserAddress::class)
+            ->where('is_default', true);
+    }
+
+    /**
+     * Relationship: User memiliki banyak Order
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Relationship: User memiliki banyak Transaction (through orders)
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasManyThrough(Transaction::class, Order::class);
+    }
+
+    // ==========================================
+    // HELPER METHODS
+    // ==========================================
+
+    /**
+     * Get default address atau address pertama
+     */
+    public function getDefaultAddress(): ?UserAddress
+    {
+        return $this->defaultAddress ?? $this->addresses()->first();
+    }
+
+    /**
+     * Check apakah user memiliki address
+     */
+    public function hasAddress(): bool
+    {
+        return $this->addresses()->exists();
+    }
+
+    /**
+     * Get total orders count
+     */
+    public function getOrdersCount(): int
+    {
+        return $this->orders()->count();
+    }
+
+    /**
+     * Get pending orders
+     */
+    public function getPendingOrders()
+    {
+        return $this->orders()->pending()->get();
+    }
+
+    /**
+     * Get completed orders
+     */
+    public function getCompletedOrders()
+    {
+        return $this->orders()->delivered()->get();
+    }
 }
