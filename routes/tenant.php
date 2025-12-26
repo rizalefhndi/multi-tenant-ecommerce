@@ -135,6 +135,36 @@ Route::middleware([
         });
 
         // ==========================================
+        // SETTINGS MANAGEMENT
+        // ==========================================
+        Route::prefix('settings')->name('settings.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SettingsController::class, 'index'])->name('index');
+            
+            // Theme settings
+            Route::get('/theme', [\App\Http\Controllers\SettingsController::class, 'theme'])->name('theme');
+            Route::post('/theme', [\App\Http\Controllers\SettingsController::class, 'updateTheme'])->name('theme.update');
+            Route::post('/upload/logo', [\App\Http\Controllers\SettingsController::class, 'uploadLogo'])->name('upload.logo');
+            Route::post('/upload/favicon', [\App\Http\Controllers\SettingsController::class, 'uploadFavicon'])->name('upload.favicon');
+            Route::post('/upload/banner', [\App\Http\Controllers\SettingsController::class, 'uploadBanner'])->name('upload.banner');
+            
+            // Store settings
+            Route::get('/store', [\App\Http\Controllers\SettingsController::class, 'store'])->name('store');
+            Route::post('/store', [\App\Http\Controllers\SettingsController::class, 'updateStore'])->name('store.update');
+            
+            // Payment settings
+            Route::get('/payment', [\App\Http\Controllers\SettingsController::class, 'payment'])->name('payment');
+            Route::post('/payment', [\App\Http\Controllers\SettingsController::class, 'updatePayment'])->name('payment.update');
+            
+            // Shipping settings
+            Route::get('/shipping', [\App\Http\Controllers\SettingsController::class, 'shipping'])->name('shipping');
+            Route::post('/shipping', [\App\Http\Controllers\SettingsController::class, 'updateShipping'])->name('shipping.update');
+            
+            // Theme CSS/JSON API
+            Route::get('/css', [\App\Http\Controllers\SettingsController::class, 'getCss'])->name('css');
+            Route::get('/theme.json', [\App\Http\Controllers\SettingsController::class, 'getThemeJson'])->name('theme.json');
+        });
+
+        // ==========================================
         // ADMIN - ORDER MANAGEMENT
         // ==========================================
         Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
