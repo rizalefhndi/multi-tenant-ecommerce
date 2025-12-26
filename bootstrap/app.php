@@ -16,7 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        //
+        // Register middleware aliases
+        $middleware->alias([
+            'quota' => \App\Http\Middleware\CheckTenantQuota::class,
+            'subscription.active' => \App\Http\Middleware\CheckSubscriptionActive::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

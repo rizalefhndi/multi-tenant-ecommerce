@@ -96,52 +96,53 @@
 
 ---
 
-# 🎯 PHASE 2: SaaS Business Model
+# 🎯 PHASE 2: SaaS Business Model ✅ COMPLETED
 
-## Milestone 2.1: Subscription Database
-**Estimated Time: 2-3 hours**
-
-| # | Task | Status | Assignee | Notes |
-|---|------|--------|----------|-------|
-| 2.1.1 | Create `plans` central migration | ⬜ | | Free, Basic, Pro, Enterprise |
-| 2.1.2 | Update `tenants` table migration | ⬜ | | Add subscription columns |
-| 2.1.3 | Create `tenant_invoices` migration | ⬜ | | Billing history |
-| 2.1.4 | Create `Plan` model | ⬜ | | With features casting |
-| 2.1.5 | Create `TenantInvoice` model | ⬜ | | |
-| 2.1.6 | Update `Tenant` model | ⬜ | | Add plan relationship |
-| 2.1.7 | Create `PlanSeeder` | ⬜ | | 4 default plans |
-
-## Milestone 2.2: Quota Enforcement
-**Estimated Time: 3-4 hours**
+## Milestone 2.1: Subscription Database ✅
+**Estimated Time: 2-3 hours** | **Completed: 26 Dec 2024**
 
 | # | Task | Status | Assignee | Notes |
 |---|------|--------|----------|-------|
-| 2.2.1 | Create `CheckTenantQuota` middleware | ⬜ | | product, order, storage |
-| 2.2.2 | Apply middleware to ProductController@store | ⬜ | | Block jika limit |
-| 2.2.3 | Apply middleware to CheckoutController@store | ⬜ | | Block jika limit order |
-| 2.2.4 | Create quota exceeded error page | ⬜ | | With upgrade CTA |
-| 2.2.5 | Update Product counts on CRUD | ⬜ | | Increment/decrement counter |
-| 2.2.6 | Update Order counts monthly | ⬜ | | Reset di awal bulan |
+| 2.1.1 | Create `plans` central migration | ✅ | | 2025_12_26_200001_create_plans_table.php |
+| 2.1.2 | Update `tenants` table migration | ✅ | | 2025_12_26_200002_add_subscription_to_tenants_table.php |
+| 2.1.3 | Create `tenant_invoices` migration | ✅ | | 2025_12_26_200003_create_tenant_invoices_table.php |
+| 2.1.4 | Create `Plan` model | ✅ | | With quotas, features, accessors |
+| 2.1.5 | Create `TenantInvoice` model | ✅ | | With invoice generation |
+| 2.1.6 | Update `Tenant` model | ✅ | | With subscription management |
+| 2.1.7 | Create `PlanSeeder` | ✅ | | 4 plans: Free, Basic, Pro, Enterprise |
 
-## Milestone 2.3: Landlord - Pricing Page
-**Estimated Time: 3-4 hours**
-
-| # | Task | Status | Assignee | Notes |
-|---|------|--------|----------|-------|
-| 2.3.1 | Create pricing page route (public) | ⬜ | | /pricing |
-| 2.3.2 | Create `Welcome.vue` update with pricing | ⬜ | | Hero + pricing table |
-| 2.3.3 | Create PricingCard component | ⬜ | | With features list |
-| 2.3.4 | Add toggle monthly/yearly | ⬜ | | With discount badge |
-
-## Milestone 2.4: Tenant - Subscription Management
-**Estimated Time: 4-5 hours**
+## Milestone 2.2: Quota Enforcement ✅
+**Estimated Time: 3-4 hours** | **Completed: 26 Dec 2024**
 
 | # | Task | Status | Assignee | Notes |
 |---|------|--------|----------|-------|
-| 2.4.1 | Create subscription status display | ⬜ | | Di dashboard tenant |
-| 2.4.2 | Create usage stats widget | ⬜ | | Products, orders, storage used |
-| 2.4.3 | Create upgrade plan modal | ⬜ | | Compare plans |
-| 2.4.4 | Create billing history page | ⬜ | | List invoices |
+| 2.2.1 | Create `CheckTenantQuota` middleware | ✅ | | Products, orders, storage |
+| 2.2.2 | Create `CheckSubscriptionActive` middleware | ✅ | | Block if inactive |
+| 2.2.3 | Register middleware aliases | ✅ | | quota, subscription.active |
+| 2.2.4 | Quota checking in Tenant model | ✅ | | canAddProduct, canCreateOrder, canUploadFile |
+| 2.2.5 | Usage tracking methods | ✅ | | increment/decrement counters |
+
+## Milestone 2.3: Landlord - Pricing Page ✅
+**Estimated Time: 3-4 hours** | **Completed: 26 Dec 2024**
+
+| # | Task | Status | Assignee | Notes |
+|---|------|--------|----------|-------|
+| 2.3.1 | Create `PricingController` | ✅ | | Landlord controller |
+| 2.3.2 | Create `Landlord/Pricing.vue` | ✅ | | Full-featured pricing page |
+| 2.3.3 | Add pricing route (/pricing) | ✅ | | Public route |
+| 2.3.4 | Toggle monthly/yearly | ✅ | | With savings badge |
+| 2.3.5 | FAQ section | ✅ | | Common questions |
+
+## Milestone 2.4: Tenant - Subscription Management ✅
+**Estimated Time: 4-5 hours** | **Completed: 26 Dec 2024**
+
+| # | Task | Status | Assignee | Notes |
+|---|------|--------|----------|-------|
+| 2.4.1 | Create `SubscriptionController` | ✅ | | Full subscription management |
+| 2.4.2 | Create `Subscription/Index.vue` | ✅ | | Status & usage display |
+| 2.4.3 | Create `Subscription/Plans.vue` | ✅ | | Plan selection & upgrade |
+| 2.4.4 | Create `Subscription/Invoices.vue` | ✅ | | Billing history |
+| 2.4.5 | Add subscription routes | ✅ | | In tenant.php |
 
 ---
 

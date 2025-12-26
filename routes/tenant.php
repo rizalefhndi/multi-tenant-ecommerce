@@ -123,6 +123,18 @@ Route::middleware([
         });
 
         // ==========================================
+        // SUBSCRIPTION MANAGEMENT
+        // ==========================================
+        Route::prefix('subscription')->name('subscription.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SubscriptionController::class, 'index'])->name('index');
+            Route::get('/plans', [\App\Http\Controllers\SubscriptionController::class, 'plans'])->name('plans');
+            Route::post('/change', [\App\Http\Controllers\SubscriptionController::class, 'changePlan'])->name('change');
+            Route::get('/invoices', [\App\Http\Controllers\SubscriptionController::class, 'invoices'])->name('invoices');
+            Route::get('/invoices/{invoice}', [\App\Http\Controllers\SubscriptionController::class, 'showInvoice'])->name('invoice');
+            Route::get('/expired', [\App\Http\Controllers\SubscriptionController::class, 'expired'])->name('expired');
+        });
+
+        // ==========================================
         // ADMIN - ORDER MANAGEMENT
         // ==========================================
         Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
@@ -139,4 +151,3 @@ Route::middleware([
 
     });
 });
-
