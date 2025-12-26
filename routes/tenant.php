@@ -149,5 +149,40 @@ Route::middleware([
             Route::get('/{order}/invoice', [AdminOrderController::class, 'printInvoice'])->name('invoice');
         });
 
+        // ==========================================
+        // PAYMENT API (Midtrans)
+        // ==========================================
+        Route::prefix('api/payment')->name('api.payment.')->group(function () {
+            Route::post('/snap-token', [\App\Http\Controllers\MidtransController::class, 'getSnapToken'])->name('snap-token');
+            Route::get('/status/{orderNumber}', [\App\Http\Controllers\MidtransController::class, 'checkStatus'])->name('status');
+        });
+
+        // ==========================================
+        // SHIPPING API (RajaOngkir)
+        // ==========================================
+        Route::prefix('api/shipping')->name('api.shipping.')->group(function () {
+            Route::get('/provinces', [\App\Http\Controllers\ShippingController::class, 'provinces'])->name('provinces');
+            Route::get('/cities/{provinceId?}', [\App\Http\Controllers\ShippingController::class, 'cities'])->name('cities');
+            Route::get('/subdistricts/{cityId}', [\App\Http\Controllers\ShippingController::class, 'subdistricts'])->name('subdistricts');
+            Route::get('/search-city', [\App\Http\Controllers\ShippingController::class, 'searchCity'])->name('search-city');
+            Route::get('/couriers', [\App\Http\Controllers\ShippingController::class, 'couriers'])->name('couriers');
+            Route::post('/cost', [\App\Http\Controllers\ShippingController::class, 'cost'])->name('cost');
+            Route::post('/options', [\App\Http\Controllers\ShippingController::class, 'options'])->name('options');
+            Route::post('/track', [\App\Http\Controllers\ShippingController::class, 'track'])->name('track');
+        });
+
     });
+
+    // ==========================================
+    // PAYMENT WEBHOOKS (No Auth Required)
+    // ==========================================
+    Route::post('/webhook/midtrans', [\App\Http\Controllers\MidtransController::class, 'notification'])
+        ->name('webhook.midtrans');
+    
+    Route::get('/payment/finish', [\App\Http\Controllers\MidtransController::class, 'finish'])
+        ->name('payment.finish');
+    Route::get('/payment/unfinish', [\App\Http\Controllers\MidtransController::class, 'unfinish'])
+        ->name('payment.unfinish');
+    Route::get('/payment/error', [\App\Http\Controllers\MidtransController::class, 'error'])
+        ->name('payment.error');
 });

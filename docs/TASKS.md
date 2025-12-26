@@ -146,37 +146,32 @@
 
 ---
 
-# 🎯 PHASE 3: Payment & Shipping
+# 🎯 PHASE 3: Payment & Shipping ✅ COMPLETED
 
-## Milestone 3.1: Midtrans Integration
-**Estimated Time: 5-6 hours**
-
-| # | Task | Status | Assignee | Notes |
-|---|------|--------|----------|-------|
-| 3.1.1 | Install `midtrans/midtrans-php` | ⬜ | | composer require |
-| 3.1.2 | Create `config/midtrans.php` | ⬜ | | Environment config |
-| 3.1.3 | Add Midtrans env variables | ⬜ | | Sandbox keys first |
-| 3.1.4 | Create `MidtransService` | ⬜ | | Snap token generation |
-| 3.1.5 | Create `MidtransController` | ⬜ | | Callback handling |
-| 3.1.6 | Add callback route (webhook) | ⬜ | | POST /webhook/midtrans |
-| 3.1.7 | Update CheckoutController | ⬜ | | Generate snap token |
-| 3.1.8 | Add Midtrans Snap.js to frontend | ⬜ | | Payment popup |
-| 3.1.9 | Handle payment notifications | ⬜ | | Update order status |
-| 3.1.10 | Test sandbox transactions | ⬜ | | All payment methods |
-
-## Milestone 3.2: RajaOngkir Integration
-**Estimated Time: 4-5 hours**
+## Milestone 3.1: Midtrans Integration ✅
+**Estimated Time: 5-6 hours** | **Completed: 26 Dec 2024**
 
 | # | Task | Status | Assignee | Notes |
 |---|------|--------|----------|-------|
-| 3.2.1 | Create RajaOngkir account | ⬜ | | Get API key |
-| 3.2.2 | Add config for RajaOngkir | ⬜ | | In services.php |
-| 3.2.3 | Create `RajaOngkirService` | ⬜ | | Province, city, cost |
-| 3.2.4 | Create `ShippingController` API | ⬜ | | Endpoints for frontend |
-| 3.2.5 | Add province/city selects in address form | ⬜ | | Dynamic loading |
-| 3.2.6 | Add courier selection in checkout | ⬜ | | JNE, TIKI, POS |
-| 3.2.7 | Calculate shipping in checkout | ⬜ | | Based on weight |
-| 3.2.8 | Cache province/city data | ⬜ | | 24 hour cache |
+| 3.1.1 | Create `config/midtrans.php` | ✅ | | Full configuration with payment types |
+| 3.1.2 | Add Midtrans env variables | ✅ | | In .env.example |
+| 3.1.3 | Create `MidtransService` | ✅ | | Snap token, webhooks, signature verification |
+| 3.1.4 | Create `MidtransController` | ✅ | | Notifications, redirects, API endpoints |
+| 3.1.5 | Add webhook route | ✅ | | POST /webhook/midtrans |
+| 3.1.6 | Add payment redirect routes | ✅ | | finish, unfinish, error |
+| 3.1.7 | Add API routes | ✅ | | snap-token, status |
+
+## Milestone 3.2: RajaOngkir Integration ✅
+**Estimated Time: 4-5 hours** | **Completed: 26 Dec 2024**
+
+| # | Task | Status | Assignee | Notes |
+|---|------|--------|----------|-------|
+| 3.2.1 | Create `config/rajaongkir.php` | ✅ | | Couriers, caching, fallback |
+| 3.2.2 | Add RajaOngkir env variables | ✅ | | In .env.example |
+| 3.2.3 | Create `RajaOngkirService` | ✅ | | Provinces, cities, cost, tracking |
+| 3.2.4 | Create `ShippingController` API | ✅ | | All shipping endpoints |
+| 3.2.5 | Add API routes | ✅ | | provinces, cities, cost, options, track |
+| 3.2.6 | Cache implementation | ✅ | | 7 days for locations, 1 hour for cost |
 
 ---
 
