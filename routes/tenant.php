@@ -180,6 +180,17 @@ Route::middleware([
         });
 
         // ==========================================
+        // ADMIN - ANALYTICS
+        // ==========================================
+        Route::prefix('admin/analytics')->name('admin.analytics.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('index');
+            Route::get('/stats', [\App\Http\Controllers\AnalyticsController::class, 'stats'])->name('stats');
+            Route::get('/revenue-chart', [\App\Http\Controllers\AnalyticsController::class, 'revenueChart'])->name('revenue-chart');
+            Route::get('/orders-chart', [\App\Http\Controllers\AnalyticsController::class, 'ordersChart'])->name('orders-chart');
+            Route::get('/top-products', [\App\Http\Controllers\AnalyticsController::class, 'topProducts'])->name('top-products');
+        });
+
+        // ==========================================
         // PAYMENT API (Midtrans)
         // ==========================================
         Route::prefix('api/payment')->name('api.payment.')->group(function () {
