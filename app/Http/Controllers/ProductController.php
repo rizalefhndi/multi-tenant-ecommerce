@@ -19,12 +19,21 @@ class ProductController extends Controller
         // Query builder untuk products
         $query = Product::query();
 
-        // Search functionality
-        if ($request->has('search')) {
-            $search = $request->search;
+        // Search functionality (case-insensitive, whole word match)
+        if ($request->has('search') && $request->search) {
+            $search = strtolower(trim($request->search));
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                // Word boundary search: match whole words only
+                // Pattern: word at start, middle (spaces), or end
+                $q->where(function ($subQ) use ($search) {
+                    $subQ->whereRaw('LOWER(name) LIKE ?', ["{$search}%"]) // starts with
+                         ->orWhereRaw('LOWER(name) LIKE ?', ["% {$search}%"]) // word in middle/end
+                         ->orWhereRaw('LOWER(name) = ?', [$search]); // exact match
+                })->orWhere(function ($subQ) use ($search) {
+                    $subQ->whereRaw('LOWER(description) LIKE ?', ["{$search}%"])
+                         ->orWhereRaw('LOWER(description) LIKE ?', ["% {$search}%"])
+                         ->orWhereRaw('LOWER(description) = ?', [$search]);
+                });
             });
         }
 
