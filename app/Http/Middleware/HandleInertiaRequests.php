@@ -38,6 +38,42 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            'cart' => fn () => $this->getCartData($request),
         ];
+    }
+
+    /**
+     * Get cart data for the authenticated user
+     */
+    protected function getCartData(Request $request): ?array
+    {
+        if (!$request->user()) {
+            return null;
+        }
+
+        try {
+            $cart = \App\Models\Cart::where('user_id', $request->user()->id)
+                ->with('items')
+                ->first();
+
+            if (!$cart) {
+                return [
+                    'total_items' => 0,
+                    'subtotal' => 0,
+                ];
+            }
+
+            return [
+                'total_items' => $cart->items->sum('quantity'),
+                'subtotal' => $cart->items->sum(function ($item) {
+                    return $item->quantity * $item->price;
+                }),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'total_items' => 0,
+                'subtotal' => 0,
+            ];
+        }
     }
 }
