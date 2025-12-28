@@ -38,8 +38,7 @@ const navItems = computed(() => {
     return [
         { name: 'Dashboard', href: route('dashboard'), active: route().current('dashboard'), icon: 'home' },
         { name: 'Products', href: route('products.index'), active: route().current('products.*'), icon: 'box' },
-        { name: 'Orders', href: route('orders.index'), active: route().current('orders.*'), icon: 'shopping-bag' },
-        { name: 'Admin', href: route('admin.orders.index'), active: route().current('admin.orders.*'), icon: 'clipboard' },
+        { name: 'Orders', href: route('admin.orders.index'), active: route().current('admin.orders.*') || route().current('orders.*'), icon: 'shopping-bag' },
         { name: 'Analytics', href: route('admin.analytics.index'), active: route().current('admin.analytics.*'), icon: 'chart' },
     ];
 });

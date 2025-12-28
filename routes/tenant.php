@@ -78,13 +78,15 @@ Route::middleware([
         // ==========================================
         // PRODUCTS - Admin Management (Admin Only, except show)
         // ==========================================
-        Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
-        
         Route::middleware(['role:admin'])->group(function () {
             Route::resource('products', ProductController::class)->except(['show']);
             Route::patch('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])
                 ->name('products.toggle-status');
         });
+        
+        // Product show route - accessible by all authenticated users
+        // Must be defined AFTER resource routes to avoid matching 'create' as product ID
+        Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
 
         // ==========================================
         // CART
