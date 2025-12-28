@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StoreLayout from '@/Layouts/StoreLayout.vue';
 import CartItemComponent from '@/Components/CartItemComponent.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
@@ -19,146 +19,108 @@ const clearCart = () => {
         });
     }
 };
-
-// Checkout sekarang redirect ke halaman checkout
-const goToCheckout = () => {
-    router.visit(route('checkout.index'));
-};
 </script>
 
 <template>
-    <Head title="Shopping Cart" />
+    <Head title="Shopping Bag" />
 
-    <AuthenticatedLayout>
-        <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Shopping Cart</h2>
-                <Link
-                    :href="shopRoute"
-                    class="text-indigo-600 hover:text-indigo-800"
-                >
-                    Continue Shopping
-                </Link>
-            </div>
-        </template>
-
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <!-- Cart Items -->
-                <div v-if="cart.items.length > 0" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Items List -->
-                    <div class="lg:col-span-2 space-y-4">
-                        <div class="bg-white rounded-lg shadow-sm p-6">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    Cart Items ({{ cart.total_items }})
-                                </h3>
-                                <button
-                                    @click="clearCart"
-                                    class="text-sm text-red-600 hover:text-red-800"
-                                >
-                                    Clear Cart
-                                </button>
-                            </div>
-
-                            <div class="space-y-4">
-                                <CartItemComponent
-                                    v-for="item in cart.items"
-                                    :key="item.id"
-                                    :item="item"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Order Summary -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-6">Order Summary</h3>
-
-                            <div class="space-y-3 mb-6">
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Subtotal</span>
-                                    <span>{{ cart.formatted_total }}</span>
-                                </div>
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Shipping</span>
-                                    <span class="text-green-600">Free</span>
-                                </div>
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Tax</span>
-                                    <span>Included</span>
-                                </div>
-                            </div>
-
-                            <div class="border-t pt-4 mb-6">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-lg font-semibold text-gray-900">Total</span>
-                                    <span class="text-2xl font-bold text-indigo-600">
-                                        {{ cart.formatted_total }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <Link
-                                :href="route('checkout.index')"
-                                class="w-full block text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mb-3"
-                            >
-                                Proceed to Checkout
-                            </Link>
-
-                            <Link
-                                :href="shopRoute"
-                                class="block w-full text-center text-indigo-600 hover:text-indigo-800 font-medium py-2"
-                            >
-                                Continue Shopping
-                            </Link>
-
-                            <!-- Trust Badges -->
-                            <div class="mt-6 pt-6 border-t space-y-3">
-                                <div class="flex items-center gap-3 text-sm text-gray-600">
-                                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span>Secure checkout</span>
-                                </div>
-                                <div class="flex items-center gap-3 text-sm text-gray-600">
-                                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span>Free shipping</span>
-                                </div>
-                                <div class="flex items-center gap-3 text-sm text-gray-600">
-                                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span>Easy returns</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <StoreLayout>
+        <div class="min-h-screen bg-white">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12">
+                <!-- Header -->
+                 <div class="flex items-end justify-between mb-12 border-b border-gray-100 pb-6">
+                    <h1 class="text-6xl sm:text-7xl md:text-8xl font-black text-black tracking-tighter leading-none">
+                        YOUR BAG
+                    </h1>
+                     <p class="text-xl font-bold text-gray-500 mb-2 uppercase tracking-wide">
+                        {{ cart.total_items }} Items
+                    </p>
                 </div>
 
-                <!-- Empty Cart -->
-                <div v-else class="bg-white rounded-lg shadow-sm p-12 text-center">
-                    <svg class="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <h3 class="text-2xl font-semibold text-gray-900 mb-2">Your cart is empty</h3>
-                    <p class="text-gray-600 mb-6">
-                        Start shopping to add items to your cart
-                    </p>
+                <!-- Empty State -->
+                <div v-if="cart.items.length === 0" class="py-24 text-center">
+                    <div class="w-64 h-64 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                         <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Your bag is empty</h2>
+                    <p class="text-gray-500 mb-8 max-w-md mx-auto">Looks like you haven't found your style yet. Explore our collection to find something unique.</p>
                     <Link
                         :href="shopRoute"
-                        class="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors"
+                        class="inline-block px-12 py-4 bg-black text-white text-lg font-bold uppercase tracking-wider rounded-full hover:scale-105 transition-transform"
                     >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        Browse Products
+                        Start Shopping
                     </Link>
+                </div>
+
+                <!-- Content Grid -->
+                <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 relative">
+                    <!-- Items List (Left) -->
+                    <div class="lg:col-span-8">
+                        <div class="flex justify-between items-center mb-6">
+                             <a 
+                                href="#" 
+                                @click.prevent="clearCart" 
+                                class="text-xs font-bold text-red-500 uppercase tracking-widest hover:text-red-600 transition-colors"
+                            >
+                                Clear All
+                            </a>
+                        </div>
+                        <div class="divide-y divide-gray-100 border-t border-gray-100">
+                            <CartItemComponent
+                                v-for="item in cart.items"
+                                :key="item.id"
+                                :item="item"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Summary (Right - Sticky) -->
+                    <div class="lg:col-span-4 relative">
+                        <div class="sticky top-32">
+                             <div class="bg-gray-50 rounded-3xl p-8">
+                                <h3 class="text-2xl font-black uppercase tracking-tight text-gray-900 mb-8">Summary</h3>
+                                
+                                <div class="space-y-4 mb-8">
+                                    <div class="flex justify-between text-gray-600 font-medium">
+                                        <span>Subtotal</span>
+                                        <span class="text-gray-900 font-bold">{{ cart.formatted_total }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-gray-600 font-medium">
+                                        <span>Shipping</span>
+                                        <span class="text-green-600 font-bold uppercase text-sm">Free</span>
+                                    </div>
+                                    <div class="flex justify-between text-gray-600 font-medium">
+                                        <span>Tax</span>
+                                        <span class="text-gray-900 font-bold">Included</span>
+                                    </div>
+                                </div>
+
+                                <div class="border-t border-gray-200 pt-6 mb-8">
+                                    <div class="flex justify-between items-end">
+                                        <span class="text-lg font-black uppercase tracking-wide text-gray-400">Total</span>
+                                        <span class="text-3xl font-black text-black tracking-tight">
+                                            {{ cart.formatted_total }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <Link
+                                    :href="route('checkout.index')"
+                                    class="w-full block text-center py-5 bg-black text-white text-lg font-black uppercase tracking-wider rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/20 mb-4"
+                                >
+                                    Checkout
+                                </Link>
+                                
+                                <p class="text-xs text-center text-gray-400 font-bold uppercase tracking-widest">
+                                    Secure Payment • Free Returns
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </StoreLayout>
 </template>
