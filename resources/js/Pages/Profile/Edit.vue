@@ -48,14 +48,14 @@ const getInitials = (name) => {
 };
 
 const tabs = [
-    { id: 'profile', name: 'Profil', icon: 'user' },
-    { id: 'security', name: 'Keamanan', icon: 'shield' },
-    { id: 'addresses', name: 'Alamat', icon: 'location' },
+    { id: 'profile', name: 'Profile', icon: 'user' },
+    { id: 'security', name: 'Security', icon: 'shield' },
+    { id: 'addresses', name: 'Addresses', icon: 'location' },
 ];
 </script>
 
 <template>
-    <Head title="Profil Saya" />
+    <Head title="My Profile" />
 
     <AuthenticatedLayout>
         <div class="py-6">
@@ -63,8 +63,8 @@ const tabs = [
                 
                 <!-- Header -->
                 <div class="mb-8">
-                    <h1 class="text-2xl font-bold text-gray-900">Pengaturan Akun</h1>
-                    <p class="text-gray-500 mt-1">Kelola informasi profil dan keamanan akun Anda</p>
+                    <h1 class="text-2xl font-bold text-gray-900">Account Settings</h1>
+                    <p class="text-gray-500 mt-1">Manage your profile information and account security</p>
                 </div>
 
                 <div class="flex flex-col lg:flex-row gap-8">
@@ -81,7 +81,7 @@ const tabs = [
                                 <p class="text-sm text-gray-500">{{ user?.email }}</p>
                                 <span class="mt-3 inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
                                     <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
-                                    Terverifikasi
+                                    Verified
                                 </span>
                             </div>
                         </div>
@@ -113,14 +113,14 @@ const tabs = [
                         <!-- Profile Tab -->
                         <div v-if="activeTab === 'profile'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
                             <div class="mb-6">
-                                <h2 class="text-xl font-semibold text-gray-900">Informasi Profil</h2>
-                                <p class="text-sm text-gray-500 mt-1">Update nama dan email akun Anda</p>
+                                <h2 class="text-xl font-semibold text-gray-900">Profile Information</h2>
+                                <p class="text-sm text-gray-500 mt-1">Update your name and email</p>
                             </div>
 
                             <form @submit.prevent="updateProfile" class="space-y-6">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
                                         <input
                                             type="text"
                                             v-model="profileForm.name"
@@ -148,21 +148,21 @@ const tabs = [
                                             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                                         </svg>
                                         <div>
-                                            <p class="text-sm font-medium text-yellow-800">Email belum diverifikasi</p>
+                                            <p class="text-sm font-medium text-yellow-800">Email not verified</p>
                                             <Link
                                                 :href="route('verification.send')"
                                                 method="post"
                                                 as="button"
                                                 class="text-sm text-yellow-700 underline hover:text-yellow-900"
                                             >
-                                                Kirim ulang email verifikasi
+                                                Resend verification email
                                             </Link>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div v-if="status === 'verification-link-sent'" class="p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
-                                    Link verifikasi baru telah dikirim ke email Anda.
+                                    New verification link has been sent to your email.
                                 </div>
 
                                 <div class="flex items-center gap-4">
@@ -171,7 +171,7 @@ const tabs = [
                                         :disabled="profileForm.processing"
                                         class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 transition-all"
                                     >
-                                        {{ profileForm.processing ? 'Menyimpan...' : 'Simpan Perubahan' }}
+                                        {{ profileForm.processing ? 'Saving...' : 'Save Changes' }}
                                     </button>
                                     <Transition
                                         enter-active-class="transition ease-in-out"
@@ -180,7 +180,7 @@ const tabs = [
                                         leave-to-class="opacity-0"
                                     >
                                         <span v-if="profileForm.recentlySuccessful" class="text-sm text-green-600 font-medium">
-                                            ✓ Tersimpan
+                                            ✓ Saved
                                         </span>
                                     </Transition>
                                 </div>
@@ -192,13 +192,13 @@ const tabs = [
                             <!-- Change Password -->
                             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
                                 <div class="mb-6">
-                                    <h2 class="text-xl font-semibold text-gray-900">Ubah Password</h2>
-                                    <p class="text-sm text-gray-500 mt-1">Gunakan password yang kuat dan unik</p>
+                                    <h2 class="text-xl font-semibold text-gray-900">Change Password</h2>
+                                    <p class="text-sm text-gray-500 mt-1">Use a strong and unique password</p>
                                 </div>
 
                                 <form @submit.prevent="updatePassword" class="space-y-6">
                                     <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Password Saat Ini</label>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Current Password</label>
                                         <div class="relative">
                                             <input
                                                 :type="showCurrentPassword ? 'text' : 'password'"
@@ -218,7 +218,7 @@ const tabs = [
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Password Baru</label>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">New Password</label>
                                             <div class="relative">
                                                 <input
                                                     :type="showNewPassword ? 'text' : 'password'"
@@ -237,7 +237,7 @@ const tabs = [
                                         </div>
 
                                         <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Konfirmasi Password</label>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
                                             <div class="relative">
                                                 <input
                                                     :type="showConfirmPassword ? 'text' : 'password'"
@@ -260,7 +260,7 @@ const tabs = [
                                             :disabled="passwordForm.processing"
                                             class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 transition-all"
                                         >
-                                            {{ passwordForm.processing ? 'Menyimpan...' : 'Ubah Password' }}
+                                            {{ passwordForm.processing ? 'Saving...' : 'Change Password' }}
                                         </button>
                                         <Transition
                                             enter-active-class="transition ease-in-out"
@@ -269,7 +269,7 @@ const tabs = [
                                             leave-to-class="opacity-0"
                                         >
                                             <span v-if="passwordForm.recentlySuccessful" class="text-sm text-green-600 font-medium">
-                                                ✓ Password diubah
+                                                ✓ Password changed
                                             </span>
                                         </Transition>
                                     </div>
@@ -285,12 +285,12 @@ const tabs = [
                                         </svg>
                                     </div>
                                     <div class="flex-1">
-                                        <h3 class="text-lg font-semibold text-gray-900">Hapus Akun</h3>
+                                        <h3 class="text-lg font-semibold text-gray-900">Delete Account</h3>
                                         <p class="text-sm text-gray-500 mt-1">
-                                            Setelah akun dihapus, semua data akan hilang permanen. Pastikan Anda sudah mengunduh data yang diperlukan.
+                                            Once your account is deleted, all data will be permanently lost. Make sure you have downloaded any data you need.
                                         </p>
                                         <button class="mt-4 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors">
-                                            Hapus Akun Saya
+                                            Delete My Account
                                         </button>
                                     </div>
                                 </div>
@@ -301,14 +301,14 @@ const tabs = [
                         <div v-if="activeTab === 'addresses'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8">
                             <div class="flex items-center justify-between mb-6">
                                 <div>
-                                    <h2 class="text-xl font-semibold text-gray-900">Alamat Pengiriman</h2>
-                                    <p class="text-sm text-gray-500 mt-1">Kelola alamat untuk pengiriman pesanan</p>
+                                    <h2 class="text-xl font-semibold text-gray-900">Shipping Addresses</h2>
+                                    <p class="text-sm text-gray-500 mt-1">Manage addresses for order delivery</p>
                                 </div>
                                 <Link
                                     :href="route('addresses.create')"
                                     class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all"
                                 >
-                                    + Tambah Alamat
+                                    + Add Address
                                 </Link>
                             </div>
 
@@ -316,12 +316,12 @@ const tabs = [
                                 <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <p>Belum ada alamat tersimpan</p>
+                                <p>No saved addresses yet</p>
                                 <Link
                                     :href="route('addresses.index')"
                                     class="inline-flex items-center mt-4 text-indigo-600 hover:text-indigo-700 font-medium"
                                 >
-                                    Kelola Alamat
+                                    Manage Addresses
                                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>

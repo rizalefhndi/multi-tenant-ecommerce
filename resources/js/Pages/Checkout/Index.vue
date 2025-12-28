@@ -76,17 +76,17 @@ const handleAddressSaved = (address) => {
 // Submit checkout
 const submitCheckout = () => {
     if (!form.address_id) {
-        alert('Pilih alamat pengiriman');
+        alert('Please select a shipping address');
         return;
     }
 
     if (!form.payment_method) {
-        alert('Pilih metode pembayaran');
+        alert('Please select a payment method');
         return;
     }
 
     if (props.stockIssues && props.stockIssues.length > 0) {
-        alert('Ada masalah dengan stok produk:\n' + props.stockIssues.join('\n'));
+        alert('There are stock issues:\n' + props.stockIssues.join('\n'));
         return;
     }
 
@@ -113,7 +113,7 @@ const submitCheckout = () => {
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
-                    Kembali ke Keranjang
+                    Back to Cart
                 </Link>
             </div>
         </template>
@@ -127,7 +127,7 @@ const submitCheckout = () => {
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
                         <div>
-                            <h4 class="font-medium text-red-800">Masalah Stok</h4>
+                            <h4 class="font-medium text-red-800">Stock Issues</h4>
                             <ul class="mt-1 text-sm text-red-700 list-disc list-inside">
                                 <li v-for="issue in stockIssues" :key="issue">{{ issue }}</li>
                             </ul>
@@ -147,7 +147,7 @@ const submitCheckout = () => {
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
-                                        Alamat Pengiriman
+                                        Shipping Address
                                     </h3>
                                     <button
                                         @click="openAddressModal"
@@ -156,7 +156,7 @@ const submitCheckout = () => {
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                         </svg>
-                                        Tambah Alamat
+                                        Add Address
                                     </button>
                                 </div>
                             </div>
@@ -167,13 +167,13 @@ const submitCheckout = () => {
                                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     </svg>
-                                    <h4 class="mt-3 text-gray-900 font-medium">Belum ada alamat</h4>
-                                    <p class="mt-1 text-gray-500 text-sm">Tambahkan alamat pengiriman untuk melanjutkan</p>
+                                    <h4 class="mt-3 text-gray-900 font-medium">No address found</h4>
+                                    <p class="mt-1 text-gray-500 text-sm">Add a shipping address to continue</p>
                                     <button
                                         @click="openAddressModal"
                                         class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                                     >
-                                        Tambah Alamat
+                                        Add Address
                                     </button>
                                 </div>
 
@@ -206,7 +206,7 @@ const submitCheckout = () => {
                                                 <div class="flex items-center gap-2">
                                                     <span class="font-medium text-gray-900">{{ address.label }}</span>
                                                     <span v-if="address.is_default" class="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full">
-                                                        Utama
+                                                        Primary
                                                     </span>
                                                 </div>
                                                 <p class="mt-1 text-sm font-medium text-gray-700">{{ address.recipient_name }}</p>
@@ -226,7 +226,7 @@ const submitCheckout = () => {
                                     <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                     </svg>
-                                    Metode Pembayaran
+                                    Payment Method
                                 </h3>
                             </div>
 
@@ -277,7 +277,7 @@ const submitCheckout = () => {
 
                                 <!-- No available methods message -->
                                 <div v-if="availablePaymentMethods.length === 0" class="text-center py-6 text-gray-500">
-                                    Tidak ada metode pembayaran tersedia
+                                    No payment methods available
                                 </div>
                             </div>
                         </div>
@@ -297,7 +297,7 @@ const submitCheckout = () => {
                                     v-model="form.customer_notes"
                                     rows="3"
                                     class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                    placeholder="Catatan untuk penjual (warna, ukuran, dll)"
+                                    placeholder="Notes for seller (color, size, etc)"
                                 ></textarea>
                             </div>
                         </div>
@@ -307,7 +307,7 @@ const submitCheckout = () => {
                     <div class="lg:col-span-1">
                         <div class="bg-white rounded-xl shadow-sm sticky top-6 overflow-hidden">
                             <div class="p-6 border-b border-gray-100">
-                                <h3 class="text-lg font-semibold text-gray-900">Ringkasan Pesanan</h3>
+                                <h3 class="text-lg font-semibold text-gray-900">Order Summary</h3>
                             </div>
 
                             <div class="p-6">
@@ -351,12 +351,12 @@ const submitCheckout = () => {
                                         <span>{{ cart.formatted_subtotal }}</span>
                                     </div>
                                     <div class="flex justify-between text-gray-600">
-                                        <span>Ongkos Kirim</span>
+                                        <span>Shipping</span>
                                         <span v-if="shippingCost > 0">{{ formatCurrency(shippingCost) }}</span>
                                         <span v-else class="text-green-600">Gratis</span>
                                     </div>
                                     <div v-if="discount > 0" class="flex justify-between text-green-600">
-                                        <span>Diskon</span>
+                                        <span>Discount</span>
                                         <span>-{{ formatCurrency(discount) }}</span>
                                     </div>
                                 </div>
@@ -379,7 +379,7 @@ const submitCheckout = () => {
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    {{ isProcessing ? 'Memproses...' : 'Buat Pesanan' }}
+                                    {{ isProcessing ? 'Processing...' : 'Place Order' }}
                                 </button>
 
                                 <!-- Security badges -->
@@ -388,13 +388,13 @@ const submitCheckout = () => {
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
                                         </svg>
-                                        Aman
+                                        Secure
                                     </span>
                                     <span class="flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                         </svg>
-                                        Terverifikasi
+                                        Verified
                                     </span>
                                 </div>
                             </div>

@@ -39,11 +39,11 @@ const getStatusColor = (status) => {
 
 const getStatusLabel = (status) => {
     const labels = {
-        pending: 'Menunggu',
-        processing: 'Diproses',
-        shipped: 'Dikirim',
-        completed: 'Selesai',
-        cancelled: 'Dibatalkan',
+        pending: 'Pending',
+        processing: 'Processing',
+        shipped: 'Shipped',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
     };
     return labels[status] || status;
 };
@@ -62,7 +62,7 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
             <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <h1 class="text-3xl font-bold text-white">Analytics Dashboard</h1>
-                    <p class="text-white/80 mt-1">Pantau performa toko Anda secara real-time</p>
+                    <p class="text-white/80 mt-1">Monitor your store performance in real-time</p>
                 </div>
             </div>
 
@@ -85,7 +85,7 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
                             </span>
                         </div>
                         <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(stats?.revenue?.this_month) }}</p>
-                        <p class="text-sm text-gray-500 mt-1">Pendapatan bulan ini</p>
+                        <p class="text-sm text-gray-500 mt-1">Revenue this month</p>
                     </div>
 
                     <!-- Orders Today -->
@@ -97,11 +97,11 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
                                 </svg>
                             </div>
                             <span class="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                                {{ stats?.orders?.today }} hari ini
+                                {{ stats?.orders?.today }} today
                             </span>
                         </div>
                         <p class="text-2xl font-bold text-gray-900">{{ formatNumber(stats?.orders?.this_month) }}</p>
-                        <p class="text-sm text-gray-500 mt-1">Pesanan bulan ini</p>
+                        <p class="text-sm text-gray-500 mt-1">Orders this month</p>
                     </div>
 
                     <!-- Pending Orders -->
@@ -114,12 +114,12 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
                             </div>
                         </div>
                         <p class="text-2xl font-bold text-gray-900">{{ formatNumber(stats?.orders?.pending) }}</p>
-                        <p class="text-sm text-gray-500 mt-1">Menunggu pembayaran</p>
+                        <p class="text-sm text-gray-500 mt-1">Pending payment</p>
                         <Link 
                             href="/admin/orders?status=pending" 
                             class="inline-flex items-center text-sm text-orange-600 font-medium mt-2 hover:text-orange-700"
                         >
-                            Lihat semua
+                            View all
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
@@ -138,11 +138,11 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
                                 v-if="stats?.products?.low_stock > 0"
                                 class="text-sm font-medium text-red-600 bg-red-100 px-2 py-1 rounded-full"
                             >
-                                {{ stats?.products?.low_stock }} stok rendah
+                                {{ stats?.products?.low_stock }} low stock
                             </span>
                         </div>
                         <p class="text-2xl font-bold text-gray-900">{{ formatNumber(stats?.products?.total) }}</p>
-                        <p class="text-sm text-gray-500 mt-1">Total produk ({{ stats?.products?.active }} aktif)</p>
+                        <p class="text-sm text-gray-500 mt-1">Total products ({{ stats?.products?.active }} active)</p>
                     </div>
                 </div>
 
@@ -150,7 +150,7 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <!-- Monthly Revenue Chart -->
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Pendapatan Bulanan</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Monthly Revenue</h3>
                         <div class="flex items-end justify-between h-48 gap-2">
                             <div 
                                 v-for="(value, index) in monthlyRevenue?.data" 
@@ -168,7 +168,7 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
 
                     <!-- Sales by Day of Week -->
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Penjualan per Hari</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">Sales by Day</h3>
                         <div class="space-y-4">
                             <div 
                                 v-for="(value, index) in salesByDayOfWeek?.data" 
@@ -193,9 +193,9 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
                     <!-- Top Products -->
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900">Produk Terlaris</h3>
+                            <h3 class="text-lg font-semibold text-gray-900">Top Products</h3>
                             <Link href="/products" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                                Lihat Semua
+                                View All
                             </Link>
                         </div>
                         <div class="space-y-4">
@@ -218,11 +218,11 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
                                 </div>
                                 <div class="text-right">
                                     <p class="font-semibold text-gray-900">{{ product.total_sold }}</p>
-                                    <p class="text-xs text-gray-500">terjual</p>
+                                    <p class="text-xs text-gray-500">sold</p>
                                 </div>
                             </div>
                             <div v-if="!topProducts?.length" class="text-center py-8 text-gray-500">
-                                Belum ada data penjualan
+                                No sales data yet
                             </div>
                         </div>
                     </div>
@@ -230,9 +230,9 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
                     <!-- Recent Orders -->
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900">Pesanan Terbaru</h3>
+                            <h3 class="text-lg font-semibold text-gray-900">Recent Orders</h3>
                             <Link href="/admin/orders" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                                Lihat Semua
+                                View All
                             </Link>
                         </div>
                         <div class="space-y-4">
@@ -263,7 +263,7 @@ const maxDailyRevenue = computed(() => Math.max(...(props.revenueChart?.data || 
                                 </div>
                             </div>
                             <div v-if="!recentOrders?.length" class="text-center py-8 text-gray-500">
-                                Belum ada pesanan
+                                No orders yet
                             </div>
                         </div>
                     </div>

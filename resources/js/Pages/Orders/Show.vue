@@ -42,7 +42,7 @@ const submitProof = () => {
 
 // Cancel order
 const cancelOrder = () => {
-    if (confirm('Yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan.')) {
+    if (confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
         router.post(route('orders.cancel', props.order.id));
     }
 };
@@ -54,7 +54,7 @@ const reorder = () => {
 
 // Confirm received
 const confirmReceived = () => {
-    if (confirm('Konfirmasi bahwa pesanan sudah diterima?')) {
+    if (confirm('Confirm that the order has been received?')) {
         router.post(route('orders.confirm-received', props.order.id));
     }
 };
@@ -62,7 +62,7 @@ const confirmReceived = () => {
 // Copy to clipboard
 const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    alert('Disalin ke clipboard!');
+    alert('Copied to clipboard!');
 };
 
 // Check if can upload proof
@@ -83,7 +83,7 @@ const waitingVerification = computed(() => {
 </script>
 
 <template>
-    <Head :title="`Pesanan ${order.order_number}`" />
+    <Head :title="`Order ${order.order_number}`" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -97,7 +97,7 @@ const waitingVerification = computed(() => {
                     </svg>
                 </Link>
                 <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Detail Pesanan</h2>
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Order Details</h2>
                     <p class="text-sm text-gray-500 font-mono">{{ order.order_number }}</p>
                 </div>
             </div>
@@ -158,7 +158,7 @@ const waitingVerification = computed(() => {
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
                             <OrderStatusBadge :status="order.status" :label="order.status_label" size="lg" />
-                            <p class="text-sm text-gray-500 mt-2">Dibuat pada {{ order.created_at }}</p>
+                            <p class="text-sm text-gray-500 mt-2">Created on {{ order.created_at }}</p>
                         </div>
 
                         <div class="flex flex-wrap gap-2">
@@ -171,7 +171,7 @@ const waitingVerification = computed(() => {
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
                                 </svg>
-                                Upload Bukti Transfer
+                                Upload Transfer Proof
                             </button>
 
                             <!-- Confirm Received Button -->
@@ -183,7 +183,7 @@ const waitingVerification = computed(() => {
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                Pesanan Diterima
+                                Order Received
                             </button>
 
                             <!-- Reorder Button -->
@@ -195,7 +195,7 @@ const waitingVerification = computed(() => {
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
-                                Pesan Lagi
+                                Reorder
                             </button>
 
                             <!-- Cancel Button -->
@@ -207,7 +207,7 @@ const waitingVerification = computed(() => {
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
-                                Batalkan
+                                Cancel
                             </button>
                         </div>
                     </div>
@@ -220,8 +220,8 @@ const waitingVerification = computed(() => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <div>
-                            <h4 class="font-medium text-amber-800">Menunggu Verifikasi</h4>
-                            <p class="text-sm text-amber-700 mt-1">Bukti transfer sudah diupload. Mohon tunggu verifikasi dari admin.</p>
+                            <h4 class="font-medium text-amber-800">Waiting for Verification</h4>
+                            <p class="text-sm text-amber-700 mt-1">Transfer proof has been uploaded. Please wait for admin verification.</p>
                         </div>
                     </div>
                 </div>
@@ -233,11 +233,11 @@ const waitingVerification = computed(() => {
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Menunggu Pembayaran
+                        Pending Payment
                     </h4>
 
                     <p class="text-sm text-amber-700 mb-4">
-                        Silakan transfer ke rekening berikut sebelum <span class="font-medium">{{ transaction.expires_at }}</span>
+                        Please transfer to the following account before <span class="font-medium">{{ transaction.expires_at }}</span>
                     </p>
 
                     <div v-if="transaction.bank_transfer_info" class="bg-white rounded-lg p-4 border border-amber-200 space-y-3">
@@ -246,13 +246,13 @@ const waitingVerification = computed(() => {
                             <span class="font-medium text-gray-900">{{ transaction.bank_transfer_info.bank_name }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Nomor Rekening</span>
+                            <span class="text-sm text-gray-600">Account Number</span>
                             <div class="flex items-center gap-2">
                                 <span class="font-mono font-medium text-gray-900">{{ transaction.bank_transfer_info.account_number }}</span>
                                 <button 
                                     @click="copyToClipboard(transaction.bank_transfer_info.account_number)"
                                     class="text-indigo-600 hover:text-indigo-800"
-                                    title="Salin"
+                                    title="Copy"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -261,17 +261,17 @@ const waitingVerification = computed(() => {
                             </div>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Atas Nama</span>
+                            <span class="text-sm text-gray-600">Account Holder</span>
                             <span class="font-medium text-gray-900">{{ transaction.bank_transfer_info.account_holder }}</span>
                         </div>
                         <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                            <span class="text-sm text-gray-600">Jumlah Transfer</span>
+                            <span class="text-sm text-gray-600">Transfer Amount</span>
                             <div class="flex items-center gap-2">
                                 <span class="font-bold text-xl text-indigo-600">{{ transaction.formatted_amount }}</span>
                                 <button 
                                     @click="copyToClipboard(transaction.amount.toString())"
                                     class="text-indigo-600 hover:text-indigo-800"
-                                    title="Salin"
+                                    title="Copy"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -285,7 +285,7 @@ const waitingVerification = computed(() => {
                 <!-- Order Items -->
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
                     <div class="p-6 border-b border-gray-100">
-                        <h3 class="font-semibold text-gray-900">Item Pesanan</h3>
+                        <h3 class="font-semibold text-gray-900">Order Items</h3>
                     </div>
                     <div class="divide-y divide-gray-100">
                         <div 
@@ -338,7 +338,7 @@ const waitingVerification = computed(() => {
                             <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             </svg>
-                            Alamat Pengiriman
+                            Shipping Address
                         </h3>
                         <div v-if="order.shipping_address" class="text-gray-600">
                             <p class="font-medium text-gray-900">{{ order.shipping_address.recipient_name }}</p>
@@ -348,7 +348,7 @@ const waitingVerification = computed(() => {
 
                         <!-- Tracking Info -->
                         <div v-if="order.shipping_tracking_number" class="mt-4 pt-4 border-t border-gray-200">
-                            <p class="text-sm text-gray-500">Nomor Resi</p>
+                            <p class="text-sm text-gray-500">Tracking Number</p>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="font-mono font-medium text-gray-900">{{ order.shipping_tracking_number }}</span>
                                 <button 
@@ -370,7 +370,7 @@ const waitingVerification = computed(() => {
                             <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            Ringkasan Pembayaran
+                            Payment Summary
                         </h3>
                         <div class="space-y-2">
                             <div class="flex justify-between text-gray-600">
@@ -378,11 +378,11 @@ const waitingVerification = computed(() => {
                                 <span>{{ order.formatted_subtotal }}</span>
                             </div>
                             <div v-if="order.shipping_cost > 0" class="flex justify-between text-gray-600">
-                                <span>Ongkos Kirim</span>
+                                <span>Shipping</span>
                                 <span>{{ order.formatted_shipping_cost }}</span>
                             </div>
                             <div v-if="order.discount > 0" class="flex justify-between text-green-600">
-                                <span>Diskon</span>
+                                <span>Discount</span>
                                 <span>-Rp {{ order.discount.toLocaleString('id-ID') }}</span>
                             </div>
                             <div class="flex justify-between text-lg font-semibold text-gray-900 pt-3 border-t border-gray-200">
@@ -392,16 +392,16 @@ const waitingVerification = computed(() => {
                         </div>
 
                         <div class="mt-4 pt-4 border-t border-gray-200">
-                            <p class="text-sm text-gray-500">Metode Pembayaran</p>
-                            <p class="font-medium text-gray-900">{{ order.payment_method === 'bank_transfer' ? 'Transfer Bank Manual' : order.payment_method }}</p>
-                            <p v-if="order.paid_at" class="text-sm text-green-600 mt-1">Dibayar pada {{ order.paid_at }}</p>
+                            <p class="text-sm text-gray-500">Payment Method</p>
+                            <p class="font-medium text-gray-900">{{ order.payment_method === 'bank_transfer' ? 'Manual Bank Transfer' : order.payment_method }}</p>
+                            <p v-if="order.paid_at" class="text-sm text-green-600 mt-1">Paid on {{ order.paid_at }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Customer Notes -->
                 <div v-if="order.customer_notes" class="bg-white rounded-xl shadow-sm p-6 mb-6">
-                    <h3 class="font-semibold text-gray-900 mb-2">Catatan</h3>
+                    <h3 class="font-semibold text-gray-900 mb-2">Notes</h3>
                     <p class="text-gray-600">{{ order.customer_notes }}</p>
                 </div>
             </div>
@@ -410,11 +410,11 @@ const waitingVerification = computed(() => {
         <!-- Upload Proof Modal -->
         <Modal :show="showUploadModal" @close="showUploadModal = false" max-width="md">
             <div class="p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Upload Bukti Transfer</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Upload Transfer Proof</h3>
 
                 <form @submit.prevent="submitProof">
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Foto Bukti Transfer</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Transfer Proof Photo</label>
                         
                         <!-- Preview -->
                         <div v-if="previewUrl" class="mb-3">
@@ -429,7 +429,7 @@ const waitingVerification = computed(() => {
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                     <p class="text-sm text-gray-500">
-                                        <span class="font-medium text-indigo-600">Pilih file</span> atau drag & drop
+                                        <span class="font-medium text-indigo-600">Choose file</span> or drag & drop
                                     </p>
                                     <p class="text-xs text-gray-400 mt-1">PNG, JPG (max. 2MB)</p>
                                 </div>
@@ -453,14 +453,14 @@ const waitingVerification = computed(() => {
                             @click="showUploadModal = false"
                             class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                         >
-                            Batal
+                            Cancel
                         </button>
                         <button
                             type="submit"
                             :disabled="!uploadForm.transfer_proof || uploadForm.processing"
                             class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors"
                         >
-                            {{ uploadForm.processing ? 'Mengupload...' : 'Upload' }}
+                            {{ uploadForm.processing ? 'Uploading...' : 'Upload' }}
                         </button>
                     </div>
                 </form>
