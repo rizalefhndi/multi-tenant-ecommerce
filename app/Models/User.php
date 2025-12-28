@@ -13,10 +13,15 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    // Role constants
+    const ROLE_ADMIN = 'admin';
+    const ROLE_CUSTOMER = 'customer';
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
     ];
 
     protected $hidden = [
@@ -30,6 +35,34 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // ==========================================
+    // ROLE METHODS
+    // ==========================================
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    /**
+     * Check if user is customer
+     */
+    public function isCustomer(): bool
+    {
+        return $this->role === self::ROLE_CUSTOMER;
+    }
+
+    /**
+     * Check if user has specific role
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
     }
 
     /**

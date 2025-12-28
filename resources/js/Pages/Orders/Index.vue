@@ -32,11 +32,11 @@ const getStatusLabel = (status) => {
 </script>
 
 <template>
-    <Head title="Pesanan Saya" />
+    <Head title="My Orders" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Pesanan Saya</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">My Orders</h2>
         </template>
 
         <div class="py-12">
@@ -52,7 +52,7 @@ const getStatusLabel = (status) => {
                                     ? 'border-indigo-500 text-indigo-600' 
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                             >
-                                Semua
+                                All
                             </button>
                             <button
                                 v-for="(label, status) in statuses"
@@ -80,12 +80,12 @@ const getStatusLabel = (status) => {
                         <div class="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div class="flex items-center gap-4">
                                 <div>
-                                    <p class="text-sm text-gray-500">No. Pesanan</p>
+                                    <p class="text-sm text-gray-500">Order No.</p>
                                     <p class="font-mono font-medium text-gray-900">{{ order.order_number }}</p>
                                 </div>
                                 <div class="hidden sm:block text-gray-300">|</div>
                                 <div>
-                                    <p class="text-sm text-gray-500">Tanggal</p>
+                                    <p class="text-sm text-gray-500">Date</p>
                                     <p class="text-gray-900">{{ order.created_at }}</p>
                                 </div>
                             </div>
@@ -125,7 +125,7 @@ const getStatusLabel = (status) => {
 
                                 <!-- Total -->
                                 <div class="text-right">
-                                    <p class="text-sm text-gray-500">Total Belanja</p>
+                                    <p class="text-sm text-gray-500">Order Total</p>
                                     <p class="text-lg font-bold text-gray-900">{{ order.formatted_total }}</p>
                                 </div>
                             </div>
@@ -139,13 +139,13 @@ const getStatusLabel = (status) => {
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Menunggu pembayaran
+                                    Awaiting payment
                                 </span>
                                 <span v-else-if="order.status === 'shipped'" class="text-sm text-blue-600 flex items-center gap-1">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
                                     </svg>
-                                    Dalam pengiriman
+                                    In transit
                                 </span>
                             </div>
                             
@@ -154,7 +154,7 @@ const getStatusLabel = (status) => {
                                     :href="route('orders.show', order.id)"
                                     class="px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors"
                                 >
-                                    Lihat Detail
+                                    View Details
                                 </Link>
                                 
                                 <!-- Conditional buttons based on status -->
@@ -163,14 +163,14 @@ const getStatusLabel = (status) => {
                                     :href="route('orders.show', order.id)"
                                     class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
                                 >
-                                    Bayar Sekarang
+                                    Pay Now
                                 </Link>
                                 <Link
                                     v-if="order.status === 'shipped'"
                                     :href="route('orders.track', order.id)"
                                     class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                                 >
-                                    Lacak
+                                    Track
                                 </Link>
                             </div>
                         </div>
@@ -204,11 +204,11 @@ const getStatusLabel = (status) => {
                     <svg class="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
-                    <h3 class="text-2xl font-semibold text-gray-900 mb-2">Belum ada pesanan</h3>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-2">No orders yet</h3>
                     <p class="text-gray-600 mb-6">
                         {{ selectedStatus === 'all' 
-                            ? 'Ayo mulai belanja dan temukan produk favoritmu!' 
-                            : `Tidak ada pesanan dengan status "${getStatusLabel(selectedStatus)}"` }}
+                            ? 'Start shopping and find your favorite products!' 
+                            : `No orders with status "${getStatusLabel(selectedStatus)}"` }}
                     </p>
                     <Link
                         :href="route('products.index')"
@@ -217,7 +217,7 @@ const getStatusLabel = (status) => {
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
-                        Mulai Belanja
+                        Start Shopping
                     </Link>
                 </div>
             </div>

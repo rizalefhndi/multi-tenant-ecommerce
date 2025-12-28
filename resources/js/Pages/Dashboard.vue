@@ -59,21 +59,21 @@ const getStatusColor = (status) => {
 
 const getStatusLabel = (status) => {
     const labels = {
-        pending: 'Menunggu',
-        processing: 'Diproses',
-        shipped: 'Dikirim',
-        completed: 'Selesai',
-        cancelled: 'Dibatalkan',
+        pending: 'Pending',
+        processing: 'Processing',
+        shipped: 'Shipped',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
     };
     return labels[status] || status;
 };
 
 const greeting = computed(() => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Selamat Pagi';
-    if (hour < 15) return 'Selamat Siang';
-    if (hour < 18) return 'Selamat Sore';
-    return 'Selamat Malam';
+    if (hour < 12) return 'Good Morning';
+    if (hour < 15) return 'Good Afternoon';
+    if (hour < 18) return 'Good Evening';
+    return 'Good Night';
 });
 </script>
 
@@ -87,7 +87,7 @@ const greeting = computed(() => {
                 <!-- Welcome Section -->
                 <div class="mb-8">
                     <h1 class="text-2xl font-bold text-gray-900">{{ greeting }}! 👋</h1>
-                    <p class="text-gray-500 mt-1">Berikut ringkasan toko Anda hari ini</p>
+                    <p class="text-gray-500 mt-1">Here's your store summary for today</p>
                 </div>
 
                 <!-- Stats Cards -->
@@ -96,7 +96,7 @@ const greeting = computed(() => {
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-500">Total Produk</p>
+                                <p class="text-sm font-medium text-gray-500">Total Products</p>
                                 <p class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalProducts }}</p>
                             </div>
                             <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
@@ -107,7 +107,7 @@ const greeting = computed(() => {
                         </div>
                         <div class="mt-4 flex items-center text-sm">
                             <span class="text-green-600 font-medium">+12%</span>
-                            <span class="text-gray-400 ml-2">dari bulan lalu</span>
+                            <span class="text-gray-400 ml-2">from last month</span>
                         </div>
                     </div>
 
@@ -115,7 +115,7 @@ const greeting = computed(() => {
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-500">Total Pesanan</p>
+                                <p class="text-sm font-medium text-gray-500">Total Orders</p>
                                 <p class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalOrders }}</p>
                             </div>
                             <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
@@ -126,7 +126,7 @@ const greeting = computed(() => {
                         </div>
                         <div class="mt-4 flex items-center text-sm">
                             <span class="text-green-600 font-medium">+8%</span>
-                            <span class="text-gray-400 ml-2">dari bulan lalu</span>
+                            <span class="text-gray-400 ml-2">from last month</span>
                         </div>
                     </div>
 
@@ -134,7 +134,7 @@ const greeting = computed(() => {
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-500">Pendapatan</p>
+                                <p class="text-sm font-medium text-gray-500">Revenue</p>
                                 <p class="text-2xl font-bold text-gray-900 mt-1">{{ formatCurrency(stats.totalRevenue) }}</p>
                             </div>
                             <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center">
@@ -145,7 +145,7 @@ const greeting = computed(() => {
                         </div>
                         <div class="mt-4 flex items-center text-sm">
                             <span class="text-green-600 font-medium">+23%</span>
-                            <span class="text-gray-400 ml-2">dari bulan lalu</span>
+                            <span class="text-gray-400 ml-2">from last month</span>
                         </div>
                     </div>
 
@@ -153,7 +153,7 @@ const greeting = computed(() => {
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-500">Perlu Diproses</p>
+                                <p class="text-sm font-medium text-gray-500">Need Processing</p>
                                 <p class="text-3xl font-bold text-gray-900 mt-1">{{ stats.pendingOrders }}</p>
                             </div>
                             <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
@@ -163,7 +163,7 @@ const greeting = computed(() => {
                             </div>
                         </div>
                         <Link href="/orders?status=pending" class="mt-4 inline-flex items-center text-sm text-orange-600 font-medium hover:text-orange-700">
-                            Lihat pesanan
+                            View orders
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
@@ -178,9 +178,9 @@ const greeting = computed(() => {
                     <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100">
                         <div class="p-6 border-b border-gray-100">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-semibold text-gray-900">Pesanan Terbaru</h2>
+                                <h2 class="text-lg font-semibold text-gray-900">Recent Orders</h2>
                                 <Link href="/orders" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                                    Lihat Semua
+                                    View All
                                 </Link>
                             </div>
                         </div>
@@ -215,13 +215,13 @@ const greeting = computed(() => {
                             </div>
                         </div>
                         <div v-if="recentOrders.length === 0" class="p-8 text-center text-gray-500">
-                            Belum ada pesanan
+                            No orders yet
                         </div>
                     </div>
 
                     <!-- Quick Actions -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Aksi Cepat</h2>
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
                         <div class="space-y-3">
                             <Link 
                                 href="/products/create" 
@@ -233,8 +233,8 @@ const greeting = computed(() => {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-gray-900">Tambah Produk</p>
-                                    <p class="text-sm text-gray-500">Tambah produk baru ke toko</p>
+                                    <p class="font-medium text-gray-900">Add Product</p>
+                                    <p class="text-sm text-gray-500">Add a new product to store</p>
                                 </div>
                             </Link>
 
@@ -248,8 +248,8 @@ const greeting = computed(() => {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-gray-900">Kelola Pesanan</p>
-                                    <p class="text-sm text-gray-500">Proses pesanan masuk</p>
+                                    <p class="font-medium text-gray-900">Manage Orders</p>
+                                    <p class="text-sm text-gray-500">Process incoming orders</p>
                                 </div>
                             </Link>
 
@@ -264,8 +264,8 @@ const greeting = computed(() => {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-gray-900">Pengaturan Toko</p>
-                                    <p class="text-sm text-gray-500">Kustomisasi tampilan toko</p>
+                                    <p class="font-medium text-gray-900">Store Settings</p>
+                                    <p class="text-sm text-gray-500">Customize store appearance</p>
                                 </div>
                             </Link>
 
@@ -280,7 +280,7 @@ const greeting = computed(() => {
                                 </div>
                                 <div>
                                     <p class="font-medium text-gray-900">Subscription</p>
-                                    <p class="text-sm text-gray-500">Lihat paket langganan</p>
+                                    <p class="text-sm text-gray-500">View subscription plans</p>
                                 </div>
                             </Link>
                         </div>

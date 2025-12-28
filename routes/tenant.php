@@ -36,11 +36,35 @@ Route::middleware([
     Route::middleware(['auth', 'verified'])->group(function () {
 
         // ==========================================
-        // DASHBOARD
+        // DASHBOARD - Redirect based on role
         // ==========================================
         Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard');
+            $user = auth()->user();
+            if ($user->isAdmin()) {
+                return Inertia::render('Dashboard');
+            }
+            // Customer goes to storefront/shop
+            return redirect()->route('customer.home');
         })->name('dashboard');
+
+        // ==========================================
+        // ADMIN DASHBOARD (Admin Only)
+        // ==========================================
+        Route::get('/admin/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->middleware('role:admin')->name('admin.dashboard');
+
+        // ==========================================
+        // CUSTOMER HOME (Customer View)
+        // ==========================================
+        Route::get('/shop', function () {
+            $products = \App\Models\Product::where('is_active', true)
+                ->latest()
+                ->paginate(12);
+            return Inertia::render('Customer/Shop', [
+                'products' => $products,
+            ]);
+        })->name('customer.home');
 
         // ==========================================
         // PROFILE
@@ -52,11 +76,15 @@ Route::middleware([
         });
 
         // ==========================================
-        // PRODUCTS
+        // PRODUCTS - Admin Management (Admin Only, except show)
         // ==========================================
-        Route::resource('products', ProductController::class);
-        Route::patch('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])
-            ->name('products.toggle-status');
+        Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
+        
+        Route::middleware(['role:admin'])->group(function () {
+            Route::resource('products', ProductController::class)->except(['show']);
+            Route::patch('products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])
+                ->name('products.toggle-status');
+        });
 
         // ==========================================
         // CART
@@ -165,29 +193,31 @@ Route::middleware([
         });
 
         // ==========================================
-        // ADMIN - ORDER MANAGEMENT
+        // ADMIN - ORDER MANAGEMENT (Admin Only)
         // ==========================================
-        Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
-            Route::get('/', [AdminOrderController::class, 'index'])->name('index');
-            Route::get('/{order}', [AdminOrderController::class, 'show'])->name('show');
-            Route::patch('/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('update-status');
-            Route::patch('/{order}/tracking', [AdminOrderController::class, 'updateTracking'])->name('update-tracking');
-            Route::post('/{order}/transactions/{transaction}/verify', [AdminOrderController::class, 'verifyPayment'])
-                ->name('verify-payment');
-            Route::post('/{order}/transactions/{transaction}/reject', [AdminOrderController::class, 'rejectPayment'])
-                ->name('reject-payment');
-            Route::get('/{order}/invoice', [AdminOrderController::class, 'printInvoice'])->name('invoice');
-        });
+        Route::middleware(['role:admin'])->group(function () {
+            Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
+                Route::get('/', [AdminOrderController::class, 'index'])->name('index');
+                Route::get('/{order}', [AdminOrderController::class, 'show'])->name('show');
+                Route::patch('/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('update-status');
+                Route::patch('/{order}/tracking', [AdminOrderController::class, 'updateTracking'])->name('update-tracking');
+                Route::post('/{order}/transactions/{transaction}/verify', [AdminOrderController::class, 'verifyPayment'])
+                    ->name('verify-payment');
+                Route::post('/{order}/transactions/{transaction}/reject', [AdminOrderController::class, 'rejectPayment'])
+                    ->name('reject-payment');
+                Route::get('/{order}/invoice', [AdminOrderController::class, 'printInvoice'])->name('invoice');
+            });
 
-        // ==========================================
-        // ADMIN - ANALYTICS
-        // ==========================================
-        Route::prefix('admin/analytics')->name('admin.analytics.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('index');
-            Route::get('/stats', [\App\Http\Controllers\AnalyticsController::class, 'stats'])->name('stats');
-            Route::get('/revenue-chart', [\App\Http\Controllers\AnalyticsController::class, 'revenueChart'])->name('revenue-chart');
-            Route::get('/orders-chart', [\App\Http\Controllers\AnalyticsController::class, 'ordersChart'])->name('orders-chart');
-            Route::get('/top-products', [\App\Http\Controllers\AnalyticsController::class, 'topProducts'])->name('top-products');
+            // ==========================================
+            // ADMIN - ANALYTICS (Admin Only)
+            // ==========================================
+            Route::prefix('admin/analytics')->name('admin.analytics.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('index');
+                Route::get('/stats', [\App\Http\Controllers\AnalyticsController::class, 'stats'])->name('stats');
+                Route::get('/revenue-chart', [\App\Http\Controllers\AnalyticsController::class, 'revenueChart'])->name('revenue-chart');
+                Route::get('/orders-chart', [\App\Http\Controllers\AnalyticsController::class, 'ordersChart'])->name('orders-chart');
+                Route::get('/top-products', [\App\Http\Controllers\AnalyticsController::class, 'topProducts'])->name('top-products');
+            });
         });
 
         // ==========================================

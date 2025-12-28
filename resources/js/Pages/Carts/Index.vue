@@ -1,12 +1,16 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import CartItemComponent from '@/Components/CartItemComponent.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
     cart: Object,
 });
+
+const page = usePage();
+const isAdmin = computed(() => page.props.auth.user?.role === 'admin');
+const shopRoute = computed(() => isAdmin.value ? route('products.index') : route('customer.home'));
 
 const clearCart = () => {
     if (confirm('Are you sure you want to clear your cart?')) {
@@ -30,7 +34,7 @@ const goToCheckout = () => {
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">Shopping Cart</h2>
                 <Link
-                    :href="route('products.index')"
+                    :href="shopRoute"
                     class="text-indigo-600 hover:text-indigo-800"
                 >
                     Continue Shopping
@@ -104,7 +108,7 @@ const goToCheckout = () => {
                             </Link>
 
                             <Link
-                                :href="route('products.index')"
+                                :href="shopRoute"
                                 class="block w-full text-center text-indigo-600 hover:text-indigo-800 font-medium py-2"
                             >
                                 Continue Shopping
@@ -145,7 +149,7 @@ const goToCheckout = () => {
                         Start shopping to add items to your cart
                     </p>
                     <Link
-                        :href="route('products.index')"
+                        :href="shopRoute"
                         class="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors"
                     >
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

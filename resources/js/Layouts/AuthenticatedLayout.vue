@@ -14,6 +14,10 @@ const isLandlord = computed(() => {
     return page.url.startsWith('/landlord') || route().current('landlord.*');
 });
 
+const isAdmin = computed(() => {
+    return user.value?.role === 'admin';
+});
+
 const navItems = computed(() => {
     if (isLandlord.value) {
         return [
@@ -21,20 +25,39 @@ const navItems = computed(() => {
             { name: 'Tenants', href: route('landlord.tenants.index'), active: route().current('landlord.tenants.*'), icon: 'users' },
         ];
     }
+    
+    // Customer navigation
+    if (!isAdmin.value) {
+        return [
+            { name: 'Shop', href: route('customer.home'), active: route().current('customer.home'), icon: 'shopping-bag' },
+            { name: 'My Orders', href: route('orders.index'), active: route().current('orders.*'), icon: 'clipboard' },
+        ];
+    }
+    
+    // Admin navigation
     return [
         { name: 'Dashboard', href: route('dashboard'), active: route().current('dashboard'), icon: 'home' },
-        { name: 'Produk', href: route('products.index'), active: route().current('products.*'), icon: 'box' },
-        { name: 'Pesanan', href: route('orders.index'), active: route().current('orders.*'), icon: 'shopping-bag' },
+        { name: 'Products', href: route('products.index'), active: route().current('products.*'), icon: 'box' },
+        { name: 'Orders', href: route('orders.index'), active: route().current('orders.*'), icon: 'shopping-bag' },
         { name: 'Admin', href: route('admin.orders.index'), active: route().current('admin.orders.*'), icon: 'clipboard' },
         { name: 'Analytics', href: route('admin.analytics.index'), active: route().current('admin.analytics.*'), icon: 'chart' },
     ];
 });
 
-const userMenuItems = [
-    { name: 'Profil', href: route('profile.edit'), icon: 'user' },
-    { name: 'Pengaturan', href: route('settings.index'), icon: 'settings' },
-    { name: 'Subscription', href: route('subscription.index'), icon: 'credit-card' },
-];
+const userMenuItems = computed(() => {
+    if (isAdmin.value) {
+        return [
+            { name: 'Profile', href: route('profile.edit'), icon: 'user' },
+            { name: 'Settings', href: route('settings.index'), icon: 'settings' },
+            { name: 'Subscription', href: route('subscription.index'), icon: 'credit-card' },
+        ];
+    }
+    // Customer menu
+    return [
+        { name: 'Profile', href: route('profile.edit'), icon: 'user' },
+        { name: 'Addresses', href: route('addresses.index'), icon: 'map-pin' },
+    ];
+});
 
 const getInitials = (name) => {
     return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';

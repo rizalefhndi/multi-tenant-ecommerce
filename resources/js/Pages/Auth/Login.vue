@@ -27,7 +27,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Masuk" />
+    <Head title="Login" />
 
     <div class="min-h-screen flex">
         <!-- Left Side - Branding (Desktop Only) -->
@@ -48,9 +48,9 @@ const submit = () => {
                     </svg>
                 </div>
                 
-                <h1 class="text-4xl font-bold mb-4 text-center">Selamat Datang</h1>
+                <h1 class="text-4xl font-bold mb-4 text-center">Welcome Back</h1>
                 <p class="text-lg text-white/80 text-center max-w-sm">
-                    Platform e-commerce modern untuk mengembangkan bisnis online Anda
+                    Modern e-commerce platform to grow your online business
                 </p>
                 
                 <div class="mt-12 space-y-4 w-full max-w-xs">
@@ -60,7 +60,7 @@ const submit = () => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <span class="text-sm">Kelola produk dengan mudah</span>
+                        <span class="text-sm">Manage products easily</span>
                     </div>
                     <div class="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
                         <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -68,7 +68,7 @@ const submit = () => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <span class="text-sm">Terima pembayaran otomatis</span>
+                        <span class="text-sm">Automatic payment processing</span>
                     </div>
                     <div class="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
                         <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -76,7 +76,7 @@ const submit = () => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <span class="text-sm">Kustomisasi tampilan toko</span>
+                        <span class="text-sm">Customize your store</span>
                     </div>
                 </div>
             </div>
@@ -98,11 +98,11 @@ const submit = () => {
 
                 <!-- Header -->
                 <div class="text-center mb-8">
-                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Masuk ke Akun</h2>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Sign In to Account</h2>
                     <p class="text-gray-500 mt-2">
-                        Belum punya akun?
+                        Don't have an account?
                         <Link :href="route('register')" class="text-indigo-600 hover:text-indigo-700 font-semibold ml-1">
-                            Daftar gratis
+                            Register free
                         </Link>
                     </p>
                 </div>
@@ -126,7 +126,7 @@ const submit = () => {
                             required
                             autofocus
                             autocomplete="username"
-                            placeholder="nama@email.com"
+                            placeholder="name@email.com"
                             class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900 placeholder-gray-400"
                             :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': form.errors.email }"
                         />
@@ -147,7 +147,7 @@ const submit = () => {
                                 v-model="form.password"
                                 required
                                 autocomplete="current-password"
-                                placeholder="Masukkan password"
+                                placeholder="Enter password"
                                 class="w-full px-4 py-3 pr-12 bg-white border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900 placeholder-gray-400"
                                 :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500': form.errors.password }"
                             />
@@ -178,14 +178,14 @@ const submit = () => {
                                 v-model="form.remember"
                                 class="w-4 h-4 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 focus:ring-offset-0"
                             />
-                            <span class="text-sm text-gray-600">Ingat saya</span>
+                            <span class="text-sm text-gray-600">Remember me</span>
                         </label>
                         <Link
                             v-if="canResetPassword"
                             :href="route('password.request')"
                             class="text-sm text-indigo-600 hover:text-indigo-700 font-semibold"
                         >
-                            Lupa password?
+                            Forgot password?
                         </Link>
                     </div>
 
@@ -200,16 +200,16 @@ const submit = () => {
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Memproses...
+                            Processing...
                         </span>
-                        <span v-else>Masuk</span>
+                        <span v-else>Sign In</span>
                     </button>
                 </form>
 
                 <!-- Divider -->
                 <div class="mt-8 flex items-center gap-4">
                     <div class="flex-1 h-px bg-gray-200"></div>
-                    <span class="text-sm text-gray-400 font-medium">atau</span>
+                    <span class="text-sm text-gray-400 font-medium">or</span>
                     <div class="flex-1 h-px bg-gray-200"></div>
                 </div>
 
@@ -234,8 +234,8 @@ const submit = () => {
 
                 <!-- Footer -->
                 <p class="mt-8 text-center text-sm text-gray-400">
-                    Dengan masuk, Anda menyetujui
-                    <a href="#" class="text-gray-600 hover:text-indigo-600">Syarat & Ketentuan</a>
+                    By signing in, you agree to our
+                    <a href="#" class="text-gray-600 hover:text-indigo-600">Terms & Conditions</a>
                 </p>
             </div>
         </div>

@@ -105,6 +105,24 @@ class ProductController extends Controller
      */
     public function show(Product $product): Response
     {
+        $user = auth()->user();
+        
+        // Customer view
+        if ($user && $user->isCustomer()) {
+            // Get related products (same category or random)
+            $relatedProducts = Product::where('id', '!=', $product->id)
+                ->where('is_active', true)
+                ->inRandomOrder()
+                ->limit(4)
+                ->get();
+
+            return Inertia::render('Customer/ProductDetail', [
+                'product' => $product,
+                'relatedProducts' => $relatedProducts,
+            ]);
+        }
+
+        // Admin view
         return Inertia::render('Products/Show', [
             'product' => $product,
         ]);

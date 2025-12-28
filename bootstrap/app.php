@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'quota' => \App\Http\Middleware\CheckTenantQuota::class,
             'subscription.active' => \App\Http\Middleware\CheckSubscriptionActive::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

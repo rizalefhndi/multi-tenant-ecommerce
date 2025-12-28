@@ -63,18 +63,18 @@ class Order extends Model
     const STATUS_REFUNDED = 'refunded';
 
     /**
-     * Get semua status dengan label Indonesia
+     * Get all statuses with English labels
      */
     public static function getStatuses(): array
     {
         return [
-            self::STATUS_PENDING_PAYMENT => 'Menunggu Pembayaran',
-            self::STATUS_PAYMENT_RECEIVED => 'Pembayaran Diterima',
-            self::STATUS_PROCESSING => 'Sedang Diproses',
-            self::STATUS_SHIPPED => 'Dikirim',
-            self::STATUS_DELIVERED => 'Selesai',
-            self::STATUS_CANCELLED => 'Dibatalkan',
-            self::STATUS_REFUNDED => 'Dikembalikan',
+            self::STATUS_PENDING_PAYMENT => 'Pending Payment',
+            self::STATUS_PAYMENT_RECEIVED => 'Payment Received',
+            self::STATUS_PROCESSING => 'Processing',
+            self::STATUS_SHIPPED => 'Shipped',
+            self::STATUS_DELIVERED => 'Delivered',
+            self::STATUS_CANCELLED => 'Cancelled',
+            self::STATUS_REFUNDED => 'Refunded',
         ];
     }
 

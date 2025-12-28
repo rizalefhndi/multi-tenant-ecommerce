@@ -75,10 +75,10 @@ watch([status, stock], () => {
                         <!-- Text Content -->
                         <div class="text-center lg:text-left">
                             <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4">
-                                Kelola Produk Anda
+                                Manage Your Products
                             </h1>
                             <p class="text-lg text-white/80 max-w-xl mb-6">
-                                Tambah, edit, dan kelola semua produk toko Anda dengan mudah. Pantau stok dan status produk dalam satu tempat.
+                                Add, edit, and manage all your store products easily. Monitor stock and product status in one place.
                             </p>
                             <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                                 <Link
@@ -88,7 +88,7 @@ watch([status, stock], () => {
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
-                                    Tambah Produk Baru
+                                    Add New Product
                                 </Link>
                                 <button
                                     @click="resetFilters"
@@ -106,19 +106,19 @@ watch([status, stock], () => {
                         <div class="grid grid-cols-2 gap-4">
                             <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
                                 <p class="text-4xl font-bold text-white">{{ products?.total || 0 }}</p>
-                                <p class="text-white/80 text-sm mt-1">Total Produk</p>
+                                <p class="text-white/80 text-sm mt-1">Total Products</p>
                             </div>
                             <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
                                 <p class="text-4xl font-bold text-white">{{ products?.data?.filter(p => p.is_active).length || 0 }}</p>
-                                <p class="text-white/80 text-sm mt-1">Produk Aktif</p>
+                                <p class="text-white/80 text-sm mt-1">Active Products</p>
                             </div>
                             <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
                                 <p class="text-4xl font-bold text-white">{{ products?.data?.filter(p => p.stock > 0).length || 0 }}</p>
-                                <p class="text-white/80 text-sm mt-1">Stok Tersedia</p>
+                                <p class="text-white/80 text-sm mt-1">In Stock</p>
                             </div>
                             <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
                                 <p class="text-4xl font-bold text-white">{{ products?.data?.filter(p => p.stock === 0).length || 0 }}</p>
-                                <p class="text-white/80 text-sm mt-1">Stok Habis</p>
+                                <p class="text-white/80 text-sm mt-1">Out of Stock</p>
                             </div>
                         </div>
                     </div>
@@ -149,7 +149,7 @@ watch([status, stock], () => {
                                     ref="searchInput"
                                     v-model="search"
                                     type="text"
-                                    placeholder="Cari produk..."
+                                    placeholder="Search products..."
                                     class="w-full pl-12 pr-24 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900 placeholder-gray-400"
                                 />
                                 
@@ -160,7 +160,7 @@ watch([status, stock], () => {
                                         v-if="search"
                                         @click="clearSearch"
                                         class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                                        title="Hapus pencarian"
+                                        title="Clear search"
                                     >
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -181,9 +181,9 @@ watch([status, stock], () => {
                                     v-model="status"
                                     class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white appearance-none cursor-pointer"
                                 >
-                                    <option value="">Semua Status</option>
-                                    <option value="active">✓ Aktif</option>
-                                    <option value="inactive">✗ Nonaktif</option>
+                                    <option value="">All Status</option>
+                                    <option value="active">✓ Active</option>
+                                    <option value="inactive">✗ Inactive</option>
                                 </select>
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,9 +200,9 @@ watch([status, stock], () => {
                                     v-model="stock"
                                     class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white appearance-none cursor-pointer"
                                 >
-                                    <option value="">Semua Stok</option>
-                                    <option value="in_stock">📦 Tersedia</option>
-                                    <option value="out_of_stock">⚠️ Habis</option>
+                                    <option value="">All Stock</option>
+                                    <option value="in_stock">📦 In Stock</option>
+                                    <option value="out_of_stock">⚠️ Out of Stock</option>
                                 </select>
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,7 +227,7 @@ watch([status, stock], () => {
 
                     <!-- Active Filters Tags -->
                     <div v-if="search || status || stock" class="mt-4 flex flex-wrap gap-2">
-                        <span class="text-sm text-gray-500">Filter aktif:</span>
+                        <span class="text-sm text-gray-500">Active filters:</span>
                         <span 
                             v-if="search"
                             class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"
@@ -278,7 +278,7 @@ watch([status, stock], () => {
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
                         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div class="text-sm text-gray-600">
-                                Menampilkan <span class="font-semibold">{{ products.from }}</span> - <span class="font-semibold">{{ products.to }}</span> dari <span class="font-semibold">{{ products.total }}</span> produk
+                                Showing <span class="font-semibold">{{ products.from }}</span> - <span class="font-semibold">{{ products.to }}</span> of <span class="font-semibold">{{ products.total }}</span> products
                             </div>
 
                             <div class="flex gap-2">
@@ -314,9 +314,9 @@ watch([status, stock], () => {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Tidak ada produk ditemukan</h3>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
                     <p class="text-gray-500 mb-6 max-w-md mx-auto">
-                        {{ filters.search ? 'Coba ubah kata kunci pencarian atau filter Anda' : 'Mulai dengan menambahkan produk pertama Anda' }}
+                        {{ filters.search ? 'Try changing your search term or filters' : 'Start by adding your first product' }}
                     </p>
                     <Link
                         :href="route('products.create')"
@@ -325,7 +325,7 @@ watch([status, stock], () => {
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Tambah Produk
+                        Add Product
                     </Link>
                 </div>
             </div>
