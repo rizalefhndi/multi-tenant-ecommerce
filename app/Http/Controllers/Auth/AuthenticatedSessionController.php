@@ -33,7 +33,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('landlord.dashboard', absolute: false));
+        $user = $request->user();
+
+        if ($user->role === 'superadmin') {
+            return redirect()->route('landlord.dashboard');
+        }
+
+        return redirect()->intended(route('home', absolute: false));
     }
 
     /**

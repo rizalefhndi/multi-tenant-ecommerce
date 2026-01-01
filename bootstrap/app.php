@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
             'superadmin' => \App\Http\Middleware\CheckSuperAdmin::class,
             'tenant.active' => \App\Http\Middleware\CheckTenantStatus::class,
+            'tenant.identify' => \App\Http\Middleware\IdentifyTenant::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
