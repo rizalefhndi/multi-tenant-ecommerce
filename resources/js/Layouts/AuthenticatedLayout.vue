@@ -36,7 +36,7 @@ const navItems = computed(() => {
     
     // Admin navigation
     return [
-        { name: 'Dashboard', href: route('dashboard'), active: route().current('dashboard'), icon: 'home' },
+        { name: 'Dashboard', href: route('landlord.dashboard'), active: route().current('landlord.dashboard'), icon: 'home' },
         { name: 'Products', href: route('products.index'), active: route().current('products.*'), icon: 'box' },
         { name: 'Orders', href: route('admin.orders.index'), active: route().current('admin.orders.*') || route().current('orders.*'), icon: 'shopping-bag' },
         { name: 'Analytics', href: route('admin.analytics.index'), active: route().current('admin.analytics.*'), icon: 'chart' },
@@ -66,24 +66,42 @@ const getInitials = (name) => {
 <template>
     <div>
         <FlashMessage />
-        <div class="min-h-screen bg-gray-50">
+        <div 
+            class="min-h-screen transition-colors duration-300"
+            :class="isLandlord ? 'bg-black' : 'bg-gray-50'"
+        >
             <!-- Modern Navbar -->
-            <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
+            <nav 
+                class="border-b sticky top-0 z-50 transition-colors duration-300"
+                :class="isLandlord ? 'bg-black border-zinc-800' : 'bg-white border-gray-100'"
+            >
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex h-16 items-center justify-between">
                         
                         <!-- Left: Logo + Navigation -->
                         <div class="flex items-center gap-8">
                             <!-- Logo -->
-                            <Link :href="route('dashboard')" class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <Link :href="isLandlord ? route('landlord.dashboard') : (isAdmin ? route('landlord.dashboard') : route('customer.home'))" class="flex items-center gap-3">
+                                <div 
+                                    class="w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-300"
+                                    :class="isLandlord ? 'bg-white' : 'bg-gradient-to-br from-indigo-600 to-purple-600'"
+                                >
+                                    <svg 
+                                        class="w-8 h-8" 
+                                        viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path d="M50 0 L93.3 25 V75 L50 100 L6.7 75 V25 L50 0 Z" :fill="isLandlord ? 'black' : 'white'"/>
+                                        <path d="M50 20 L24 35 V65 L50 80 L76 65 V35 L50 20 Z" :fill="isLandlord ? 'white' : 'black'"/>
+                                        <path d="M50 35 L50 65" :stroke="isLandlord ? 'black' : 'white'" stroke-width="8"/>
+                                        <path d="M35 50 L65 50" :stroke="isLandlord ? 'black' : 'white'" stroke-width="8"/>
                                     </svg>
                                 </div>
-                                <span class="hidden sm:block font-bold text-gray-900">ONYX</span>
+                                <span 
+                                    class="hidden sm:block font-bold"
+                                    :class="isLandlord ? 'text-white' : 'text-gray-900'"
+                                >
+                                    ONYX
+                                </span>
                             </Link>
 
                             <!-- Desktop Navigation -->
@@ -93,9 +111,11 @@ const getInitials = (name) => {
                                     :key="item.name"
                                     :href="item.href"
                                     class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                                    :class="item.active 
-                                        ? 'bg-indigo-50 text-indigo-700' 
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'"
+                                    :class="[
+                                        item.active 
+                                            ? (isLandlord ? 'bg-zinc-900 text-white' : 'bg-indigo-50 text-indigo-700')
+                                            : (isLandlord ? 'text-zinc-400 hover:text-white hover:bg-zinc-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100')
+                                    ]"
                                 >
                                     {{ item.name }}
                                 </Link>
@@ -122,7 +142,10 @@ const getInitials = (name) => {
                             </Link>
 
                             <!-- Notifications -->
-                            <button class="hidden sm:flex p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors relative">
+                            <button 
+                                class="hidden sm:flex p-2 rounded-lg transition-colors relative"
+                                :class="isLandlord ? 'text-zinc-400 hover:text-white hover:bg-zinc-900' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'"
+                            >
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                 </svg>
@@ -138,8 +161,17 @@ const getInitials = (name) => {
                                     <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                                         {{ getInitials(user?.name) }}
                                     </div>
-                                    <span class="hidden sm:block text-sm font-medium text-gray-700">{{ user?.name }}</span>
-                                    <svg class="hidden sm:block w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <span 
+                                        class="hidden sm:block text-sm font-medium"
+                                        :class="isLandlord ? 'text-white' : 'text-gray-700'"
+                                    >
+                                        {{ user?.name }}
+                                    </span>
+                                    <svg 
+                                        class="hidden sm:block w-4 h-4" 
+                                        :class="isLandlord ? 'text-zinc-500' : 'text-gray-400'"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    >
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
@@ -156,11 +188,20 @@ const getInitials = (name) => {
                                     <div 
                                         v-if="showUserMenu"
                                         @click.away="showUserMenu = false"
-                                        class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50"
+                                        class="absolute right-0 mt-2 w-56 rounded-xl shadow-lg border py-2 z-50"
+                                        :class="isLandlord ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-100'"
                                     >
                                         <!-- User Info -->
-                                        <div class="px-4 py-3 border-b border-gray-100">
-                                            <p class="text-sm font-medium text-gray-900">{{ user?.name }}</p>
+                                        <div 
+                                            class="px-4 py-3 border-b"
+                                            :class="isLandlord ? 'border-zinc-800' : 'border-gray-100'"
+                                        >
+                                            <p 
+                                                class="text-sm font-medium"
+                                                :class="isLandlord ? 'text-white' : 'text-gray-900'"
+                                            >
+                                                {{ user?.name }}
+                                            </p>
                                             <p class="text-xs text-gray-500 truncate">{{ user?.email }}</p>
                                         </div>
 
@@ -170,7 +211,10 @@ const getInitials = (name) => {
                                                 v-for="item in userMenuItems"
                                                 :key="item.name"
                                                 :href="item.href"
-                                                class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                                class="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                                                :class="isLandlord ? 'text-zinc-300 hover:bg-zinc-800' : 'text-gray-700 hover:bg-gray-50'"
+                                                @click="showUserMenu = false"
+                                            >
                                                 @click="showUserMenu = false"
                                             >
                                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +227,10 @@ const getInitials = (name) => {
                                         </div>
 
                                         <!-- Logout -->
-                                        <div class="border-t border-gray-100 pt-1">
+                                        <div 
+                                            class="border-t pt-1"
+                                            :class="isLandlord ? 'border-zinc-800' : 'border-gray-100'"
+                                        >
                                             <Link
                                                 :href="route('logout')"
                                                 method="post"
@@ -226,16 +273,22 @@ const getInitials = (name) => {
                     leave-from-class="opacity-100 translate-y-0"
                     leave-to-class="opacity-0 -translate-y-1"
                 >
-                    <div v-if="showingNavigationDropdown" class="md:hidden border-t border-gray-100 bg-white">
+                    <div 
+                        v-if="showingNavigationDropdown" 
+                        class="md:hidden border-t transition-colors"
+                        :class="isLandlord ? 'bg-black border-zinc-800' : 'bg-white border-gray-100'"
+                    >
                         <div class="px-4 py-3 space-y-1">
                             <Link
                                 v-for="item in navItems"
                                 :key="item.name"
                                 :href="item.href"
                                 class="block px-4 py-3 rounded-lg text-base font-medium transition-colors"
-                                :class="item.active 
-                                    ? 'bg-indigo-50 text-indigo-700' 
-                                    : 'text-gray-600 hover:bg-gray-50'"
+                                :class="[
+                                    item.active 
+                                        ? (isLandlord ? 'bg-zinc-900 text-white' : 'bg-indigo-50 text-indigo-700')
+                                        : (isLandlord ? 'text-zinc-400 hover:bg-zinc-900 hover:text-white' : 'text-gray-600 hover:bg-gray-50')
+                                ]"
                                 @click="showingNavigationDropdown = false"
                             >
                                 {{ item.name }}

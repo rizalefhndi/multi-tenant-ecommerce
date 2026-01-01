@@ -64,20 +64,39 @@ Route::domain('localhost')->group(function () {
 
 Route::domain('{tenant}.localhost')->middleware(['tenant.identify'])->group(function () {
     
-    // Storefront (Buyer)
+    // Storefront (Buyer) - Public
     Route::get('/', function () {
-        // Temporary placeholder
-        return "Welcome to " . request()->getHost();
+        $tenant = app('tenant');
+        return Inertia::render('Tenant/Storefront/Home', [
+            'tenant' => [
+                'id' => $tenant->id ?? 'unknown',
+                'name' => $tenant->name ?? 'Store',
+            ],
+        ]);
     })->name('tenant.home');
 
-    // Store Admin Authentication (separate from central?)
-    // Uses the same Login logic but scoped? 
-    // For now, let's reuse auth routes but ensure they work on subdomain
-    
-    // Tenant Admin Routes
-    Route::middleware(['auth'])->prefix('admin')->name('tenant.admin.')->group(function () {
-        Route::get('/', function () {
-             return "Tenant Admin Dashboard";
-        })->name('dashboard');
+    // Tenant Authentication Routes
+    Route::middleware('guest')->group(function () {
+        Route::get('login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])
+            ->name('tenant.login');
+        Route::post('login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store']);
+    });
+
+    Route::middleware('auth')->group(function () {
+        Route::post('logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])
+            ->name('tenant.logout');
+    });
+
+    // Tenant Admin Routes - Only for tenant admins
+    Route::middleware(['auth', 'tenant.admin'])->prefix('admin')->name('tenant.admin.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Tenant\DashboardController::class, 'index'])
+            ->name('dashboard');
+        
+        // Products (coming soon)
+        // Route::resource('products', \App\Http\Controllers\Tenant\ProductController::class);
+        
+        // Orders (coming soon)
+        // Route::resource('orders', \App\Http\Controllers\Tenant\OrderController::class);
     });
 });
+

@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'superadmin' => \App\Http\Middleware\CheckSuperAdmin::class,
             'tenant.active' => \App\Http\Middleware\CheckTenantStatus::class,
             'tenant.identify' => \App\Http\Middleware\IdentifyTenant::class,
+            'tenant.admin' => \App\Http\Middleware\CheckTenantAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
