@@ -20,6 +20,9 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     {
         return [
             'id',
+            'status',
+            'suspended_at',
+            'suspended_reason',
             'plan_id',
             'subscription_status',
             'billing_cycle',
@@ -39,10 +42,18 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         'trial_ends_at' => 'datetime',
         'subscription_ends_at' => 'datetime',
         'usage_reset_date' => 'date',
+        'suspended_at' => 'datetime',
         'product_count' => 'integer',
         'order_count_this_month' => 'integer',
         'storage_used_mb' => 'integer',
     ];
+
+    // ==========================================
+    // TENANT STATUS CONSTANTS
+    // ==========================================
+
+    const TENANT_STATUS_ACTIVE = 'active';
+    const TENANT_STATUS_SUSPENDED = 'suspended';
 
     // ==========================================
     // SUBSCRIPTION STATUS CONSTANTS
@@ -86,6 +97,26 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     public function invoices(): HasMany
     {
         return $this->hasMany(TenantInvoice::class);
+    }
+
+    // ==========================================
+    // TENANT STATUS METHODS
+    // ==========================================
+
+    /**
+     * Check if tenant is active
+     */
+    public function isActive(): bool
+    {
+        return $this->status === self::TENANT_STATUS_ACTIVE;
+    }
+
+    /**
+     * Check if tenant is suspended
+     */
+    public function isSuspended(): bool
+    {
+        return $this->status === self::TENANT_STATUS_SUSPENDED;
     }
 
     // ==========================================
@@ -160,7 +191,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     }
 
     // ==========================================
-    // QUOTA CHECKING METHODS  
+    // QUOTA CHECKING METHODS
     // ==========================================
 
     /**

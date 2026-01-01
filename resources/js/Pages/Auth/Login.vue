@@ -44,7 +44,7 @@ const submit = () => {
 
             <!-- Overlay Text -->
             <div class="relative z-10 h-full flex flex-col justify-between p-12 text-white">
-                <div class="font-black text-2xl tracking-widest uppercase">MyStore</div>
+                <div class="font-black text-2xl tracking-widest uppercase">ONYX</div>
                 
                 <div>
                     <h1 class="text-7xl font-black mb-4 leading-[0.9] tracking-tighter uppercase">
@@ -68,7 +68,7 @@ const submit = () => {
             <div class="w-full max-w-md space-y-10">
                 <!-- Mobile Header -->
                 <div class="lg:hidden mb-8">
-                     <div class="font-black text-2xl tracking-widest uppercase mb-8">MyStore</div>
+                     <div class="font-black text-2xl tracking-widest uppercase mb-8">ONYX</div>
                      <h2 class="text-4xl font-black text-gray-900 tracking-tighter uppercase">Sign In</h2>
                 </div>
                 

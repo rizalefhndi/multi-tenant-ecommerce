@@ -28,7 +28,7 @@ const submit = () => {
             <div class="mx-auto w-full max-w-sm lg:max-w-md relative z-10 space-y-10">
                 <!-- Mobile Header -->
                 <div class="lg:hidden mb-8">
-                     <div class="font-black text-2xl tracking-widest uppercase mb-8">MyStore</div>
+                     <div class="font-black text-2xl tracking-widest uppercase mb-8">ONYX</div>
                      <h2 class="text-4xl font-black text-gray-900 tracking-tighter uppercase">Join Us</h2>
                 </div>
 

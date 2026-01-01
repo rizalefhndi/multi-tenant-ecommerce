@@ -15,7 +15,7 @@ use Inertia\Inertia;
 
 // Public landing page
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    return Inertia::render('LandingPage');
 })->name('home');
 
 // Pricing page (public)
@@ -24,8 +24,8 @@ Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
 // Auth routes (Breeze)
 require __DIR__.'/auth.php';
 
-// Landlord protected routes
-Route::middleware(['auth'])->prefix('landlord')->name('landlord.')->group(function () {
+// Landlord protected routes - Only Super Admin can access
+Route::middleware(['auth', 'superadmin'])->prefix('landlord')->name('landlord.')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -39,6 +39,10 @@ Route::middleware(['auth'])->prefix('landlord')->name('landlord.')->group(functi
         ->name('tenants.migrate');
     Route::post('tenants/{tenant}/seed', [TenantController::class, 'seed'])
         ->name('tenants.seed');
+    Route::post('tenants/{tenant}/suspend', [TenantController::class, 'suspend'])
+        ->name('tenants.suspend');
+    Route::post('tenants/{tenant}/activate', [TenantController::class, 'activate'])
+        ->name('tenants.activate');
 
     // Profile routes
     Route::prefix('profile')->name('profile.')->group(function () {

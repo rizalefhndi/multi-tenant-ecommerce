@@ -191,4 +191,46 @@ class TenantController extends Controller
             return back()->with('error', 'Seeding failed: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Suspend a tenant
+     */
+    public function suspend(Request $request, Tenant $tenant): RedirectResponse
+    {
+        $validated = $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $tenant->update([
+                'status' => 'suspended',
+                'suspended_at' => now(),
+                'suspended_reason' => $validated['reason'] ?? null,
+            ]);
+
+            return back()->with('success', "Tenant '{$tenant->id}' has been suspended.");
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to suspend tenant: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Activate a suspended tenant
+     */
+    public function activate(Tenant $tenant): RedirectResponse
+    {
+        try {
+            $tenant->update([
+                'status' => 'active',
+                'suspended_at' => null,
+                'suspended_reason' => null,
+            ]);
+
+            return back()->with('success', "Tenant '{$tenant->id}' has been activated.");
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to activate tenant: ' . $e->getMessage());
+        }
+    }
 }

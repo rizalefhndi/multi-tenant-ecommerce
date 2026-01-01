@@ -83,7 +83,7 @@ const getInitials = (name) => {
                                         <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
                                 </div>
-                                <span class="hidden sm:block font-bold text-gray-900">MyStore</span>
+                                <span class="hidden sm:block font-bold text-gray-900">ONYX</span>
                             </Link>
 
                             <!-- Desktop Navigation -->

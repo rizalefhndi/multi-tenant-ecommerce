@@ -21,6 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'quota' => \App\Http\Middleware\CheckTenantQuota::class,
             'subscription.active' => \App\Http\Middleware\CheckSubscriptionActive::class,
             'role' => \App\Http\Middleware\CheckRole::class,
+            'superadmin' => \App\Http\Middleware\CheckSuperAdmin::class,
+            'tenant.active' => \App\Http\Middleware\CheckTenantStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
