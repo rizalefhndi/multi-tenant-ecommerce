@@ -45,6 +45,12 @@ class PricingController extends Controller
 
         return Inertia::render('Landlord/Pricing', [
             'plans' => $plans,
+            'auth' => [
+                'user' => auth()->user() ? [
+                    'name' => auth()->user()->name,
+                    'email' => auth()->user()->email,
+                ] : null,
+            ],
         ]);
     }
 }

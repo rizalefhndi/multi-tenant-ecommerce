@@ -1,12 +1,15 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
-defineProps({
+const props = defineProps({
     canResetPassword: {
         type: Boolean,
     },
     status: {
+        type: String,
+    },
+    success: {
         type: String,
     },
 });
@@ -18,6 +21,17 @@ const form = useForm({
 });
 
 const showPassword = ref(false);
+const showSuccessAlert = ref(false);
+
+onMounted(() => {
+    if (props.success) {
+        showSuccessAlert.value = true;
+    }
+});
+
+const closeAlert = () => {
+    showSuccessAlert.value = false;
+};
 
 const submit = () => {
     form.post(route('login'), {
@@ -64,7 +78,52 @@ const submit = () => {
         </div>
 
         <!-- Right Side - Login Form -->
-        <div class="flex items-center justify-center p-6 sm:p-12 bg-white h-full">
+        <div class="flex items-center justify-center p-6 sm:p-12 bg-white h-full relative">
+            <!-- Success Alert Modal -->
+            <Transition
+                enter-active-class="transition ease-out duration-300"
+                enter-from-class="opacity-0 scale-90"
+                enter-to-class="opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-200"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-90"
+            >
+                <div
+                    v-if="showSuccessAlert"
+                    class="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
+                    @click.self="closeAlert"
+                >
+                    <div class="bg-white border-4 border-black p-8 max-w-md w-full shadow-2xl transform">
+                        <!-- Success Icon -->
+                        <div class="flex justify-center mb-6">
+                            <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center">
+                                <svg class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Title -->
+                        <h2 class="text-3xl font-black uppercase text-center mb-4 tracking-tighter">
+                            Account Created!
+                        </h2>
+
+                        <!-- Message -->
+                        <p class="text-center text-gray-600 font-medium mb-8 leading-relaxed">
+                            {{ success }}
+                        </p>
+
+                        <!-- Action Button -->
+                        <button
+                            @click="closeAlert"
+                            class="w-full py-4 bg-black text-white font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-[0.98] transition-transform shadow-xl"
+                        >
+                            Got It!
+                        </button>
+                    </div>
+                </div>
+            </Transition>
+
             <div class="w-full max-w-md space-y-10">
                 <!-- Mobile Header -->
                 <div class="lg:hidden mb-8">

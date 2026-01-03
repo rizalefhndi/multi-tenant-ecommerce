@@ -24,9 +24,6 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
@@ -35,11 +32,13 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
+        // Super admin goes to landlord dashboard
         if ($user->role === 'superadmin') {
             return redirect()->route('landlord.dashboard');
         }
 
-        return redirect()->intended(route('home', absolute: false));
+        // Regular staff users go to pricing page to create their tenant
+        return redirect()->intended(route('pricing'));
     }
 
     /**

@@ -117,7 +117,7 @@ class Plan extends Model
         if ($this->price_monthly == 0) {
             return 'Gratis';
         }
-        return 'Rp ' . number_format($this->price_monthly, 0, ',', '.');
+        return '$' . number_format($this->price_monthly, 2);
     }
 
     /**
@@ -128,7 +128,7 @@ class Plan extends Model
         if ($this->price_yearly == 0) {
             return 'Gratis';
         }
-        return 'Rp ' . number_format($this->price_yearly, 0, ',', '.');
+        return '$' . number_format($this->price_yearly, 2);
     }
 
     /**

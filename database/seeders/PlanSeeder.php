@@ -2,136 +2,70 @@
 
 namespace Database\Seeders;
 
-use App\Models\Plan;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\Plan;
 
 class PlanSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $plans = [
             [
-                'slug' => Plan::PLAN_FREE,
-                'name' => 'Free',
-                'description' => 'Sempurna untuk memulai bisnis online Anda',
+                'name' => 'Starter',
+                'slug' => 'starter',
+                'description' => 'Perfect for side hustles and new drops.',
                 'price_monthly' => 0,
                 'price_yearly' => 0,
-                'currency' => 'IDR',
+                'features' => [
+                    '1 Storefront',
+                    'Up to 10 Products',
+                    'Basic Analytics',
+                    'Community Support'
+                ],
                 'max_products' => 10,
                 'max_orders_per_month' => 50,
-                'max_storage_mb' => 100, // 100 MB
-                'max_users' => 1,
-                'features' => [
-                    'Hingga 10 produk',
-                    '50 pesanan per bulan',
-                    '100 MB penyimpanan',
-                    'Subdomain gratis',
-                    'Tema dasar',
-                    'Dukungan email',
-                ],
-                'is_active' => true,
                 'is_featured' => false,
-                'is_custom' => false,
-                'sort_order' => 1,
             ],
             [
-                'slug' => Plan::PLAN_BASIC,
-                'name' => 'Basic',
-                'description' => 'Ideal untuk toko yang sedang berkembang',
-                'price_monthly' => 99000,
-                'price_yearly' => 990000, // 2 bulan gratis
-                'currency' => 'IDR',
+                'name' => 'Growth',
+                'slug' => 'growth',
+                'description' => 'For brands starting to make noise.',
+                'price_monthly' => 29,
+                'price_yearly' => 290,
+                'features' => [
+                    '3 Storefronts',
+                    'Up to 100 Products',
+                    'Advanced Analytics',
+                    'Priority Email Support',
+                    'Custom Domain'
+                ],
                 'max_products' => 100,
                 'max_orders_per_month' => 500,
-                'max_storage_mb' => 1024, // 1 GB
-                'max_users' => 3,
-                'features' => [
-                    'Hingga 100 produk',
-                    '500 pesanan per bulan',
-                    '1 GB penyimpanan',
-                    'Custom domain',
-                    'Tema premium',
-                    'Laporan penjualan',
-                    'Integrasi WhatsApp',
-                    'Dukungan chat',
-                ],
-                'is_active' => true,
-                'is_featured' => false,
-                'is_custom' => false,
-                'sort_order' => 2,
+                'is_featured' => true,
             ],
             [
-                'slug' => Plan::PLAN_PRO,
-                'name' => 'Pro',
-                'description' => 'Untuk bisnis yang serius dengan pertumbuhan tinggi',
-                'price_monthly' => 249000,
-                'price_yearly' => 2490000, // 2 bulan gratis
-                'currency' => 'IDR',
-                'max_products' => 1000,
-                'max_orders_per_month' => 5000,
-                'max_storage_mb' => 10240, // 10 GB
-                'max_users' => 10,
+                'name' => 'Empire',
+                'slug' => 'empire',
+                'description' => 'Dominate the market without limits.',
+                'price_monthly' => 79,
+                'price_yearly' => 790,
                 'features' => [
-                    'Hingga 1.000 produk',
-                    '5.000 pesanan per bulan',
-                    '10 GB penyimpanan',
-                    'Custom domain',
-                    'Semua tema premium',
-                    'Laporan analytics lengkap',
-                    'Integrasi Midtrans',
-                    'Email marketing',
-                    'Priority support',
-                    'Multi admin',
-                    'API access',
+                    'Unlimited Storefronts',
+                    'Unlimited Products',
+                    'Real-time Analytics',
+                    '24/7 Dedicated Support',
+                    'Custom Domain + SSL',
+                    'White Labeling'
                 ],
-                'is_active' => true,
-                'is_featured' => true, // Highlight di pricing
-                'is_custom' => false,
-                'sort_order' => 3,
-            ],
-            [
-                'slug' => Plan::PLAN_ENTERPRISE,
-                'name' => 'Enterprise',
-                'description' => 'Solusi lengkap untuk perusahaan besar',
-                'price_monthly' => 999000,
-                'price_yearly' => 9990000, // 2 bulan gratis
-                'currency' => 'IDR',
-                'max_products' => 0, // Unlimited
-                'max_orders_per_month' => 0, // Unlimited
-                'max_storage_mb' => 0, // Unlimited
-                'max_users' => 0, // Unlimited
-                'features' => [
-                    'Produk unlimited',
-                    'Pesanan unlimited',
-                    'Storage unlimited',
-                    'Custom domain',
-                    'White-label branding',
-                    'Dedicated server',
-                    'Custom integration',
-                    'SLA 99.9%',
-                    'Dedicated account manager',
-                    '24/7 phone support',
-                    'Training & onboarding',
-                    'Custom development',
-                ],
-                'is_active' => true,
+                'max_products' => 999999,
+                'max_orders_per_month' => 999999,
                 'is_featured' => false,
-                'is_custom' => true, // Custom plan
-                'sort_order' => 4,
-            ],
+            ]
         ];
 
-        foreach ($plans as $planData) {
-            Plan::updateOrCreate(
-                ['slug' => $planData['slug']],
-                $planData
-            );
+        foreach ($plans as $plan) {
+            Plan::updateOrCreate(['slug' => $plan['slug']], $plan);
         }
-
-        $this->command->info('Created ' . count($plans) . ' subscription plans.');
     }
 }

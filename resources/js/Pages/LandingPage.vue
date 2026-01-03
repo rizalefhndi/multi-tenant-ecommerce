@@ -1,14 +1,17 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-
-defineProps({
+const props = defineProps({
     canLogin: {
         type: Boolean,
     },
     canRegister: {
         type: Boolean,
     },
+    auth: Object,
 });
+
+import { ref } from 'vue';
+const showDropdown = ref(false);
 </script>
 
 <template>
@@ -20,21 +23,66 @@ defineProps({
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
                 <div class="flex items-center justify-between h-20">
                     <!-- Text Logo -->
-                    <div class="flex-shrink-0">
+                    <Link href="/" class="flex-shrink-0">
                          <span class="font-black text-2xl tracking-widest uppercase">ONYX</span>
-                    </div>
+                    </Link>
 
                     <!-- Desktop Nav -->
                     <div class="hidden md:flex items-center gap-8">
                         <Link href="#features" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Features</Link>
-                        <Link href="#pricing" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Pricing</Link>
-                         <Link :href="route('login')" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Login</Link>
-                        <Link
-                            :href="route('register')"
-                            class="px-6 py-3 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
-                        >
-                            Start Free
-                        </Link>
+                        <Link href="/pricing" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Pricing</Link>
+                        
+                        <!-- Guest Nav -->
+                        <div v-if="!auth?.user" class="flex items-center gap-8">
+                            <Link :href="route('login')" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Login</Link>
+                            <Link
+                                :href="route('register')"
+                                class="px-6 py-3 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
+                            >
+                                Start Free
+                            </Link>
+                        </div>
+
+                        <!-- Auth Nav -->
+                        <div v-else class="relative">
+                            <button
+                                @click="showDropdown = !showDropdown"
+                                class="flex items-center gap-2 px-4 py-2 border-2 border-transparent hover:border-black rounded-full transition-colors font-bold uppercase tracking-wider text-sm"
+                            >
+                                <span>{{ auth.user.name }}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <Transition
+                                enter-active-class="transition ease-out duration-100"
+                                enter-from-class="opacity-0 scale-95"
+                                enter-to-class="opacity-100 scale-100"
+                                leave-active-class="transition ease-in duration-75"
+                                leave-from-class="opacity-100 scale-100"
+                                leave-to-class="opacity-0 scale-95"
+                            >
+                                <div
+                                    v-show="showDropdown"
+                                    class="absolute right-0 mt-2 w-48 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-50 text-left"
+                                >
+                                    <div class="px-4 py-3 border-b-2 border-black">
+                                        <p class="text-xs font-black uppercase tracking-widest text-gray-500">Signed in as</p>
+                                        <p class="text-sm font-bold truncate">{{ auth.user.email }}</p>
+                                    </div>
+                                    <Link
+                                        href="/logout"
+                                        method="post"
+                                        as="button"
+                                        class="w-full text-left px-4 py-3 text-sm font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors flex items-center gap-2"
+                                    >
+                                        Logout
+                                    </Link>
+                                </div>
+                            </Transition>
+                        </div>
                     </div>
                 </div>
             </div>

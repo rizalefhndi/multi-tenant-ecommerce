@@ -1,20 +1,24 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps({
     plans: Array,
+    auth: Object,
 });
 
 // Toggle between monthly and yearly billing
 const isYearly = ref(false);
 
+// Dropdown menu state
+const showDropdown = ref(false);
+
 // Get price based on billing cycle
 const getPrice = (plan) => {
-    if (plan.is_free) return 'Gratis';
+    if (plan.is_free) return 'Free';
     
     const price = isYearly.value ? plan.price_yearly : plan.price_monthly;
-    return 'Rp ' + new Intl.NumberFormat('id-ID').format(price);
+    return '$' + new Intl.NumberFormat('en-US').format(price);
 };
 
 // Get billing cycle label
@@ -31,158 +35,199 @@ const getSavingsText = (plan) => {
 </script>
 
 <template>
-    <Head title="Harga - Multi-Tenant E-Commerce" />
+    <Head title="Pricing - ONYX" />
 
-    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <!-- Navigation -->
-        <nav class="border-b border-white/10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <Link href="/" class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <span class="text-white font-bold text-sm">MT</span>
-                        </div>
-                        <span class="text-white font-semibold">Multi-Tenant</span>
+    <div class="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+        <!-- Navbar -->
+        <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-black">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <!-- Text Logo -->
+                    <Link href="/" class="flex-shrink-0">
+                         <span class="font-black text-2xl tracking-widest uppercase">ONYX</span>
                     </Link>
-                    
-                    <div class="flex items-center gap-4">
-                        <Link href="/login" class="text-gray-300 hover:text-white transition-colors">
-                            Masuk
-                        </Link>
-                        <Link 
-                            href="/register" 
-                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors"
-                        >
-                            Mulai Gratis
-                        </Link>
+
+                    <!-- Navigation Items -->
+                    <div class="flex items-center gap-8">
+                        <!-- Desktop Nav Links -->
+                        <div class="hidden md:flex items-center gap-8">
+                            <Link href="/#features" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Features</Link>
+                            <Link href="/pricing" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Pricing</Link>
+                        </div>
+
+                        <!-- Guest Navigation -->
+                        <div v-if="!auth.user" class="flex items-center gap-6">
+                            <Link href="/login" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">
+                                Login
+                            </Link>
+                            <Link 
+                                href="/register" 
+                                class="px-6 py-3 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
+                            >
+                                Start Free
+                            </Link>
+                        </div>
+
+                        <!-- Authenticated Navigation -->
+                        <div v-else class="relative">
+                            <button
+                                @click="showDropdown = !showDropdown"
+                                class="flex items-center gap-2 px-4 py-2 border-2 border-transparent hover:border-black rounded-full transition-colors font-bold uppercase tracking-wider text-sm"
+                            >
+                                <span>{{ auth.user.name }}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <Transition
+                                enter-active-class="transition ease-out duration-100"
+                                enter-from-class="opacity-0 scale-95"
+                                enter-to-class="opacity-100 scale-100"
+                                leave-active-class="transition ease-in duration-75"
+                                leave-from-class="opacity-100 scale-100"
+                                leave-to-class="opacity-0 scale-95"
+                            >
+                                <div
+                                    v-show="showDropdown"
+                                    class="absolute right-0 mt-2 w-48 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-50"
+                                >
+                                    <div class="px-4 py-3 border-b-2 border-black">
+                                        <p class="text-xs font-black uppercase tracking-widest text-gray-500">Signed in as</p>
+                                        <p class="text-sm font-bold truncate">{{ auth.user.email }}</p>
+                                    </div>
+                                    <Link
+                                        href="/logout"
+                                        method="post"
+                                        as="button"
+                                        class="w-full text-left px-4 py-3 text-sm font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors flex items-center gap-2"
+                                    >
+                                        Logout
+                                    </Link>
+                                </div>
+                            </Transition>
+                        </div>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <!-- Header -->
-        <div class="text-center pt-16 pb-12 px-4">
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                Pilih Paket yang Tepat untuk Bisnis Anda
-            </h1>
-            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
-                Mulai gratis, upgrade kapan saja. Tanpa biaya tersembunyi.
-            </p>
+        <!-- Main Content -->
+        <main class="pt-20">
+            <!-- Header Section -->
+            <div class="text-center pt-24 pb-16 px-4">
+                <div class="inline-flex items-center gap-2 mb-6">
+                    <span class="w-2 h-2 bg-black rounded-full animate-pulse"></span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Flexible Plans</span>
+                </div>
+                
+                <h1 class="text-6xl sm:text-8xl font-black uppercase tracking-tighter mb-8 leading-[0.9]">
+                    Choose Your <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-b from-black to-gray-500">Empire</span>
+                </h1>
+                
+                <p class="text-xl font-medium text-gray-600 max-w-2xl mx-auto mb-10">
+                    Scale your brand with clear, transparent pricing. No hidden fees. Just pure growth.
+                </p>
 
-            <!-- Billing Toggle -->
-            <div class="mt-8 inline-flex items-center gap-4 bg-white/5 backdrop-blur-sm rounded-full p-1.5">
-                <button
-                    @click="isYearly = false"
-                    class="px-6 py-2 rounded-full text-sm font-medium transition-all"
-                    :class="!isYearly 
-                        ? 'bg-white text-gray-900 shadow-lg' 
-                        : 'text-gray-300 hover:text-white'"
-                >
-                    Bulanan
-                </button>
-                <button
-                    @click="isYearly = true"
-                    class="px-6 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2"
-                    :class="isYearly 
-                        ? 'bg-white text-gray-900 shadow-lg' 
-                        : 'text-gray-300 hover:text-white'"
-                >
-                    Tahunan
-                    <span class="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
-                        -16%
-                    </span>
-                </button>
+                <!-- Billing Toggle -->
+                <div class="inline-flex items-center p-2 border-2 border-black rounded-full gap-2">
+                    <button
+                        @click="isYearly = false"
+                        class="px-8 py-2 rounded-full text-sm font-black uppercase tracking-widest transition-all"
+                        :class="!isYearly 
+                            ? 'bg-black text-white shadow-lg' 
+                            : 'text-gray-500 hover:text-black'"
+                    >
+                        Monthly
+                    </button>
+                    <button
+                        @click="isYearly = true"
+                        class="px-8 py-2 rounded-full text-sm font-black uppercase tracking-widest transition-all flex items-center gap-2"
+                        :class="isYearly 
+                            ? 'bg-black text-white shadow-lg' 
+                            : 'text-gray-500 hover:text-black'"
+                    >
+                        Yearly
+                        <span class="text-[10px] bg-red-600 text-white px-2 py-0.5 rounded-full animate-pulse">
+                            -16%
+                        </span>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <!-- Pricing Cards -->
-        <div class="max-w-7xl mx-auto px-4 pb-20">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div
-                    v-for="plan in plans"
-                    :key="plan.id"
-                    class="relative rounded-2xl overflow-hidden transition-transform hover:-translate-y-1"
-                    :class="plan.is_featured 
-                        ? 'bg-gradient-to-b from-indigo-500 to-purple-600 p-[2px]' 
-                        : 'bg-white/5 backdrop-blur-sm border border-white/10'"
-                >
-                    <!-- Featured Badge -->
-                    <div 
-                        v-if="plan.is_featured" 
-                        class="absolute top-0 right-0 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg"
+            <!-- Pricing Grid -->
+            <div class="max-w-7xl mx-auto px-6 pb-32">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border-2 border-black bg-black">
+                    <div
+                        v-for="plan in plans"
+                        :key="plan.id"
+                        class="relative group bg-white p-8 border-b-2 last:border-b-0 lg:border-b-0 lg:border-r-2 lg:last:border-r-0 border-black hover:bg-black hover:text-white transition-all duration-300 flex flex-col"
                     >
-                        POPULER
-                    </div>
+                        <!-- Top Badge -->
+                         <div 
+                            v-if="plan.is_featured" 
+                            class="absolute top-0 right-0 bg-black text-white text-xs font-black uppercase tracking-widest px-4 py-1 border-l-2 border-b-2 border-white group-hover:bg-white group-hover:text-black group-hover:border-black transition-colors"
+                        >
+                            Best Seller
+                        </div>
 
-                    <div 
-                        class="p-6 h-full"
-                        :class="plan.is_featured ? 'bg-slate-900 rounded-xl' : ''"
-                    >
-                        <!-- Plan Name -->
-                        <div class="mb-4">
-                            <h3 class="text-xl font-bold text-white">{{ plan.name }}</h3>
-                            <p class="text-gray-400 text-sm mt-1">{{ plan.description }}</p>
+                        <!-- Header -->
+                        <div class="mb-8">
+                            <h3 class="text-2xl font-black uppercase italic tracking-wider mb-2">{{ plan.name }}</h3>
+                            <p class="text-sm font-medium text-gray-500 group-hover:text-gray-400 min-h-[40px]">{{ plan.description }}</p>
                         </div>
 
                         <!-- Price -->
-                        <div class="mb-6">
+                        <div class="mb-8">
                             <div class="flex items-baseline gap-1">
-                                <span class="text-4xl font-bold text-white">{{ getPrice(plan) }}</span>
-                                <span class="text-gray-400">{{ getBillingLabel(plan) }}</span>
+                                <span class="text-4xl font-black tracking-tighter">{{ getPrice(plan) }}</span>
                             </div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-gray-500">{{ getBillingLabel(plan) }}</span>
                             <p 
                                 v-if="getSavingsText(plan)" 
-                                class="text-green-400 text-sm font-medium mt-1"
+                                class="text-red-600 text-xs font-bold uppercase tracking-widest mt-2 group-hover:text-white"
                             >
                                 {{ getSavingsText(plan) }}
                             </p>
                         </div>
 
                         <!-- CTA Button -->
-                        <Link
-                            :href="plan.is_custom ? '/contact' : '/register?plan=' + plan.slug"
-                            class="block w-full text-center py-3 rounded-lg font-semibold transition-colors mb-6"
-                            :class="plan.is_featured 
-                                ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700'
-                                : plan.is_free 
-                                    ? 'bg-white text-gray-900 hover:bg-gray-100'
-                                    : 'bg-white/10 text-white hover:bg-white/20'"
-                        >
-                            {{ plan.is_custom ? 'Hubungi Kami' : plan.is_free ? 'Mulai Gratis' : 'Pilih Paket' }}
-                        </Link>
-
-                        <!-- Quotas -->
-                        <div class="space-y-3 mb-6 pb-6 border-b border-white/10">
-                            <div class="flex items-center gap-2 text-sm text-gray-300">
-                                <svg class="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
-                                    <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                                </svg>
-                                <span>{{ plan.max_products_display }} produk</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-sm text-gray-300">
-                                <svg class="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
-                                </svg>
-                                <span>{{ plan.max_orders_display }} pesanan</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-sm text-gray-300">
-                                <svg class="w-4 h-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
-                                </svg>
-                                <span>{{ plan.max_storage_display }} storage</span>
-                            </div>
+                        <div class="mb-8">
+                            <Link
+                                :href="plan.is_custom ? '/contact' : '/register?plan=' + plan.slug"
+                                class="block w-full text-center py-4 border-2 border-black font-black uppercase tracking-widest text-xs transition-all duration-300"
+                                :class="plan.is_featured 
+                                    ? 'bg-black text-white group-hover:bg-white group-hover:text-black'
+                                    : 'bg-transparent text-black hover:bg-black hover:text-white group-hover:bg-white group-hover:text-black'"
+                            >
+                                {{ plan.is_custom ? 'Contact Sales' : plan.is_free ? 'Start Free' : 'Select Plan' }}
+                            </Link>
                         </div>
 
-                        <!-- Features List -->
-                        <div class="space-y-3">
+                        <!-- Features -->
+                        <div class="space-y-4 mt-auto">
+                            <!-- Quotas -->
+                             <div class="pb-6 border-b-2 border-black/10 group-hover:border-white/20 space-y-2">
+                                <div class="flex items-center gap-3 text-sm font-bold">
+                                    <span class="w-1.5 h-1.5 bg-black rounded-full group-hover:bg-white"></span>
+                                    <span>{{ plan.max_products_display }} Products</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-sm font-bold">
+                                    <span class="w-1.5 h-1.5 bg-black rounded-full group-hover:bg-white"></span>
+                                    <span>{{ plan.max_orders_display }} Orders</span>
+                                </div>
+                             </div>
+
+                            <!-- List -->
                             <div 
                                 v-for="(feature, index) in plan.features" 
                                 :key="index"
-                                class="flex items-start gap-2 text-sm text-gray-300"
+                                class="flex items-start gap-3 text-sm font-medium group-hover:text-gray-300"
                             >
-                                <svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                                 <span>{{ feature }}</span>
                             </div>
@@ -190,58 +235,51 @@ const getSavingsText = (plan) => {
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- FAQ Section -->
-        <div class="max-w-4xl mx-auto px-4 pb-20">
-            <h2 class="text-3xl font-bold text-white text-center mb-12">Pertanyaan Umum</h2>
-            
-            <div class="space-y-4">
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-                    <h3 class="text-lg font-semibold text-white mb-2">Apakah ada biaya tersembunyi?</h3>
-                    <p class="text-gray-400">Tidak ada! Harga yang tertera sudah termasuk semua fitur yang ada di paket tersebut. Tidak ada biaya setup, tidak ada biaya tambahan.</p>
-                </div>
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-                    <h3 class="text-lg font-semibold text-white mb-2">Bisa upgrade atau downgrade kapan saja?</h3>
-                    <p class="text-gray-400">Ya! Anda bisa mengubah paket kapan saja. Jika upgrade, Anda akan langsung mendapat fitur baru. Jika downgrade, perubahan berlaku di periode billing berikutnya.</p>
-                </div>
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-                    <h3 class="text-lg font-semibold text-white mb-2">Bagaimana dengan data saya jika berhenti berlangganan?</h3>
-                    <p class="text-gray-400">Data Anda aman. Jika subscription berakhir, akun akan di-freeze selama 30 hari. Anda masih bisa mengakses data tetapi tidak bisa menambah produk/pesanan baru sampai berlangganan lagi.</p>
-                </div>
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-                    <h3 class="text-lg font-semibold text-white mb-2">Metode pembayaran apa saja yang diterima?</h3>
-                    <p class="text-gray-400">Kami menerima pembayaran via Transfer Bank, Virtual Account, GoPay, ShopeePay, QRIS, dan Kartu Kredit/Debit.</p>
-                </div>
-            </div>
-        </div>
+            <!-- FAQ Section -->
+            <section class="border-t-2 border-black bg-gray-50">
+                <div class="max-w-4xl mx-auto px-6 py-24">
+                    <h2 class="text-5xl font-black uppercase tracking-tighter mb-16 text-center">Common Questions</h2>
+                    
+                    <div class="grid gap-6">
+                        <div class="bg-white border-2 border-black p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-shadow cursor-default">
+                            <h3 class="text-xl font-black uppercase mb-3">No Hidden Fees?</h3>
+                            <p class="font-medium text-gray-600">Pure transparency. The price you see is the price you pay. No setup fees, no surprise charges. Everything is included.</p>
+                        </div>
 
-        <!-- CTA Section -->
-        <div class="text-center pb-20 px-4">
-            <div class="max-w-2xl mx-auto bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12">
-                <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">
-                    Siap Memulai?
-                </h2>
-                <p class="text-indigo-100 mb-6">
-                    Buat toko online Anda dalam hitungan menit. Gratis selamanya untuk paket Free.
-                </p>
-                <Link
-                    href="/register"
-                    class="inline-flex items-center px-8 py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                    Mulai Sekarang
-                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                </Link>
-            </div>
-        </div>
+                        <div class="bg-white border-2 border-black p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-shadow cursor-default">
+                            <h3 class="text-xl font-black uppercase mb-3">Change Plans Anytime?</h3>
+                            <p class="font-medium text-gray-600">Absolutely. Upgrade instantly to unlock more power. Downgrade changes take effect at the next billing cycle.</p>
+                        </div>
 
-        <!-- Footer -->
-        <footer class="border-t border-white/10 py-8">
-            <div class="max-w-7xl mx-auto px-4 text-center text-gray-400 text-sm">
-                <p>&copy; {{ new Date().getFullYear() }} Multi-Tenant E-Commerce. All rights reserved.</p>
-            </div>
-        </footer>
+                         <div class="bg-white border-2 border-black p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-shadow cursor-default">
+                            <h3 class="text-xl font-black uppercase mb-3">What Happens to My Data?</h3>
+                            <p class="font-medium text-gray-600">Your data is yours. If you leave, we freeze your account for 30 days. You can export everything before you go.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <!-- Footer -->
+            <footer class="bg-white border-t-2 border-black py-12 px-6">
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="font-black text-xl tracking-widest uppercase">ONYX</div>
+                    <div class="text-sm font-bold text-gray-500 uppercase tracking-widest">
+                        © {{ new Date().getFullYear() }} ONYX. All Rights Reserved.
+                    </div>
+                     <div class="flex gap-6">
+                        <a href="#" class="text-black hover:text-gray-500"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+                        <a href="#" class="text-black hover:text-gray-500"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    </div>
+                </div>
+            </footer>
+        </main>
     </div>
 </template>
+
+<style scoped>
+.bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+</style>

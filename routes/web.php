@@ -19,8 +19,15 @@ use Inertia\Inertia;
 
 Route::domain('localhost')->group(function () {
     // Public landing page
+    // Public landing page
     Route::get('/', function () {
-        return Inertia::render('LandingPage');
+        return Inertia::render('LandingPage', [
+            'auth' => [
+                'user' => auth()->user(),
+            ],
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+        ]);
     })->name('home');
 
     // Pricing page (public)

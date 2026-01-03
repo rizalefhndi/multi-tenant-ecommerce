@@ -40,12 +40,13 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'staff', // Set default role for new users
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('landlord.dashboard', absolute: false));
+        // Don't auto-login, redirect to login page with success message
+        return redirect(route('login'))
+            ->with('success', 'Account created successfully! Please login to continue.');
     }
 }
