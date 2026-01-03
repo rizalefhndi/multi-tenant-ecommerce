@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Landlord\DashboardController;
 use App\Http\Controllers\Landlord\PricingController;
+use App\Http\Controllers\Landlord\StoreController;
 use App\Http\Controllers\Landlord\TenantController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,12 @@ Route::domain('localhost')->group(function () {
 
     // Pricing page (public)
     Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
+
+    // Create Store (requires auth)
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/create-store', [StoreController::class, 'create'])->name('store.create');
+        Route::post('/create-store', [StoreController::class, 'store'])->name('store.store');
+    });
 
     // Auth routes (Breeze)
     require __DIR__.'/auth.php';

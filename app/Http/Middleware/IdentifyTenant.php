@@ -39,7 +39,8 @@ class IdentifyTenant
              return $next($request);
         }
 
-        $tenant = Tenant::where('domain', $subdomain)->first();
+        // Find tenant by ID (subdomain is the tenant ID)
+        $tenant = Tenant::find($subdomain);
 
         if (!$tenant) {
             abort(404, 'Store not found.');

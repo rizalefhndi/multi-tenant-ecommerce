@@ -20,6 +20,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     {
         return [
             'id',
+            'owner_id',
+            'store_name',
             'status',
             'suspended_at',
             'suspended_reason',
@@ -89,6 +91,14 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
+    }
+
+    /**
+     * Relationship: Tenant belongs to Owner (User who created it)
+     */
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
     /**

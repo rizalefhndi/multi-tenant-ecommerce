@@ -38,6 +38,18 @@ class User extends Authenticatable
     }
 
     // ==========================================
+    // RELATIONSHIPS
+    // ==========================================
+
+    /**
+     * Get tenants owned by this user
+     */
+    public function ownedTenants(): HasMany
+    {
+        return $this->hasMany(Tenant::class, 'owner_id');
+    }
+
+    // ==========================================
     // ROLE METHODS
     // ==========================================
 

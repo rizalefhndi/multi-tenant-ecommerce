@@ -196,7 +196,7 @@ const getSavingsText = (plan) => {
                         <!-- CTA Button -->
                         <div class="mb-8">
                             <Link
-                                :href="plan.is_custom ? '/contact' : '/register?plan=' + plan.slug"
+                                :href="plan.is_custom ? '/contact' : '/create-store?plan=' + plan.slug"
                                 class="block w-full text-center py-4 border-2 border-black font-black uppercase tracking-widest text-xs transition-all duration-300"
                                 :class="plan.is_featured 
                                     ? 'bg-black text-white group-hover:bg-white group-hover:text-black'

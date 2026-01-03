@@ -29,8 +29,45 @@ Route::middleware([
 ])->group(function () {
 
     Route::get('/', function () {
+        // If user is logged in, go to dashboard
+        if (auth()->check()) {
+            return redirect()->route('dashboard');
+        }
+        // Otherwise show login page
         return redirect()->route('login');
     })->name('tenant.home');
+
+    // SSO route for cross-domain login (from central after store creation)
+    Route::get('/sso', function (\Illuminate\Http\Request $request) {
+        $token = $request->query('token');
+        
+        if (!$token) {
+            return redirect()->route('login')->with('error', 'Invalid login token.');
+        }
+
+        // Find and validate token from central database
+        $loginToken = \App\Models\TenantLoginToken::findValid($token);
+        
+        if (!$loginToken) {
+            return redirect()->route('login')->with('error', 'Login token expired or invalid.');
+        }
+
+        // Get user from central database
+        $user = $loginToken->user;
+        
+        if (!$user) {
+            $loginToken->consume();
+            return redirect()->route('login')->with('error', 'User not found.');
+        }
+
+        // Consume the token (one-time use)
+        $loginToken->consume();
+
+        // Log the user in on tenant domain
+        auth()->login($user);
+
+        return redirect()->route('dashboard')->with('success', 'Welcome to your store!');
+    })->name('sso.login');
 
     require __DIR__.'/auth.php';
 
