@@ -1,17 +1,31 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
     plan: Object,
     auth: Object,
 });
 
+const page = usePage();
+
 const form = useForm({
     store_name: '',
     subdomain: '',
     plan_id: props.plan?.id || null,
 });
+
+// Success modal state
+const showSuccessModal = ref(false);
+const createdStore = ref(null);
+
+// Watch for flash success message
+watch(() => page.props.flash?.success, (success) => {
+    if (success && success.store_name) {
+        createdStore.value = success;
+        showSuccessModal.value = true;
+    }
+}, { immediate: true });
 
 // Auto-generate subdomain from store name
 const generateSubdomain = () => {
@@ -28,7 +42,23 @@ const domainPreview = computed(() => {
 });
 
 const submit = () => {
-    form.post(route('store.store'));
+    form.post(route('store.store'), {
+        preserveScroll: true,
+    });
+};
+
+const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+};
+
+const goToMyStores = () => {
+    window.location.href = '/my-stores';
+};
+
+const visitStore = () => {
+    if (createdStore.value?.full_url) {
+        window.open(createdStore.value.full_url, '_blank');
+    }
 };
 </script>
 
@@ -36,6 +66,68 @@ const submit = () => {
     <Head title="Create Your Store - ONYX" />
 
     <div class="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+        <!-- Success Modal -->
+        <Teleport to="body">
+            <div 
+                v-if="showSuccessModal" 
+                class="fixed inset-0 z-[100] flex items-center justify-center"
+            >
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+                
+                <!-- Modal -->
+                <div class="relative bg-white border-4 border-black p-8 max-w-md w-full mx-4 animate-modal-in">
+                    <!-- Success Icon -->
+                    <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+
+                    <!-- Title -->
+                    <h2 class="text-2xl font-black uppercase text-center mb-2">
+                        Store Created!
+                    </h2>
+                    <p class="text-gray-600 text-center mb-6">
+                        Your store <span class="font-bold">{{ createdStore?.store_name }}</span> is now live.
+                    </p>
+
+                    <!-- Store URL -->
+                    <div class="bg-gray-100 border-2 border-black p-4 mb-6">
+                        <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Your Store URL</p>
+                        <div class="flex items-center justify-between gap-2">
+                            <code class="text-sm font-mono font-bold truncate">{{ createdStore?.full_url }}</code>
+                            <button 
+                                @click="copyToClipboard(createdStore?.full_url)"
+                                class="p-2 bg-black text-white hover:scale-110 transition-transform flex-shrink-0"
+                                title="Copy URL"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex flex-col gap-3">
+                        <button 
+                            @click="goToMyStores"
+                            class="w-full py-4 bg-black text-white text-sm font-bold uppercase tracking-widest hover:scale-[1.02] transition-transform"
+                        >
+                            Go to My Stores
+                        </button>
+                        <button 
+                            @click="visitStore"
+                            class="w-full py-4 border-2 border-black text-black text-sm font-bold uppercase tracking-widest hover:bg-gray-100 transition-colors"
+                        >
+                            Visit Store →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </Teleport>
+
         <!-- Navbar -->
         <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-black">
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -44,6 +136,12 @@ const submit = () => {
                          <span class="font-black text-2xl tracking-widest uppercase">ONYX</span>
                     </Link>
                     <div class="flex items-center gap-4">
+                        <Link 
+                            href="/my-stores" 
+                            class="text-sm font-bold uppercase tracking-wider text-gray-600 hover:text-black transition-colors"
+                        >
+                            My Stores
+                        </Link>
                         <span class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ auth.user.name }}</span>
                     </div>
                 </div>
@@ -168,5 +266,20 @@ const submit = () => {
 .bg-clip-text {
     -webkit-background-clip: text;
     background-clip: text;
+}
+
+@keyframes modal-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.animate-modal-in {
+    animation: modal-in 0.3s ease-out forwards;
 }
 </style>

@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Landlord\DashboardController;
+use App\Http\Controllers\Landlord\MyStoresController;
 use App\Http\Controllers\Landlord\PricingController;
+use App\Http\Controllers\Landlord\SSOController;
 use App\Http\Controllers\Landlord\StoreController;
 use App\Http\Controllers\Landlord\TenantController;
 use App\Http\Controllers\ProfileController;
@@ -34,10 +36,14 @@ Route::domain('localhost')->group(function () {
     // Pricing page (public)
     Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
 
-    // Create Store (requires auth)
+    // Store management (requires auth)
     Route::middleware(['auth'])->group(function () {
         Route::get('/create-store', [StoreController::class, 'create'])->name('store.create');
         Route::post('/create-store', [StoreController::class, 'store'])->name('store.store');
+        Route::get('/my-stores', [MyStoresController::class, 'index'])->name('my-stores');
+        
+        // SSO redirect to tenant
+        Route::get('/sso/{tenant}', [SSOController::class, 'redirect'])->name('sso.redirect');
     });
 
     // Auth routes (Breeze)

@@ -87,12 +87,14 @@ class StoreController extends Controller
             'domain' => $domain,
         ]);
 
-        // Generate login token for SSO
-        $loginToken = TenantLoginToken::generateForUser($user, $tenantId);
-
-        // Redirect to the new tenant domain with login token
-        // The tenant will consume this token and log the user in
-        return Inertia::location('http://' . $domain . ':8000/sso?token=' . $loginToken->token);
+        // Return success response with store data (for success modal)
+        return back()->with('success', [
+            'store_name' => $request->store_name,
+            'subdomain' => $tenantId,
+            'domain' => $domain,
+            'full_url' => 'http://' . $domain . ':8000',
+            'plan_name' => $plan->name,
+        ]);
     }
 }
 

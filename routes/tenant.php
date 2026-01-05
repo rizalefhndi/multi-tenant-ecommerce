@@ -39,34 +39,89 @@ Route::middleware([
 
     // SSO route for cross-domain login (from central after store creation)
     Route::get('/sso', function (\Illuminate\Http\Request $request) {
+        \Log::info('Tenant SSO: Start', ['token_exists' => $request->has('token')]);
+        
         $token = $request->query('token');
         
         if (!$token) {
+            \Log::error('Tenant SSO: No token provided');
             return redirect()->route('login')->with('error', 'Invalid login token.');
         }
 
+        \Log::info('Tenant SSO: Looking up token', ['token_prefix' => substr($token, 0, 10) . '...']);
+
         // Find and validate token from central database
-        $loginToken = \App\Models\TenantLoginToken::findValid($token);
+        try {
+            $loginToken = \App\Models\TenantLoginToken::findValid($token);
+            \Log::info('Tenant SSO: Token lookup result', ['found' => $loginToken ? true : false]);
+        } catch (\Exception $e) {
+            \Log::error('Tenant SSO: Token lookup error', ['error' => $e->getMessage()]);
+            return redirect()->route('login')->with('error', 'Token lookup failed: ' . $e->getMessage());
+        }
         
         if (!$loginToken) {
+            \Log::error('Tenant SSO: Token not found or expired');
             return redirect()->route('login')->with('error', 'Login token expired or invalid.');
         }
 
-        // Get user from central database
-        $user = $loginToken->user;
+        \Log::info('Tenant SSO: Token valid, user_id=' . $loginToken->user_id);
+
+        // Get user from central database directly
+        try {
+            $centralUser = \Illuminate\Support\Facades\DB::connection('pgsql')
+                ->table('users')
+                ->where('id', $loginToken->user_id)
+                ->first();
+            \Log::info('Tenant SSO: Central user lookup', ['found' => $centralUser ? true : false]);
+        } catch (\Exception $e) {
+            \Log::error('Tenant SSO: Central user lookup error', ['error' => $e->getMessage()]);
+            return redirect()->route('login')->with('error', 'User lookup failed: ' . $e->getMessage());
+        }
         
-        if (!$user) {
+        if (!$centralUser) {
             $loginToken->consume();
+            \Log::error('Tenant SSO: Central user not found');
             return redirect()->route('login')->with('error', 'User not found.');
         }
+
+        \Log::info('Tenant SSO: Found central user', ['email' => $centralUser->email]);
 
         // Consume the token (one-time use)
         $loginToken->consume();
 
-        // Log the user in on tenant domain
-        auth()->login($user);
+        // Find or create user in tenant database
+        try {
+            $tenantUser = \App\Models\User::firstOrCreate(
+                ['email' => $centralUser->email],
+                [
+                    'name' => $centralUser->name,
+                    'password' => $centralUser->password,
+                    'email_verified_at' => $centralUser->email_verified_at ?? now(), // Ensure verified
+                    'role' => 'admin', // Store owner gets admin role in tenant
+                ]
+            );
+            
+            // Ensure email is verified (in case user already existed without verification)
+            if (!$tenantUser->email_verified_at) {
+                $tenantUser->email_verified_at = now();
+                $tenantUser->save();
+            }
+            
+            \Log::info('Tenant SSO: Tenant user created/found', ['id' => $tenantUser->id, 'email' => $tenantUser->email]);
+        } catch (\Exception $e) {
+            \Log::error('Tenant SSO: Tenant user creation error', ['error' => $e->getMessage()]);
+            return redirect()->route('login')->with('error', 'User creation failed: ' . $e->getMessage());
+        }
 
-        return redirect()->route('dashboard')->with('success', 'Welcome to your store!');
+        // Log the user in on tenant domain with remember
+        auth()->login($tenantUser, true);
+        
+        // Ensure session is saved before redirect
+        session()->save();
+        
+        \Log::info('Tenant SSO: User logged in, session saved, redirecting to admin');
+
+        return redirect('/admin')->with('success', 'Welcome to your store!');
     })->name('sso.login');
 
     require __DIR__.'/auth.php';
@@ -88,6 +143,12 @@ Route::middleware([
         // ==========================================
         // ADMIN DASHBOARD (Admin Only)
         // ==========================================
+        
+        // Redirect /admin to /admin/dashboard
+        Route::get('/admin', function () {
+            return redirect()->route('admin.dashboard');
+        })->middleware('role:admin')->name('admin.index');
+        
         Route::get('/admin/dashboard', function () {
             return Inertia::render('Dashboard');
         })->middleware('role:admin')->name('admin.dashboard');
