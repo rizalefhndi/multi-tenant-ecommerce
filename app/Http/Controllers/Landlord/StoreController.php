@@ -82,7 +82,7 @@ class StoreController extends Controller
         ]);
 
         // Create domain for tenant
-        $domain = $tenantId . '.localhost';
+        $domain = $tenantId . '.onyx.test';
         $tenant->domains()->create([
             'domain' => $domain,
         ]);

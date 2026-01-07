@@ -20,7 +20,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::domain('localhost')->group(function () {
+Route::domain('onyx.test')->group(function () {
     // Public landing page
     // Public landing page
     Route::get('/', function () {
@@ -77,46 +77,7 @@ Route::domain('localhost')->group(function () {
 | Tenant Routes
 |--------------------------------------------------------------------------
 |
-| Routes for individual stores/tenants.
-| Accessed via subdomain (e.g. demo.localhost).
+| Tenant routes are defined in routes/tenant.php
+| They use InitializeTenancyByDomain middleware for proper multi-tenancy.
 |
 */
-
-Route::domain('{tenant}.localhost')->middleware(['tenant.identify'])->group(function () {
-    
-    // Storefront (Buyer) - Public
-    Route::get('/', function () {
-        $tenant = app('tenant');
-        return Inertia::render('Tenant/Storefront/Home', [
-            'tenant' => [
-                'id' => $tenant->id ?? 'unknown',
-                'name' => $tenant->name ?? 'Store',
-            ],
-        ]);
-    })->name('tenant.home');
-
-    // Tenant Authentication Routes
-    Route::middleware('guest')->group(function () {
-        Route::get('login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])
-            ->name('tenant.login');
-        Route::post('login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store']);
-    });
-
-    Route::middleware('auth')->group(function () {
-        Route::post('logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])
-            ->name('tenant.logout');
-    });
-
-    // Tenant Admin Routes - Only for tenant admins
-    Route::middleware(['auth', 'tenant.admin'])->prefix('admin')->name('tenant.admin.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Tenant\DashboardController::class, 'index'])
-            ->name('dashboard');
-        
-        // Products (coming soon)
-        // Route::resource('products', \App\Http\Controllers\Tenant\ProductController::class);
-        
-        // Orders (coming soon)
-        // Route::resource('orders', \App\Http\Controllers\Tenant\OrderController::class);
-    });
-});
-

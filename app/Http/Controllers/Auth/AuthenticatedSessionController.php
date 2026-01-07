@@ -32,6 +32,15 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
+        // Check if we're in a tenant context using tenancy helper or host check
+        $host = $request->getHost();
+        $isCentralDomain = in_array($host, ['onyx.test', 'localhost']);
+        
+        if (!$isCentralDomain) {
+            // We're on a tenant subdomain, redirect to tenant dashboard
+            return redirect('/dashboard');
+        }
+
         // Super admin goes to landlord dashboard
         if ($user->role === 'superadmin') {
             return redirect()->route('landlord.dashboard');
