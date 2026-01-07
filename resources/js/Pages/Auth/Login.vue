@@ -34,7 +34,7 @@ const closeAlert = () => {
 };
 
 const submit = () => {
-    form.post(route('login'), {
+    form.post('/login', {
         onFinish: () => form.reset('password'),
     });
 };

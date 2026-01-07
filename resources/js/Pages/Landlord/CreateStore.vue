@@ -93,7 +93,7 @@ const visitStore = () => {
                     </p>
 
                     <!-- Store URL -->
-                    <div class="bg-gray-100 border-2 border-black p-4 mb-6">
+                    <div class="bg-gray-100 border-2 border-black p-4 mb-4">
                         <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Your Store URL</p>
                         <div class="flex items-center justify-between gap-2">
                             <code class="text-sm font-mono font-bold truncate">{{ createdStore?.full_url }}</code>
@@ -107,6 +107,29 @@ const visitStore = () => {
                                 </svg>
                             </button>
                         </div>
+                    </div>
+
+                    <!-- Admin Credentials -->
+                    <div class="bg-amber-50 border-2 border-amber-400 p-4 mb-6">
+                        <p class="text-xs font-bold uppercase tracking-widest text-amber-700 mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                            </svg>
+                            Admin Credentials
+                        </p>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Email:</span>
+                                <code class="text-sm font-mono font-bold">{{ createdStore?.admin_email }}</code>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Password:</span>
+                                <span class="text-sm font-bold text-amber-700">Sama dengan akun Anda</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-amber-600 mt-3 italic">
+                            Gunakan kredensial ini untuk login sebagai admin di toko Anda.
+                        </p>
                     </div>
 
                     <!-- Actions -->

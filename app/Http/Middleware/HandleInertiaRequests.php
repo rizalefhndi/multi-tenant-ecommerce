@@ -39,6 +39,11 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
             ],
             'cart' => fn () => $this->getCartData($request),
+            // Override Ziggy URL to use current host for proper tenant routing
+            'ziggy' => fn () => [
+                ...(new \Tighten\Ziggy\Ziggy)->toArray(),
+                'url' => $request->getSchemeAndHttpHost(),
+            ],
         ];
     }
 

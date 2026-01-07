@@ -87,13 +87,26 @@ class StoreController extends Controller
             'domain' => $domain,
         ]);
 
-        // Return success response with store data (for success modal)
+        // Create admin user in tenant database
+        $tenant->run(function () use ($user) {
+            \App\Models\User::create([
+                'name' => $user->name,
+                'email' => $user->email,
+                'password' => $user->password, // Already hashed from central
+                'email_verified_at' => now(),
+                'role' => 'admin',
+            ]);
+        });
+
+        // Return success response with store data and admin credentials
         return back()->with('success', [
             'store_name' => $request->store_name,
             'subdomain' => $tenantId,
             'domain' => $domain,
             'full_url' => 'http://' . $domain . ':8000',
             'plan_name' => $plan->name,
+            'admin_email' => $user->email,
+            'admin_note' => 'Gunakan password yang sama dengan akun central Anda',
         ]);
     }
 }
