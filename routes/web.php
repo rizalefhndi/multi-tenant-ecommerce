@@ -20,7 +20,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::domain('onyx.test')->group(function () {
+Route::domain('onyx.127.0.0.1.nip.io')->group(function () {
     // Public landing page
     // Public landing page
     Route::get('/', function () {

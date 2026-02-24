@@ -1,4 +1,4 @@
-# OYNX || Multi-Tenant E-Commerce 
+# ONYX || Multi-Tenant E-Commerce 
 
 A multi-tenant e-commerce platform built with Laravel 11, Vue 3, and Inertia.js. This system allows multiple independent stores (tenants) to operate on a single codebase with complete data isolation.
 

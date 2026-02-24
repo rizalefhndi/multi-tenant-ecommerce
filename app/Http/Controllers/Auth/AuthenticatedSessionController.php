@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
 
         // Check if we're in a tenant context using tenancy helper or host check
         $host = $request->getHost();
-        $isCentralDomain = in_array($host, ['onyx.test', 'localhost']);
+        $isCentralDomain = in_array($host, ['onyx.127.0.0.1.nip.io', 'localhost']);
         
         if (!$isCentralDomain) {
             // We're on a tenant subdomain, redirect to tenant dashboard
