@@ -31,10 +31,10 @@ Route::middleware([
     Route::get('/', function () {
         // If user is logged in, go to dashboard
         if (auth()->check()) {
-            return redirect()->route('dashboard');
+            return redirect('/dashboard');
         }
         // Otherwise show login page
-        return redirect()->route('login');
+        return redirect('/login');
     })->name('tenant.home');
 
     // SSO route for cross-domain login (from central after store creation)
@@ -45,7 +45,7 @@ Route::middleware([
         
         if (!$token) {
             \Log::error('Tenant SSO: No token provided');
-            return redirect()->route('login')->with('error', 'Invalid login token.');
+            return redirect('/login')->with('error', 'Invalid login token.');
         }
 
         \Log::info('Tenant SSO: Looking up token', ['token_prefix' => substr($token, 0, 10) . '...']);
