@@ -82,7 +82,13 @@ class StoreController extends Controller
         ]);
 
         // Create domain for tenant
-        $domain = $tenantId . '.onyx.127.0.0.1.nip.io';
+        // Menambahkan prefix port pada URL bisa dilakukan jika di localhost, 
+        // tapi domain table hanya perlu domain-nya saja (tanpa port)
+        $centralDomain = request()->getHost();
+        if ($centralDomain === '127.0.0.1' || $centralDomain === 'localhost') {
+            $centralDomain = env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io');
+        }
+        $domain = $tenantId . '.' . $centralDomain;
         $tenant->domains()->create([
             'domain' => $domain,
         ]);

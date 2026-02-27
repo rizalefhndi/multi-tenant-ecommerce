@@ -18,6 +18,10 @@ class DatabaseSeeder extends Seeder
         // Seed Super Admin for central/landlord access
         $this->call([
             LandlordAdminSeeder::class,
+            TenantSeeder::class,
+            PlanSeeder::class,
+            ProductSeeder::class,
+            
         ]);
     }
 }

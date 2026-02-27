@@ -19,7 +19,7 @@ return [
     'central_domains' => [
         '127.0.0.1',
         'localhost',
-        'onyx.127.0.0.1.nip.io',
+        env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io'),
     ],
 
     /**
