@@ -30,177 +30,199 @@ const deleteTenant = () => {
 </script>
 
 <template>
-    <Head :title="`Tenant: ${tenant.name}`" />
+    <Head :title="`Tenant: ${tenant.name || tenant.id}`" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Tenant Details: {{ tenant.name }}
-                </h2>
-                <Link
-                    :href="route('landlord.tenants.index')"
-                    class="text-gray-600 hover:text-gray-800"
-                >
-                    ← Back to Tenants
-                </Link>
-            </div>
-        </template>
-
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                <!-- Tenant Info Card -->
-                <div class="bg-white shadow-sm rounded-lg p-6">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ tenant.name }}</h3>
-                            <p class="text-gray-600">ID: <span class="font-mono">{{ tenant.id }}</span></p>
+        <div class="bg-black min-h-screen text-white font-sans selection:bg-white selection:text-black">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                
+                <!-- Header -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 border-b border-zinc-800 pb-8">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                             <span class="w-3 h-3 bg-zinc-500 rounded-full"></span>
+                             <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Node Inspector</span>
                         </div>
-                        <div class="flex gap-2">
-                            <Link
-                                :href="route('landlord.tenants.edit', tenant.id)"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                            >
-                                Edit
-                            </Link>
-                            <button
-                                @click="deleteTenant"
-                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                            >
-                                Delete
-                            </button>
-                        </div>
+                        <h2 class="text-5xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+                            {{ tenant.store_name || tenant.name || tenant.id }} <br/>
+                            <span class="text-zinc-500 text-3xl">Profile</span>
+                        </h2>
                     </div>
+                    <div class="flex gap-4 items-center">
+                        <Link
+                            :href="route('landlord.tenants.index')"
+                            class="text-xs font-bold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back to Registry
+                        </Link>
+                    </div>
+                </div>
 
-                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500 mb-1">Email</dt>
-                            <dd class="text-base text-gray-900">{{ tenant.email }}</dd>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Main Content Panel 1 -->
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Identity Card -->
+                        <div class="bg-zinc-900/30 border border-zinc-800">
+                            <div class="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+                                <h3 class="text-lg font-black text-white uppercase tracking-widest flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                                    Node Identity
+                                </h3>
+                                <div class="flex gap-3">
+                                    <Link
+                                        :href="route('landlord.tenants.edit', tenant.id)"
+                                        class="px-4 py-2 border border-zinc-600 text-zinc-400 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-white transition-all"
+                                    >
+                                        Edit Node
+                                    </Link>
+                                    <button
+                                        @click="deleteTenant"
+                                        class="px-4 py-2 bg-red-600 text-white text-xs font-bold uppercase tracking-widest hover:bg-red-700 transition-colors"
+                                    >
+                                        Purge
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-zinc-800">
+                                <div class="space-y-4">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Registration ID</p>
+                                        <p class="font-mono text-white text-sm tracking-widest">{{ tenant.id }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Contact Relocator</p>
+                                        <p class="font-mono text-zinc-300 text-sm tracking-wide">{{ tenant.email || 'N/A' }}</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-4 pt-4 md:pt-0 md:pl-8">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Genesis Date</p>
+                                        <p class="font-mono text-zinc-300 text-sm">{{ new Date(tenant.created_at).toLocaleDateString() }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Last Sync</p>
+                                        <p class="font-mono text-zinc-300 text-sm">{{ new Date(tenant.updated_at).toLocaleDateString() }}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500 mb-1">Created At</dt>
-                            <dd class="text-base text-gray-900">{{ tenant.created_at }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500 mb-1">Last Updated</dt>
-                            <dd class="text-base text-gray-900">{{ tenant.updated_at }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500 mb-1">Database Status</dt>
-                            <dd>
+
+                        <!-- Database Info -->
+                        <div class="bg-zinc-900/30 border border-zinc-800">
+                            <div class="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+                                <h3 class="text-lg font-black text-white uppercase tracking-widest flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-zinc-500 rounded-full"></span>
+                                    Infrastructure
+                                </h3>
+                                
                                 <span :class="[
-                                    'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
+                                    'px-3 py-1 text-[10px] font-bold uppercase tracking-widest border',
                                     tenant.database_exists
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-red-100 text-red-800'
+                                        ? 'bg-green-500/10 text-green-500 border-green-500/20'
+                                        : 'bg-red-500/10 text-red-500 border-red-500/20'
                                 ]">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <circle cx="10" cy="10" r="4" />
-                                    </svg>
-                                    {{ tenant.database_exists ? 'Active' : 'Not Found' }}
+                                    {{ tenant.database_exists ? 'Online' : 'Offline' }}
                                 </span>
-                            </dd>
-                        </div>
-                    </dl>
-                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4 font-mono text-sm mb-8">
+                                    <div class="flex justify-between items-center border-b border-zinc-800/50 pb-2">
+                                        <span class="text-zinc-500 text-xs tracking-widest uppercase">Database Name</span>
+                                        <span class="text-white">{{ tenant.database_name }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b border-zinc-800/50 pb-2">
+                                        <span class="text-zinc-500 text-xs tracking-widest uppercase">Engine</span>
+                                        <span class="text-zinc-300">PostgreSQL</span>
+                                    </div>
+                                    <div class="flex justify-between items-center pb-2">
+                                        <span class="text-zinc-500 text-xs tracking-widest uppercase">State</span>
+                                        <span :class="tenant.database_exists ? 'text-green-500' : 'text-red-500'">
+                                            {{ tenant.database_exists ? 'Connected' : 'Missing' }}
+                                        </span>
+                                    </div>
+                                </div>
 
-                <!-- Database Info -->
-                <div class="bg-white shadow-sm rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Database Information</h3>
-                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <dl class="space-y-3">
-                            <div class="flex justify-between">
-                                <dt class="text-sm text-gray-600">Database Name:</dt>
-                                <dd class="text-sm font-mono font-medium text-gray-900">{{ tenant.database_name }}</dd>
+                                <div class="flex gap-4 flex-col sm:flex-row">
+                                    <button
+                                        @click="runMigrations"
+                                        class="flex-1 flex items-center justify-center gap-3 px-4 py-3 border border-zinc-700 bg-zinc-900 text-white text-xs font-bold uppercase tracking-widest hover:border-zinc-400 hover:text-green-400 transition-all group"
+                                    >
+                                        <svg class="w-4 h-4 text-zinc-500 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        Execute Migrations
+                                    </button>
+                                    <button
+                                        @click="seedData"
+                                        class="flex-1 flex items-center justify-center gap-3 px-4 py-3 border border-zinc-700 bg-zinc-900 text-white text-xs font-bold uppercase tracking-widest hover:border-zinc-400 hover:text-yellow-400 transition-all group"
+                                    >
+                                        <svg class="w-4 h-4 text-zinc-500 group-hover:text-yellow-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                        </svg>
+                                        Inject Genesis Data
+                                    </button>
+                                </div>
                             </div>
-                            <div class="flex justify-between">
-                                <dt class="text-sm text-gray-600">Connection:</dt>
-                                <dd class="text-sm font-medium text-gray-900">PostgreSQL</dd>
-                            </div>
-                            <div class="flex justify-between">
-                                <dt class="text-sm text-gray-600">Status:</dt>
-                                <dd>
-                                    <span :class="[
-                                        'text-sm font-medium',
-                                        tenant.database_exists ? 'text-green-600' : 'text-red-600'
-                                    ]">
-                                        {{ tenant.database_exists ? '✓ Connected' : '✗ Not Found' }}
-                                    </span>
-                                </dd>
-                            </div>
-                        </dl>
-                    </div>
-
-                    <!-- Database Actions -->
-                    <div class="mt-4 flex gap-3">
-                        <button
-                            @click="runMigrations"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            Run Migrations
-                        </button>
-                        <button
-                            @click="seedData"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                            Seed Data
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Domains -->
-                <div class="bg-white shadow-sm rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Domains</h3>
-                    <div class="space-y-3">
-                        <div
-                            v-for="domain in tenant.domains"
-                            :key="domain.id"
-                            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                        >
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                                </svg>
-                                <span class="font-medium text-gray-900">{{ domain.domain }}</span>
-                            </div>
-                            <a
-                                :href="`http://${domain.domain}:8000`"
-                                target="_blank"
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                            >
-                                Open Store
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                            </a>
                         </div>
                     </div>
-                </div>
 
-                <!-- Quick Stats (Optional) -->
-                <div class="bg-white shadow-sm rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                            <p class="text-sm text-blue-600 mb-1">Database Size</p>
-                            <p class="text-2xl font-bold text-blue-900">-</p>
-                            <p class="text-xs text-blue-600 mt-1">Coming soon</p>
+                    <!-- Side Panel -->
+                    <div class="space-y-8">
+                        <!-- Domains List -->
+                        <div class="bg-zinc-900/30 border border-zinc-800">
+                            <div class="p-6 border-b border-zinc-800 bg-zinc-900/50">
+                                <h3 class="text-sm font-black text-white uppercase tracking-widest">Network Mappings</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div
+                                        v-for="domain in tenant.domains"
+                                        :key="domain.id"
+                                        class="p-4 bg-black border border-zinc-800 group hover:border-zinc-600 transition-colors flex flex-col items-center"
+                                    >
+                                        <div class="flex items-center gap-3 mb-4 w-full justify-center">
+                                            <svg class="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                            </svg>
+                                            <span class="font-mono text-sm text-zinc-300 truncate max-w-full" :title="domain.domain">{{ domain.domain }}</span>
+                                        </div>
+                                        <a
+                                            :href="`http://${domain.domain}${window?.location?.port ? ':' + window.location.port : ':8000'}`"
+                                            target="_blank"
+                                            class="block w-full text-center px-4 py-3 bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors"
+                                        >
+                                            Access Node Interface
+                                        </a>
+                                    </div>
+                                    <div v-if="!tenant.domains || tenant.domains.length === 0" class="text-center py-6">
+                                        <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">No Mappings Configured</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="bg-green-50 rounded-lg p-4 border border-green-200">
-                            <p class="text-sm text-green-600 mb-1">Total Users</p>
-                            <p class="text-2xl font-bold text-green-900">-</p>
-                            <p class="text-xs text-green-600 mt-1">Coming soon</p>
-                        </div>
-                        <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                            <p class="text-sm text-purple-600 mb-1">Total Products</p>
-                            <p class="text-2xl font-bold text-purple-900">-</p>
-                            <p class="text-xs text-purple-600 mt-1">Coming soon</p>
+
+                        <!-- Statistics Mock -->
+                        <div class="bg-zinc-900/30 border border-zinc-800">
+                            <div class="p-6 border-b border-zinc-800 bg-zinc-900/50">
+                                <h3 class="text-sm font-black text-white uppercase tracking-widest">Analytics Telemetry</h3>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-center border-b border-zinc-800/50 pb-3">
+                                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Users Count</span>
+                                    <span class="text-lg font-black font-mono text-zinc-300">-</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b border-zinc-800/50 pb-3">
+                                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Products Sync</span>
+                                    <span class="text-lg font-black font-mono text-zinc-300">-</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Data Vol</span>
+                                    <span class="text-lg font-black font-mono text-zinc-300">-</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
