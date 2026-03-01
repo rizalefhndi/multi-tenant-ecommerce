@@ -6,6 +6,32 @@ const props = defineProps({
     stats: Object,
     recentTenants: Array,
 });
+
+const getTenantName = (tenant) => {
+    return tenant.store_name || tenant.name || tenant.id || 'Unknown Tenant';
+};
+
+const getTenantInitials = (tenant) => {
+    const name = getTenantName(tenant);
+    return name.charAt(0).toUpperCase();
+};
+
+const getTenantUrl = (domainObj) => {
+    if (!domainObj || !domainObj.domain) return '#';
+    
+    // In local development, we need to preserve the port (e.g. 8000)
+    if (typeof window !== 'undefined' && window.location.port) {
+        return `http://${domainObj.domain}:${window.location.port}`;
+    }
+    
+    // Fallback if port isn't available but we suspect local env
+    if (domainObj.domain.includes('localhost') || domainObj.domain.includes('127.0.0.1') || domainObj.domain.includes('.test') || domainObj.domain.includes('.local')) {
+        return `http://${domainObj.domain}:8000`;
+    }
+    
+    // Production / Default
+    return `http://${domainObj.domain}`;
+};
 </script>
 
 <template>
@@ -99,10 +125,10 @@ const props = defineProps({
                             <div v-for="tenant in recentTenants" :key="tenant.id" class="p-6 hover:bg-zinc-900 transition-colors flex items-center justify-between group">
                                 <div class="flex items-center gap-6">
                                     <div class="w-12 h-12 bg-black border border-zinc-700 flex items-center justify-center text-white font-black text-lg group-hover:border-white transition-colors">
-                                        {{ tenant.name.charAt(0) }}
+                                        {{ getTenantInitials(tenant) }}
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-bold text-white uppercase tracking-wide group-hover:underline decoration-2 underline-offset-4">{{ tenant.name }}</h4>
+                                        <h4 class="text-lg font-bold text-white uppercase tracking-wide group-hover:underline decoration-2 underline-offset-4">{{ getTenantName(tenant) }}</h4>
                                         <div class="flex items-center gap-3 mt-1">
                                             <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                                             <p class="text-xs text-zinc-500 font-mono tracking-wide">{{ tenant.email }}</p>
@@ -111,7 +137,7 @@ const props = defineProps({
                                 </div>
                                 
                                 <div class="hidden sm:flex items-center gap-4">
-                                     <a v-if="tenant.domains && tenant.domains.length > 0" :href="`http://${tenant.domains[0].domain}.${$page.props.auth.app_domain || 'localhost'}`" target="_blank" class="px-4 py-2 border border-zinc-600 text-zinc-400 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-white transition-all">
+                                     <a v-if="tenant.domains && tenant.domains.length > 0" :href="getTenantUrl(tenant.domains[0])" target="_blank" class="px-4 py-2 border border-zinc-600 text-zinc-400 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-white transition-all">
                                         Access Node
                                     </a>
                                      <Link :href="route('landlord.tenants.show', tenant.id)" class="p-2 text-zinc-600 hover:text-white transition-colors">

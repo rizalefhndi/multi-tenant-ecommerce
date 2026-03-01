@@ -3,15 +3,33 @@ import { ref, computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import FlashMessage from '@/Components/FlashMessage.vue';
 
+const page = usePage();
+
+const safeRoute = (name, params = undefined) => {
+    try {
+        return route(name, params);
+    } catch (e) {
+        console.warn('Route not found:', name);
+        return '#';
+    }
+};
+
+const safeRouteCurrent = (name) => {
+    try {
+        return route().current(name);
+    } catch (e) {
+        return false;
+    }
+};
+
 const showingNavigationDropdown = ref(false);
 const showUserMenu = ref(false);
 
-const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const cartCount = computed(() => page.props.cart?.total_items || 0);
 
 const isLandlord = computed(() => {
-    return page.url.startsWith('/landlord') || route().current('landlord.*');
+    return page.url.startsWith('/landlord') || safeRouteCurrent('landlord.*');
 });
 
 const isAdmin = computed(() => {
@@ -21,40 +39,46 @@ const isAdmin = computed(() => {
 const navItems = computed(() => {
     if (isLandlord.value) {
         return [
-            { name: 'Dashboard', href: route('landlord.dashboard'), active: route().current('landlord.dashboard'), icon: 'home' },
-            { name: 'Tenants', href: route('landlord.tenants.index'), active: route().current('landlord.tenants.*'), icon: 'users' },
+            { name: 'Dashboard', href: safeRoute('landlord.dashboard'), active: safeRouteCurrent('landlord.dashboard'), icon: 'home' },
+            { name: 'Tenants', href: safeRoute('landlord.tenants.index'), active: safeRouteCurrent('landlord.tenants.*'), icon: 'users' },
         ];
     }
     
     // Customer navigation
     if (!isAdmin.value) {
         return [
-            { name: 'Shop', href: route('customer.home'), active: route().current('customer.home'), icon: 'shopping-bag' },
-            { name: 'My Orders', href: route('orders.index'), active: route().current('orders.*'), icon: 'clipboard' },
+            { name: 'Shop', href: safeRoute('customer.home'), active: safeRouteCurrent('customer.home'), icon: 'shopping-bag' },
+            { name: 'My Orders', href: safeRoute('orders.index'), active: safeRouteCurrent('orders.*'), icon: 'clipboard' },
         ];
     }
     
     // Admin navigation
     return [
-        { name: 'Dashboard', href: route('landlord.dashboard'), active: route().current('landlord.dashboard'), icon: 'home' },
-        { name: 'Products', href: route('products.index'), active: route().current('products.*'), icon: 'box' },
-        { name: 'Orders', href: route('admin.orders.index'), active: route().current('admin.orders.*') || route().current('orders.*'), icon: 'shopping-bag' },
-        { name: 'Analytics', href: route('admin.analytics.index'), active: route().current('admin.analytics.*'), icon: 'chart' },
+        { name: 'Dashboard', href: safeRoute('admin.dashboard'), active: safeRouteCurrent('admin.dashboard'), icon: 'home' },
+        { name: 'Products', href: safeRoute('products.index'), active: safeRouteCurrent('products.*'), icon: 'box' },
+        { name: 'Orders', href: safeRoute('admin.orders.index'), active: safeRouteCurrent('admin.orders.*') || safeRouteCurrent('orders.*'), icon: 'shopping-bag' },
+        { name: 'Analytics', href: safeRoute('admin.analytics.index'), active: safeRouteCurrent('admin.analytics.*'), icon: 'chart' },
     ];
 });
 
 const userMenuItems = computed(() => {
+    if (isLandlord.value) {
+        return [
+            { name: 'Profile', href: safeRoute('landlord.profile.edit'), icon: 'user' },
+        ];
+    }
+    
     if (isAdmin.value) {
         return [
-            { name: 'Profile', href: route('profile.edit'), icon: 'user' },
-            { name: 'Settings', href: route('settings.index'), icon: 'settings' },
-            { name: 'Subscription', href: route('subscription.index'), icon: 'credit-card' },
+            { name: 'Profile', href: safeRoute('profile.edit'), icon: 'user' },
+            { name: 'Settings', href: safeRoute('settings.index'), icon: 'settings' },
+            { name: 'Subscription', href: safeRoute('subscription.index'), icon: 'credit-card' },
         ];
     }
     // Customer menu
     return [
-        { name: 'Profile', href: route('profile.edit'), icon: 'user' },
-        { name: 'Addresses', href: route('addresses.index'), icon: 'map-pin' },
+        { name: 'Profile', href: safeRoute('profile.edit'), icon: 'user' },
+        { name: 'Addresses', href: safeRoute('addresses.index'), icon: 'map-pin' },
     ];
 });
 
@@ -81,7 +105,7 @@ const getInitials = (name) => {
                         <!-- Left: Logo + Navigation -->
                         <div class="flex items-center gap-8">
                             <!-- Logo -->
-                            <Link :href="isLandlord ? route('landlord.dashboard') : (isAdmin ? route('landlord.dashboard') : route('customer.home'))" class="flex items-center gap-3">
+                            <Link :href="isLandlord ? safeRoute('landlord.dashboard') : (isAdmin ? safeRoute('admin.dashboard') : safeRoute('customer.home'))" class="flex items-center gap-3">
                                 <div 
                                     class="w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-300"
                                     :class="isLandlord ? 'bg-white' : 'bg-gradient-to-br from-indigo-600 to-purple-600'"
@@ -127,7 +151,7 @@ const getInitials = (name) => {
                             <!-- Cart Button -->
                             <Link 
                                 v-if="!isLandlord"
-                                :href="route('cart.index')"
+                                :href="safeRoute('cart.index')"
                                 class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                             >
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -215,8 +239,6 @@ const getInitials = (name) => {
                                                 :class="isLandlord ? 'text-zinc-300 hover:bg-zinc-800' : 'text-gray-700 hover:bg-gray-50'"
                                                 @click="showUserMenu = false"
                                             >
-                                                @click="showUserMenu = false"
-                                            >
                                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path v-if="item.icon === 'user'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                     <path v-if="item.icon === 'settings'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -232,7 +254,7 @@ const getInitials = (name) => {
                                             :class="isLandlord ? 'border-zinc-800' : 'border-gray-100'"
                                         >
                                             <Link
-                                                :href="route('logout')"
+                                                :href="safeRoute('logout')"
                                                 method="post"
                                                 as="button"
                                                 class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
