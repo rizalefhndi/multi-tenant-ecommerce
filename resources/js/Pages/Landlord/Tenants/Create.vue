@@ -1,10 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { watch } from 'vue';
 
 const form = useForm({
@@ -17,7 +13,8 @@ const form = useForm({
 // Auto-generate domain from id
 watch(() => form.id, (newId) => {
     if (newId && !form.domain) {
-        form.domain = `${newId}.localhost`;
+        // Automatically default to the nip.io wildcard format if that is what they use
+        form.domain = `${newId}.127.0.0.1.nip.io`;
     }
 });
 
@@ -27,174 +24,160 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Create Tenant" />
+    <Head title="Initialize Node" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Create New Tenant</h2>
-                <Link
-                    :href="route('landlord.tenants.index')"
-                    class="text-gray-600 hover:text-gray-800"
-                >
-                    ← Back to Tenants
-                </Link>
-            </div>
-        </template>
-
-        <div class="py-12">
-            <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white shadow-sm rounded-lg p-6">
-                    <!-- Info Alert -->
-                    <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4">
-                        <div class="flex">
-                            <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        <div class="bg-black min-h-screen text-white font-sans selection:bg-white selection:text-black">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                
+                <!-- Header -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 border-b border-zinc-800 pb-8">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                             <span class="w-3 h-3 bg-white rounded-full animate-pulse"></span>
+                             <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">System Initialization</span>
+                        </div>
+                        <h2 class="text-5xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+                            Initialize <br/> <span class="text-zinc-500">Tenant Node</span>
+                        </h2>
+                    </div>
+                    <div class="flex gap-4">
+                        <Link
+                            :href="route('landlord.tenants.index')"
+                            class="text-xs font-bold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            <div class="ml-3">
-                                <p class="text-sm text-blue-700">
-                                    Creating a new tenant will automatically:
-                                </p>
-                                <ul class="mt-2 text-sm text-blue-700 list-disc list-inside space-y-1">
-                                    <li>Create a new PostgreSQL database</li>
-                                    <li>Run all tenant migrations</li>
-                                    <li>Seed initial data (users, products)</li>
-                                    <li>Setup domain mapping</li>
-                                </ul>
-                            </div>
+                            Abort Initialization
+                        </Link>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-900/30 border border-zinc-800 p-8 md:p-12 relative overflow-hidden">
+                    <!-- Deco lines -->
+                    <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-zinc-700 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-zinc-700 to-transparent"></div>
+
+                    <!-- System Protocol Info -->
+                    <div class="mb-10 p-6 border border-blue-500/20 bg-blue-500/5 relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                        <h4 class="text-sm font-black text-blue-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Auto-Provisioning Protocol
+                        </h4>
+                        <div class="text-xs font-mono text-blue-300/80 space-y-2">
+                            <p>// The initialization sequence will execute the following commands:</p>
+                            <p class="pl-4 text-white hover:text-blue-200 transition-colors">1. ALLOCATE PostgreSQL database instance</p>
+                            <p class="pl-4 text-white hover:text-blue-200 transition-colors">2. EXECUTE core platform migrations</p>
+                            <p class="pl-4 text-white hover:text-blue-200 transition-colors">3. INJECT genesis data (users + catalog)</p>
+                            <p class="pl-4 text-white hover:text-blue-200 transition-colors">4. BIND network domain mapping</p>
                         </div>
                     </div>
 
-                    <form @submit.prevent="submit" class="space-y-6">
-                        <!-- Tenant ID -->
-                        <div>
-                            <InputLabel for="id" value="Tenant ID *" />
-                            <TextInput
-                                id="id"
-                                v-model="form.id"
-                                type="text"
-                                class="mt-1 block w-full"
-                                required
-                                autofocus
-                                placeholder="e.g., store1, shop2, tenant3"
-                            />
-                            <InputError class="mt-2" :message="form.errors.id" />
-                            <p class="mt-1 text-sm text-gray-500">
-                                Use lowercase letters, numbers, and dashes only. This will be used as database name: tenant{id}
-                            </p>
-                        </div>
+                    <form @submit.prevent="submit" class="space-y-10">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Registration ID -->
+                            <div class="space-y-3">
+                                <label for="id" class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                    Registration ID <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    id="id"
+                                    v-model="form.id"
+                                    type="text"
+                                    class="w-full bg-black border-zinc-700 text-white font-mono text-sm focus:border-white focus:ring-0 transition-colors placeholder:text-zinc-700 py-3 px-4"
+                                    required
+                                    autofocus
+                                    placeholder="e.g. store1, renjana3"
+                                />
+                                <div v-if="form.errors.id" class="text-red-500 text-xs font-mono mt-1">{{ form.errors.id }}</div>
+                                <p class="text-xs font-mono text-zinc-600">// Identifier used for db naming: tenant_{id}</p>
+                            </div>
 
-                        <!-- Tenant Name -->
-                        <div>
-                            <InputLabel for="name" value="Tenant Name *" />
-                            <TextInput
-                                id="name"
-                                v-model="form.name"
-                                type="text"
-                                class="mt-1 block w-full"
-                                required
-                                placeholder="e.g., John's Store, ABC Shop"
-                            />
-                            <InputError class="mt-2" :message="form.errors.name" />
-                            <p class="mt-1 text-sm text-gray-500">
-                                Display name for the tenant
-                            </p>
-                        </div>
+                            <!-- Display Label -->
+                            <div class="space-y-3">
+                                <label for="name" class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                    Display Label <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    id="name"
+                                    v-model="form.name"
+                                    type="text"
+                                    class="w-full bg-black border-zinc-700 text-white font-mono text-sm focus:border-white focus:ring-0 transition-colors placeholder:text-zinc-700 py-3 px-4"
+                                    required
+                                    placeholder="e.g. Streetwear Empire"
+                                />
+                                <div v-if="form.errors.name" class="text-red-500 text-xs font-mono mt-1">{{ form.errors.name }}</div>
+                                <p class="text-xs font-mono text-zinc-600">// Commercial alias for the dashboard</p>
+                            </div>
 
-                        <!-- Tenant Email -->
-                        <div>
-                            <InputLabel for="email" value="Tenant Email *" />
-                            <TextInput
-                                id="email"
-                                v-model="form.email"
-                                type="email"
-                                class="mt-1 block w-full"
-                                required
-                                placeholder="e.g., admin@store1.com"
-                            />
-                            <InputError class="mt-2" :message="form.errors.email" />
-                            <p class="mt-1 text-sm text-gray-500">
-                                Primary contact email for this tenant
-                            </p>
-                        </div>
+                            <!-- Contact Relocator -->
+                            <div class="space-y-3">
+                                <label for="email" class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                    Contact Relocator (Email) <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    id="email"
+                                    v-model="form.email"
+                                    type="email"
+                                    class="w-full bg-black border-zinc-700 text-white font-mono text-sm focus:border-white focus:ring-0 transition-colors placeholder:text-zinc-700 py-3 px-4"
+                                    required
+                                    placeholder="e.g. sysadmin@label.com"
+                                />
+                                <div v-if="form.errors.email" class="text-red-500 text-xs font-mono mt-1">{{ form.errors.email }}</div>
+                                <p class="text-xs font-mono text-zinc-600">// Primary communication channel</p>
+                            </div>
 
-                        <!-- Domain -->
-                        <div>
-                            <InputLabel for="domain" value="Domain *" />
-                            <TextInput
-                                id="domain"
-                                v-model="form.domain"
-                                type="text"
-                                class="mt-1 block w-full"
-                                required
-                                placeholder="e.g., store1.localhost"
-                            />
-                            <InputError class="mt-2" :message="form.errors.domain" />
-                            <p class="mt-1 text-sm text-gray-500">
-                                Domain to access this tenant. For local development, use: {id}.localhost
-                            </p>
-                        </div>
-
-                        <!-- Preview -->
-                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <h4 class="font-medium text-gray-900 mb-3">Preview:</h4>
-                            <dl class="space-y-2 text-sm">
-                                <div class="flex justify-between">
-                                    <dt class="text-gray-600">Database Name:</dt>
-                                    <dd class="font-medium text-gray-900">
-                                        {{ form.id ? `tenant${form.id}` : '-' }}
-                                    </dd>
-                                </div>
-                                <div class="flex justify-between">
-                                    <dt class="text-gray-600">Access URL:</dt>
-                                    <dd class="font-medium text-gray-900">
-                                        {{ form.domain ? `http://${form.domain}:8000` : '-' }}
-                                    </dd>
-                                </div>
-                            </dl>
-                        </div>
-
-                        <!-- Host File Reminder -->
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                            <div class="flex">
-                                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                                <div class="ml-3">
-                                    <p class="text-sm text-yellow-700">
-                                        <strong>Don't forget!</strong> Add this line to your hosts file:
-                                    </p>
-                                    <code class="block mt-2 text-sm bg-yellow-100 text-yellow-800 px-3 py-2 rounded">
-                                        127.0.0.1 {{ form.domain || 'your-domain.localhost' }}
-                                    </code>
-                                    <p class="mt-2 text-xs text-yellow-600">
-                                        Windows: C:\Windows\System32\drivers\etc\hosts<br>
-                                        Mac/Linux: /etc/hosts
-                                    </p>
-                                </div>
+                            <!-- Network Mapping -->
+                            <div class="space-y-3">
+                                <label for="domain" class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                    Network Domain <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    id="domain"
+                                    v-model="form.domain"
+                                    type="text"
+                                    class="w-full bg-black border-zinc-700 text-white font-mono text-sm focus:border-white focus:ring-0 transition-colors placeholder:text-zinc-700 py-3 px-4"
+                                    required
+                                    placeholder="e.g. store1.127.0.0.1.nip.io"
+                                />
+                                <div v-if="form.errors.domain" class="text-red-500 text-xs font-mono mt-1">{{ form.errors.domain }}</div>
+                                <p class="text-xs font-mono text-zinc-600">// FQDN for the tenant portal</p>
                             </div>
                         </div>
 
-                        <!-- Buttons -->
-                        <div class="flex items-center justify-end gap-4 pt-6 border-t">
-                            <Link
-                                :href="route('landlord.tenants.index')"
-                                class="text-gray-600 hover:text-gray-800"
-                            >
-                                Cancel
-                            </Link>
-                            <PrimaryButton :disabled="form.processing">
-                                {{ form.processing ? 'Creating Tenant...' : 'Create Tenant' }}
-                            </PrimaryButton>
+                        <!-- DNS Config Warning -->
+                        <div class="p-6 border border-yellow-500/20 bg-yellow-500/5 relative">
+                            <div class="absolute top-0 left-0 w-1 h-full bg-yellow-500"></div>
+                            <h4 class="text-sm font-black text-yellow-400 uppercase tracking-widest mb-2">DNS Routing Notice</h4>
+                            <p class="text-xs font-mono text-zinc-400 mb-3">Ensure local resolution is valid if not using a public wildcard DNS.</p>
+                            <code class="block font-mono text-xs bg-black border border-zinc-800 text-zinc-300 p-3 selection:bg-yellow-500 selection:text-black">
+                                127.0.0.1    {{ form.domain || '{registration_id}.localhost' }}
+                            </code>
                         </div>
 
-                        <!-- Processing Info -->
-                        <div v-if="form.processing" class="text-center text-sm text-gray-600">
-                            <svg class="inline animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Creating database and running migrations... This may take a moment.
+                        <!-- Actions -->
+                        <div class="flex flex-col sm:flex-row items-center justify-end gap-6 pt-8 border-t border-zinc-800">
+                            <!-- Processing Indicator -->
+                            <div v-if="form.processing" class="flex items-center gap-3 text-xs font-bold text-zinc-500 uppercase tracking-widest">
+                                <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Bootstrapping Environment...
+                            </div>
+                            
+                            <button
+                                type="submit"
+                                :disabled="form.processing"
+                                class="w-full sm:w-auto px-10 py-4 bg-white text-black font-black uppercase tracking-widest text-sm hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group relative"
+                            >
+                                <span class="relative z-10">{{ form.processing ? 'Executing...' : 'Initialize Node' }}</span>
+                                <div class="absolute inset-0 bg-white blur-md opacity-0 group-hover:opacity-50 transition-opacity"></div>
+                            </button>
                         </div>
                     </form>
                 </div>

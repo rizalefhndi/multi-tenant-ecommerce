@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
@@ -6,26 +7,47 @@ const props = defineProps({
     tenants: Object,
 });
 
-const deleteTenant = (tenant) => {
-    if (confirm(`Are you sure you want to delete tenant "${tenant.name}"? This will also delete the tenant's database!`)) {
-        router.delete(route('landlord.tenants.destroy', tenant.id));
-    }
+const getTenantName = (tenant) => {
+    if (!tenant) return '';
+    return tenant.store_name || tenant.name || tenant.id;
 };
 
-const runMigrations = (tenant) => {
-    if (confirm(`Run migrations for tenant "${tenant.name}"?`)) {
-        router.post(route('landlord.tenants.migrate', tenant.id), {}, {
-            preserveScroll: true,
-        });
-    }
+const getPort = () => {
+    return typeof window !== 'undefined' && window.location.port ? ':' + window.location.port : ':8000';
 };
 
-const seedData = (tenant) => {
-    if (confirm(`Seed data for tenant "${tenant.name}"?`)) {
-        router.post(route('landlord.tenants.seed', tenant.id), {}, {
-            preserveScroll: true,
-        });
+// Modal State
+const showModal = ref(false);
+const tenantToProcess = ref(null);
+const actionType = ref('');
+
+const confirmAction = (tenant, type) => {
+    tenantToProcess.value = tenant;
+    actionType.value = type;
+    showModal.value = true;
+};
+
+const executeAction = () => {
+    if (!tenantToProcess.value) return;
+    const id = tenantToProcess.value.id;
+    
+    if (actionType.value === 'delete') {
+        router.delete(route('landlord.tenants.destroy', id), { preserveScroll: true, preserveState: true });
+    } else if (actionType.value === 'migrate') {
+        router.post(route('landlord.tenants.migrate', id), {}, { preserveScroll: true });
+    } else if (actionType.value === 'seed') {
+        router.post(route('landlord.tenants.seed', id), {}, { preserveScroll: true });
     }
+    
+    showModal.value = false;
+    tenantToProcess.value = null;
+    actionType.value = '';
+};
+
+const cancelAction = () => {
+    showModal.value = false;
+    tenantToProcess.value = null;
+    actionType.value = '';
 };
 </script>
 
@@ -33,7 +55,48 @@ const seedData = (tenant) => {
     <Head title="Manage Tenants" />
 
     <AuthenticatedLayout>
-        <div class="bg-black min-h-screen text-white font-sans selection:bg-white selection:text-black">
+        <div class="bg-black min-h-screen text-white font-sans selection:bg-white selection:text-black relative">
+            
+            <!-- Custom Confirmation Modal -->
+            <div v-if="showModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                <div class="bg-zinc-900 border border-zinc-800 p-8 max-w-md w-full shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-50"></div>
+                    
+                    <h3 class="text-xl font-black text-white uppercase tracking-widest mb-4 flex items-center gap-3">
+                        <svg v-if="actionType === 'delete'" class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        <svg v-else class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <template v-if="actionType === 'delete'">System Purge</template>
+                        <template v-else-if="actionType === 'migrate'">Execute Migrations</template>
+                        <template v-else-if="actionType === 'seed'">Inject Genesis Data</template>
+                    </h3>
+                    
+                    <p class="text-sm font-mono text-zinc-400 mb-8 leading-relaxed">
+                        <template v-if="actionType === 'delete'">
+                            WARNING: You are about to permanently delete the identity, network mappings, and entire database for node <span class="text-red-400 font-bold">"{{ getTenantName(tenantToProcess) }}"</span>. This sector will be unrecoverable. 
+                            <br><br>Proceed with purge?
+                        </template>
+                        <template v-else-if="actionType === 'migrate'">
+                            Initialize and cascade all database schema migrations for node <span class="text-white font-bold">"{{ getTenantName(tenantToProcess) }}"</span>?
+                        </template>
+                        <template v-else-if="actionType === 'seed'">
+                            Inject initial system parameters and genesis data via seeders for node <span class="text-white font-bold">"{{ getTenantName(tenantToProcess) }}"</span>?
+                        </template>
+                    </p>
+
+                    <div class="flex justify-end gap-4 border-t border-zinc-800 pt-6">
+                        <button @click="cancelAction" class="px-6 py-3 border border-zinc-700 text-zinc-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 hover:text-white transition-colors">
+                            Abort
+                        </button>
+                        <button @click="executeAction" :class="[
+                            'px-6 py-3 text-xs font-black uppercase tracking-widest transition-colors',
+                            actionType === 'delete' ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-white text-black hover:bg-zinc-300'
+                        ]">
+                            Confirm Execution
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 
                 <!-- Header -->
@@ -98,7 +161,7 @@ const seedData = (tenant) => {
                                                 <a
                                                     v-for="domain in tenant.domains"
                                                     :key="domain.id"
-                                                    :href="`http://${domain.domain}${window?.location?.port ? ':' + window.location.port : ':8000'}`"
+                                                    :href="`http://${domain.domain}${getPort()}`"
                                                     target="_blank"
                                                     class="block text-xs font-bold text-zinc-400 hover:text-white uppercase tracking-widest transition-colors"
                                                 >
@@ -139,8 +202,9 @@ const seedData = (tenant) => {
 
                                                 <!-- Migrate -->
                                                 <button
-                                                    @click="runMigrations(tenant)"
-                                                    class="text-zinc-500 hover:text-green-400 transition-colors"
+                                                    type="button"
+                                                    @click="confirmAction(tenant, 'migrate')"
+                                                    class="text-zinc-500 hover:text-green-400 cursor-pointer transition-colors p-1"
                                                     title="Run Migrations"
                                                 >
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,8 +214,9 @@ const seedData = (tenant) => {
 
                                                 <!-- Seed -->
                                                 <button
-                                                    @click="seedData(tenant)"
-                                                    class="text-zinc-500 hover:text-yellow-400 transition-colors"
+                                                    type="button"
+                                                    @click="confirmAction(tenant, 'seed')"
+                                                    class="text-zinc-500 hover:text-yellow-400 cursor-pointer transition-colors p-1"
                                                     title="Seed Data"
                                                 >
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,8 +226,9 @@ const seedData = (tenant) => {
 
                                                 <!-- Delete -->
                                                 <button
-                                                    @click="deleteTenant(tenant)"
-                                                    class="text-zinc-500 hover:text-red-500 transition-colors"
+                                                    type="button"
+                                                    @click="confirmAction(tenant, 'delete')"
+                                                    class="text-zinc-500 hover:text-red-500 cursor-pointer transition-colors p-1"
                                                     title="Delete"
                                                 >
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
