@@ -29,12 +29,7 @@ Route::middleware([
 ])->group(function () {
 
     Route::get('/', function () {
-        // If user is logged in, go to dashboard
-        if (auth()->check()) {
-            return redirect('/dashboard');
-        }
-        // Otherwise show login page
-        return redirect('/login');
+        return redirect()->route('customer.home');
     })->name('tenant.home');
 
     // SSO route for cross-domain login (from central after store creation)

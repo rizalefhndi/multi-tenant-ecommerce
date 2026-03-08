@@ -8,6 +8,7 @@ const showUserMenu = ref(false);
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
+const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.role === 'superadmin');
 const cartCount = computed(() => page.props.cart?.total_items || 0);
 
 const navItems = [
@@ -87,7 +88,8 @@ const getInitials = (name) => {
                                     </div>
                                 </button>
                                 <!-- Dropdown -->
-                                <div v-if="showUserMenu" @click.away="showUserMenu = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50">
+                                <div v-if="showUserMenu" @click.away="showUserMenu = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50 overflow-hidden">
+                                     <Link v-if="isAdmin" :href="route('admin.dashboard')" class="block px-4 py-3 text-sm text-blue-600 bg-blue-50/50 font-black tracking-wide border-b border-gray-100 hover:bg-blue-50 transition-colors uppercase">Admin Panel</Link>
                                      <Link :href="route('profile.edit')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profile</Link>
                                      <Link :href="route('orders.index')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">My Orders</Link>
                                      <div class="border-t border-gray-100 my-1"></div>
