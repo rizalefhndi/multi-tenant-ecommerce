@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Tenant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +36,7 @@ class AuthenticatedSessionController extends Controller
         // Check if we're in a tenant context using tenancy helper or host check
         $host = $request->getHost();
         $isCentralDomain = in_array($host, config('tenancy.central_domains', ['127.0.0.1', 'localhost', 'onyx.127.0.0.1.nip.io']));
-        
+
         if (!$isCentralDomain) {
             // We're on a tenant subdomain, redirect to tenant dashboard
             return redirect('/dashboard');
@@ -46,8 +47,23 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('landlord.dashboard');
         }
 
-        // Regular staff users go to pricing page to create their tenant
-        return redirect()->intended(route('pricing'));
+        // Owner/staff central flow resolver
+        $ownedTenants = Tenant::query()
+            ->where('owner_id', $user->id)
+            ->latest('created_at')
+            ->get();
+
+        if ($ownedTenants->isEmpty()) {
+            return redirect()->intended(route('pricing'));
+        }
+
+        $pendingTenant = $ownedTenants->firstWhere('status', 'pending');
+        if ($pendingTenant) {
+            return redirect()->route('billing.checkout.page', ['tenant' => $pendingTenant->id]);
+        }
+
+        // If user has existing stores and none are pending, land on stores list.
+        return redirect()->route('my-stores');
     }
 
     /**

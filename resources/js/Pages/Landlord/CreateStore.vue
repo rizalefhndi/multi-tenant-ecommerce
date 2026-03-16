@@ -18,6 +18,13 @@ const form = useForm({
 // Success modal state
 const showSuccessModal = ref(false);
 const createdStore = ref(null);
+const isCheckingSubdomain = ref(false);
+const subdomainState = ref({
+    checked: false,
+    available: false,
+    message: '',
+});
+let subdomainCheckTimer = null;
 
 // Watch for flash success message
 watch(() => page.props.flash?.success, (success) => {
@@ -35,6 +42,69 @@ const generateSubdomain = () => {
         .replace(/^-|-$/g, '')
         .substring(0, 63);
 };
+
+const checkSubdomainAvailability = async () => {
+    if (!form.subdomain || form.subdomain.length < 3) {
+        subdomainState.value = {
+            checked: false,
+            available: false,
+            message: '',
+        };
+        return;
+    }
+
+    isCheckingSubdomain.value = true;
+    try {
+        const url = `${route('api.onboarding.subdomain-check')}?subdomain=${encodeURIComponent(form.subdomain)}`;
+        const response = await fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+            },
+            credentials: 'same-origin',
+        });
+        const data = await response.json();
+
+        if (data.available) {
+            subdomainState.value = {
+                checked: true,
+                available: true,
+                message: 'Subdomain tersedia ✓',
+            };
+        } else {
+            subdomainState.value = {
+                checked: true,
+                available: false,
+                message: data.reason === 'reserved'
+                    ? 'Subdomain ini termasuk reserved'
+                    : 'Subdomain sudah dipakai',
+            };
+        }
+    } catch {
+        subdomainState.value = {
+            checked: true,
+            available: false,
+            message: 'Gagal cek subdomain, coba lagi',
+        };
+    } finally {
+        isCheckingSubdomain.value = false;
+    }
+};
+
+watch(() => form.subdomain, () => {
+    if (subdomainCheckTimer) {
+        clearTimeout(subdomainCheckTimer);
+    }
+
+    subdomainState.value = {
+        checked: false,
+        available: false,
+        message: '',
+    };
+
+    subdomainCheckTimer = setTimeout(() => {
+        checkSubdomainAvailability();
+    }, 350);
+});
 
 // Full domain preview
 const domainPreview = computed(() => {
@@ -55,6 +125,13 @@ const goToMyStores = () => {
     window.location.href = '/my-stores';
 };
 
+const continuePayment = () => {
+    if (!createdStore.value?.tenant_id) {
+        return;
+    }
+    window.location.href = route('billing.checkout.page', { tenant: createdStore.value.tenant_id });
+};
+
 const visitStore = () => {
     if (createdStore.value?.full_url) {
         window.open(createdStore.value.full_url, '_blank');
@@ -68,13 +145,13 @@ const visitStore = () => {
     <div class="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
         <!-- Success Modal -->
         <Teleport to="body">
-            <div 
-                v-if="showSuccessModal" 
+            <div
+                v-if="showSuccessModal"
                 class="fixed inset-0 z-[100] flex items-center justify-center"
             >
                 <!-- Backdrop -->
                 <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-                
+
                 <!-- Modal -->
                 <div class="relative bg-white border-4 border-black p-8 max-w-md w-full mx-4 animate-modal-in">
                     <!-- Success Icon -->
@@ -86,10 +163,16 @@ const visitStore = () => {
 
                     <!-- Title -->
                     <h2 class="text-2xl font-black uppercase text-center mb-2">
-                        Store Created!
+                        {{ createdStore?.requires_payment ? 'Store Created (Pending)' : 'Store Created!' }}
                     </h2>
                     <p class="text-gray-600 text-center mb-6">
-                        Your store <span class="font-bold">{{ createdStore?.store_name }}</span> is now live.
+                        <template v-if="createdStore?.requires_payment">
+                            Store <span class="font-bold">{{ createdStore?.store_name }}</span> berhasil dibuat.
+                            Lanjutkan pembayaran untuk aktivasi.
+                        </template>
+                        <template v-else>
+                            Your store <span class="font-bold">{{ createdStore?.store_name }}</span> is now live.
+                        </template>
                     </p>
 
                     <!-- Store URL -->
@@ -97,7 +180,7 @@ const visitStore = () => {
                         <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Your Store URL</p>
                         <div class="flex items-center justify-between gap-2">
                             <code class="text-sm font-mono font-bold truncate">{{ createdStore?.full_url }}</code>
-                            <button 
+                            <button
                                 @click="copyToClipboard(createdStore?.full_url)"
                                 class="p-2 bg-black text-white hover:scale-110 transition-transform flex-shrink-0"
                                 title="Copy URL"
@@ -132,15 +215,30 @@ const visitStore = () => {
                         </p>
                     </div>
 
+                    <div v-if="createdStore?.requires_payment" class="bg-amber-50 border-2 border-amber-400 p-4 mb-6">
+                        <p class="text-xs font-bold uppercase tracking-widest text-amber-700 mb-2">Next Step</p>
+                        <p class="text-sm text-amber-800">
+                            Buka flow checkout onboarding (Fase berikutnya) untuk melakukan pembayaran paket.
+                        </p>
+                    </div>
+
                     <!-- Actions -->
                     <div class="flex flex-col gap-3">
-                        <button 
+                        <button
+                            v-if="createdStore?.requires_payment"
+                            @click="continuePayment"
+                            class="w-full py-4 bg-orange-600 text-white text-sm font-bold uppercase tracking-widest hover:scale-[1.02] transition-transform"
+                        >
+                            Continue Payment
+                        </button>
+                        <button
                             @click="goToMyStores"
                             class="w-full py-4 bg-black text-white text-sm font-bold uppercase tracking-widest hover:scale-[1.02] transition-transform"
                         >
                             Go to My Stores
                         </button>
-                        <button 
+                        <button
+                            v-if="!createdStore?.requires_payment"
                             @click="visitStore"
                             class="w-full py-4 border-2 border-black text-black text-sm font-bold uppercase tracking-widest hover:bg-gray-100 transition-colors"
                         >
@@ -159,8 +257,8 @@ const visitStore = () => {
                          <span class="font-black text-2xl tracking-widest uppercase">ONYX</span>
                     </Link>
                     <div class="flex items-center gap-4">
-                        <Link 
-                            href="/my-stores" 
+                        <Link
+                            href="/my-stores"
                             class="text-sm font-bold uppercase tracking-wider text-gray-600 hover:text-black transition-colors"
                         >
                             My Stores
@@ -180,12 +278,12 @@ const visitStore = () => {
                         <span class="w-2 h-2 bg-black rounded-full animate-pulse"></span>
                         <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Final Step</span>
                     </div>
-                    
+
                     <h1 class="text-5xl sm:text-6xl font-black uppercase tracking-tighter mb-6 leading-[0.9]">
                         Create Your<br/>
                         <span class="text-transparent bg-clip-text bg-gradient-to-b from-black to-gray-500">Empire</span>
                     </h1>
-                    
+
                     <p class="text-lg font-medium text-gray-600">
                         Set up your store in seconds. Start selling immediately.
                     </p>
@@ -249,8 +347,18 @@ const visitStore = () => {
                         <p v-if="form.errors.subdomain" class="mt-2 text-sm font-bold text-red-600">
                             {{ form.errors.subdomain }}
                         </p>
+                        <p v-else-if="isCheckingSubdomain" class="mt-2 text-sm text-gray-500">
+                            Checking subdomain...
+                        </p>
+                        <p
+                            v-else-if="subdomainState.checked"
+                            class="mt-2 text-sm font-bold"
+                            :class="subdomainState.available ? 'text-emerald-600' : 'text-red-600'"
+                        >
+                            {{ subdomainState.message }}
+                        </p>
                         <p class="mt-2 text-sm text-gray-500">
-                            Your store will be available at: 
+                            Your store will be available at:
                             <span class="font-bold text-black">{{ domainPreview }}</span>
                         </p>
                     </div>
@@ -272,8 +380,8 @@ const visitStore = () => {
 
                     <!-- Back Link -->
                     <div class="text-center">
-                        <Link 
-                            href="/pricing" 
+                        <Link
+                            href="/pricing"
                             class="text-sm font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:underline underline-offset-4"
                         >
                             ← Change Plan

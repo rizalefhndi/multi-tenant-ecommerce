@@ -2,8 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Package;
 use App\Models\Order;
+use App\Models\SubscriptionTransaction;
+use App\Models\Tenant;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -400,5 +404,253 @@ class MidtransService
 
             return false;
         }
+    }
+
+    /**
+     * Create Midtrans Core charge for tenant subscription transaction
+     */
+    public function createSubscriptionCharge(
+        SubscriptionTransaction $subscriptionTransaction,
+        Tenant $tenant,
+        Package $package,
+        string $paymentType,
+        ?string $paymentProvider = null
+    ): ?array {
+        $payload = $this->buildSubscriptionChargePayload(
+            $subscriptionTransaction,
+            $tenant,
+            $package,
+            $paymentType,
+            $paymentProvider
+        );
+
+        try {
+            $response = Http::withBasicAuth($this->serverKey, '')
+                ->post($this->baseUrl . '/v2/charge', $payload);
+
+            if (!$response->successful()) {
+                Log::error('Midtrans Subscription Charge Error', [
+                    'order_id' => $subscriptionTransaction->order_id,
+                    'payload' => $payload,
+                    'response' => $response->json(),
+                    'status' => $response->status(),
+                ]);
+
+                return null;
+            }
+
+            $result = $response->json();
+
+            $subscriptionTransaction->update([
+                'payment_type' => $result['payment_type'] ?? $paymentType,
+                'payment_provider' => $this->extractPaymentProviderFromResponse($result, $paymentType, $paymentProvider),
+                'status' => $result['transaction_status'] ?? 'pending',
+                'midtrans_transaction_id' => $result['transaction_id'] ?? null,
+                'payment_details' => $this->extractPaymentDetails($result),
+            ]);
+
+            return $result;
+        } catch (\Throwable $e) {
+            Log::error('Midtrans Subscription Charge Exception', [
+                'order_id' => $subscriptionTransaction->order_id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Handle Midtrans webhook for subscription transactions
+     */
+    public function handleSubscriptionNotification(array $notification): bool
+    {
+        if (!$this->verifySignature($notification)) {
+            Log::warning('Midtrans Subscription Invalid Signature', $notification);
+            return false;
+        }
+
+        $orderId = $notification['order_id'] ?? null;
+        if (!$orderId) {
+            return false;
+        }
+
+        $subscriptionTransaction = SubscriptionTransaction::where('order_id', $orderId)->first();
+        if (!$subscriptionTransaction) {
+            Log::warning('Subscription transaction not found for Midtrans webhook', [
+                'order_id' => $orderId,
+            ]);
+            return false;
+        }
+
+        $transactionStatus = $notification['transaction_status'] ?? 'pending';
+        $fraudStatus = $notification['fraud_status'] ?? null;
+
+        $subscriptionTransaction->update([
+            'status' => $transactionStatus,
+            'payment_type' => $notification['payment_type'] ?? $subscriptionTransaction->payment_type,
+            'payment_provider' => $this->extractPaymentProviderFromResponse(
+                $notification,
+                $notification['payment_type'] ?? ($subscriptionTransaction->payment_type ?? ''),
+                $subscriptionTransaction->payment_provider
+            ),
+            'midtrans_transaction_id' => $notification['transaction_id'] ?? $subscriptionTransaction->midtrans_transaction_id,
+            'payment_details' => $this->extractPaymentDetails($notification),
+            'paid_at' => in_array($transactionStatus, ['settlement', 'capture']) ? now() : $subscriptionTransaction->paid_at,
+        ]);
+
+        if ($transactionStatus === 'capture' && $fraudStatus !== null && $fraudStatus !== 'accept') {
+            return true;
+        }
+
+        if (!in_array($transactionStatus, ['settlement', 'capture'])) {
+            return true;
+        }
+
+        $tenant = Tenant::find($subscriptionTransaction->tenant_id);
+        if (!$tenant) {
+            return false;
+        }
+
+        $package = $subscriptionTransaction->package;
+        if (!$package) {
+            return false;
+        }
+
+        $baseDate = $tenant->expired_at && Carbon::parse($tenant->expired_at)->isFuture()
+            ? Carbon::parse($tenant->expired_at)
+            : now();
+
+        $tenant->update([
+            'status' => 'active',
+            'subscription_status' => 'active',
+            'package_id' => $package->id,
+            'subscription_ends_at' => $baseDate->copy()->addDays((int) $package->duration_in_days),
+            'expired_at' => $baseDate->copy()->addDays((int) $package->duration_in_days),
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Build payload for Midtrans Core charge (v2/charge)
+     */
+    protected function buildSubscriptionChargePayload(
+        SubscriptionTransaction $subscriptionTransaction,
+        Tenant $tenant,
+        Package $package,
+        string $paymentType,
+        ?string $paymentProvider = null
+    ): array {
+        $type = strtolower($paymentType);
+        $payload = [
+            'transaction_details' => [
+                'order_id' => $subscriptionTransaction->order_id,
+                'gross_amount' => (int) $subscriptionTransaction->gross_amount,
+            ],
+            'item_details' => [[
+                'id' => 'PKG-' . $package->id,
+                'price' => (int) $subscriptionTransaction->gross_amount,
+                'quantity' => 1,
+                'name' => substr($package->name, 0, 50),
+            ]],
+            'customer_details' => [
+                'first_name' => $tenant->store_name ?? ('Tenant ' . $tenant->id),
+                'email' => $tenant->owner?->email,
+                'phone' => $tenant->owner?->phone ?? '',
+            ],
+            'custom_expiry' => [
+                'order_time' => now()->format('Y-m-d H:i:s O'),
+                'expiry_duration' => (int) config('midtrans.expiry_duration', 1440),
+                'unit' => 'minute',
+            ],
+        ];
+
+        if (in_array($type, ['bank_transfer', 'va'])) {
+            $payload['payment_type'] = 'bank_transfer';
+            $payload['bank_transfer'] = [
+                'bank' => strtolower((string) ($paymentProvider ?: 'bca')),
+            ];
+
+            return $payload;
+        }
+
+        if (in_array($type, ['ewallet', 'gopay', 'shopeepay'])) {
+            $provider = strtolower((string) ($paymentProvider ?: 'gopay'));
+            $payload['payment_type'] = in_array($provider, ['gopay', 'shopeepay']) ? $provider : 'gopay';
+            return $payload;
+        }
+
+        if (in_array($type, ['qris', 'qr'])) {
+            $payload['payment_type'] = 'qris';
+            return $payload;
+        }
+
+        $payload['payment_type'] = $type;
+        return $payload;
+    }
+
+    /**
+     * Extract provider/channel from Midtrans payload/response
+     */
+    protected function extractPaymentProviderFromResponse(array $response, string $paymentType, ?string $fallback = null): ?string
+    {
+        if (($response['payment_type'] ?? '') === 'bank_transfer') {
+            if (!empty($response['va_numbers'][0]['bank'])) {
+                return strtolower((string) $response['va_numbers'][0]['bank']);
+            }
+
+            if (!empty($response['permata_va_number'])) {
+                return 'permata';
+            }
+        }
+
+        if (!empty($response['payment_type'])) {
+            return strtolower((string) $response['payment_type']);
+        }
+
+        return $fallback ?: (strtolower($paymentType) ?: null);
+    }
+
+    /**
+     * Keep only useful payment instruction fields for storage
+     */
+    protected function extractPaymentDetails(array $response): array
+    {
+        $details = [];
+
+        if (!empty($response['va_numbers'])) {
+            $details['va_numbers'] = $response['va_numbers'];
+        }
+
+        if (!empty($response['permata_va_number'])) {
+            $details['permata_va_number'] = $response['permata_va_number'];
+        }
+
+        if (!empty($response['bill_key'])) {
+            $details['bill_key'] = $response['bill_key'];
+        }
+
+        if (!empty($response['biller_code'])) {
+            $details['biller_code'] = $response['biller_code'];
+        }
+
+        if (!empty($response['actions'])) {
+            $details['actions'] = $response['actions'];
+        }
+
+        if (!empty($response['expiry_time'])) {
+            $details['expiry_time'] = $response['expiry_time'];
+        }
+
+        if (!empty($response['transaction_status'])) {
+            $details['transaction_status'] = $response['transaction_status'];
+        }
+
+        if (!empty($response['status_message'])) {
+            $details['status_message'] = $response['status_message'];
+        }
+
+        return $details;
     }
 }

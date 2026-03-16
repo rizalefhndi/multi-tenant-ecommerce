@@ -16,9 +16,9 @@ const showDropdown = ref(false);
 // Get price based on billing cycle
 const getPrice = (plan) => {
     if (plan.is_free) return 'Free';
-    
+
     const price = isYearly.value ? plan.price_yearly : plan.price_monthly;
-    return '$' + new Intl.NumberFormat('en-US').format(price);
+    return 'Rp ' + new Intl.NumberFormat('id-ID').format(price);
 };
 
 // Get billing cycle label
@@ -60,8 +60,8 @@ const getSavingsText = (plan) => {
                             <Link href="/login" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">
                                 Login
                             </Link>
-                            <Link 
-                                href="/register" 
+                            <Link
+                                href="/register"
                                 class="px-6 py-3 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
                             >
                                 Start Free
@@ -121,12 +121,12 @@ const getSavingsText = (plan) => {
                     <span class="w-2 h-2 bg-black rounded-full animate-pulse"></span>
                     <span class="text-xs font-bold uppercase tracking-widest text-gray-500">Flexible Plans</span>
                 </div>
-                
+
                 <h1 class="text-6xl sm:text-8xl font-black uppercase tracking-tighter mb-8 leading-[0.9]">
                     Choose Your <br/>
                     <span class="text-transparent bg-clip-text bg-gradient-to-b from-black to-gray-500">Empire</span>
                 </h1>
-                
+
                 <p class="text-xl font-medium text-gray-600 max-w-2xl mx-auto mb-10">
                     Scale your brand with clear, transparent pricing. No hidden fees. Just pure growth.
                 </p>
@@ -136,8 +136,8 @@ const getSavingsText = (plan) => {
                     <button
                         @click="isYearly = false"
                         class="px-8 py-2 rounded-full text-sm font-black uppercase tracking-widest transition-all"
-                        :class="!isYearly 
-                            ? 'bg-black text-white shadow-lg' 
+                        :class="!isYearly
+                            ? 'bg-black text-white shadow-lg'
                             : 'text-gray-500 hover:text-black'"
                     >
                         Monthly
@@ -145,8 +145,8 @@ const getSavingsText = (plan) => {
                     <button
                         @click="isYearly = true"
                         class="px-8 py-2 rounded-full text-sm font-black uppercase tracking-widest transition-all flex items-center gap-2"
-                        :class="isYearly 
-                            ? 'bg-black text-white shadow-lg' 
+                        :class="isYearly
+                            ? 'bg-black text-white shadow-lg'
                             : 'text-gray-500 hover:text-black'"
                     >
                         Yearly
@@ -166,8 +166,8 @@ const getSavingsText = (plan) => {
                         class="relative group bg-white p-8 border-b-2 last:border-b-0 lg:border-b-0 lg:border-r-2 lg:last:border-r-0 border-black hover:bg-black hover:text-white transition-all duration-300 flex flex-col"
                     >
                         <!-- Top Badge -->
-                         <div 
-                            v-if="plan.is_featured" 
+                         <div
+                            v-if="plan.is_featured"
                             class="absolute top-0 right-0 bg-black text-white text-xs font-black uppercase tracking-widest px-4 py-1 border-l-2 border-b-2 border-white group-hover:bg-white group-hover:text-black group-hover:border-black transition-colors"
                         >
                             Best Seller
@@ -185,8 +185,8 @@ const getSavingsText = (plan) => {
                                 <span class="text-4xl font-black tracking-tighter">{{ getPrice(plan) }}</span>
                             </div>
                             <span class="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-gray-500">{{ getBillingLabel(plan) }}</span>
-                            <p 
-                                v-if="getSavingsText(plan)" 
+                            <p
+                                v-if="getSavingsText(plan)"
                                 class="text-red-600 text-xs font-bold uppercase tracking-widest mt-2 group-hover:text-white"
                             >
                                 {{ getSavingsText(plan) }}
@@ -198,7 +198,7 @@ const getSavingsText = (plan) => {
                             <Link
                                 :href="plan.is_custom ? '/contact' : '/create-store?plan=' + plan.slug"
                                 class="block w-full text-center py-4 border-2 border-black font-black uppercase tracking-widest text-xs transition-all duration-300"
-                                :class="plan.is_featured 
+                                :class="plan.is_featured
                                     ? 'bg-black text-white group-hover:bg-white group-hover:text-black'
                                     : 'bg-transparent text-black hover:bg-black hover:text-white group-hover:bg-white group-hover:text-black'"
                             >
@@ -221,8 +221,8 @@ const getSavingsText = (plan) => {
                              </div>
 
                             <!-- List -->
-                            <div 
-                                v-for="(feature, index) in plan.features" 
+                            <div
+                                v-for="(feature, index) in plan.features"
                                 :key="index"
                                 class="flex items-start gap-3 text-sm font-medium group-hover:text-gray-300"
                             >
@@ -240,7 +240,7 @@ const getSavingsText = (plan) => {
             <section class="border-t-2 border-black bg-gray-50">
                 <div class="max-w-4xl mx-auto px-6 py-24">
                     <h2 class="text-5xl font-black uppercase tracking-tighter mb-16 text-center">Common Questions</h2>
-                    
+
                     <div class="grid gap-6">
                         <div class="bg-white border-2 border-black p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-shadow cursor-default">
                             <h3 class="text-xl font-black uppercase mb-3">No Hidden Fees?</h3>

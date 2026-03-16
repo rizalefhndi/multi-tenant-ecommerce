@@ -20,8 +20,9 @@ class DatabaseSeeder extends Seeder
             LandlordAdminSeeder::class,
             TenantSeeder::class,
             PlanSeeder::class,
+            PackageSeeder::class,
             ProductSeeder::class,
-            
+
         ]);
     }
 }

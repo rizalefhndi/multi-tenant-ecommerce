@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Landlord;
 
 use App\Http\Controllers\Controller;
-use App\Models\Plan;
+use App\Models\Package;
 use App\Models\Tenant;
-use App\Models\TenantLoginToken;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -19,26 +20,28 @@ class StoreController extends Controller
      */
     public function create(Request $request): Response
     {
-        $planSlug = $request->query('plan', 'starter');
-        $plan = Plan::where('slug', $planSlug)->first();
-        
-        // Fallback to free plan if not found
-        if (!$plan) {
-            $plan = Plan::where('price_monthly', 0)->first();
+        $packageSlug = $request->query('plan', 'basic');
+        $package = Package::query()
+            ->get()
+            ->first(fn ($item) => Str::slug($item->name) === $packageSlug);
+
+        if (!$package) {
+            $package = Package::orderBy('price')->first();
         }
 
         return Inertia::render('Landlord/CreateStore', [
-            'plan' => $plan ? [
-                'id' => $plan->id,
-                'slug' => $plan->slug,
-                'name' => $plan->name,
-                'description' => $plan->description,
-                'price_monthly' => $plan->price_monthly,
-                'formatted_price_monthly' => $plan->formatted_price_monthly,
-                'is_free' => $plan->isFree(),
+            // Keep prop name `plan` to avoid large frontend refactor.
+            'plan' => $package ? [
+                'id' => $package->id,
+                'slug' => Str::slug($package->name),
+                'name' => $package->name,
+                'description' => $package->description,
+                'price_monthly' => (float) $package->price,
+                'formatted_price_monthly' => 'Rp ' . number_format((float) $package->price, 0, ',', '.'),
+                'is_free' => (float) $package->price <= 0,
             ] : null,
             'auth' => [
-                'user' => auth()->user(),
+                'user' => Auth::user(),
             ],
         ]);
     }
@@ -48,41 +51,105 @@ class StoreController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'store_name' => ['required', 'string', 'max:255'],
             'subdomain' => [
                 'required',
                 'string',
                 'max:63',
                 'regex:/^[a-z0-9]+(-[a-z0-9]+)*$/',
+                'not_in:www,admin,mail,api',
                 Rule::unique('tenants', 'id'), // Tenant ID = subdomain
             ],
-            'plan_id' => ['required', 'exists:plans,id'],
+            // Keep request key `plan_id` to stay compatible with current UI payload.
+            'plan_id' => ['required', 'exists:packages,id'],
         ], [
             'subdomain.regex' => 'Subdomain can only contain lowercase letters, numbers, and hyphens.',
             'subdomain.unique' => 'This subdomain is already taken.',
+            'subdomain.not_in' => 'This subdomain is reserved.',
         ]);
 
-        $user = auth()->user();
-        $plan = Plan::findOrFail($request->plan_id);
+        $payload = $this->createTenantAndProvision($validated, Auth::user());
+
+        return back()->with('success', $payload);
+    }
+
+    /**
+     * API endpoint for realtime subdomain availability check.
+     */
+    public function checkSubdomain(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'subdomain' => ['required', 'string', 'max:63', 'regex:/^[a-z0-9]+(-[a-z0-9]+)*$/'],
+        ]);
+
+        $subdomain = Str::slug($validated['subdomain']);
+        $reserved = in_array($subdomain, ['www', 'admin', 'mail', 'api']);
+        $exists = Tenant::where('id', $subdomain)->exists();
+
+        return response()->json([
+            'subdomain' => $subdomain,
+            'available' => !$reserved && !$exists,
+            'reason' => $reserved ? 'reserved' : ($exists ? 'taken' : null),
+        ]);
+    }
+
+    /**
+     * API endpoint for onboarding tenant creation.
+     */
+    public function storeApi(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'store_name' => ['required', 'string', 'max:255'],
+            'subdomain' => [
+                'required',
+                'string',
+                'max:63',
+                'regex:/^[a-z0-9]+(-[a-z0-9]+)*$/',
+                'not_in:www,admin,mail,api',
+                Rule::unique('tenants', 'id'),
+            ],
+            'package_id' => ['required', 'exists:packages,id'],
+        ]);
+
+        // Convert to current web payload shape for shared creator method.
+        $payload = [
+            'store_name' => $validated['store_name'],
+            'subdomain' => $validated['subdomain'],
+            'plan_id' => $validated['package_id'],
+        ];
+
+        return response()->json($this->createTenantAndProvision($payload, Auth::user()));
+    }
+
+    private function createTenantAndProvision(array $validated, $user): array
+    {
+        $package = Package::findOrFail($validated['plan_id']);
 
         // Generate tenant ID (subdomain)
-        $tenantId = Str::slug($request->subdomain);
+        $tenantId = Str::slug($validated['subdomain']);
+
+        $requiresPayment = (float) $package->price > 0;
+        $scheme = request()->isSecure() ? 'https' : 'http';
+        $port = parse_url(config('app.url'), PHP_URL_PORT);
 
         // Create the tenant
         $tenant = Tenant::create([
             'id' => $tenantId,
             'owner_id' => $user->id,
-            'store_name' => $request->store_name,
-            'plan_id' => $plan->id,
-            'subscription_status' => $plan->isFree() ? 'active' : 'trial',
+            'store_name' => $validated['store_name'],
+            'package_id' => $package->id,
+            'plan_id' => null,
+            'subscription_status' => $requiresPayment ? 'past_due' : 'active',
             'billing_cycle' => 'monthly',
-            'trial_ends_at' => $plan->isFree() ? null : now()->addDays(14),
-            'status' => 'active',
+            'trial_ends_at' => null,
+            'subscription_ends_at' => $requiresPayment ? null : now()->addDays((int) $package->duration_in_days),
+            'status' => $requiresPayment ? 'pending' : 'active',
+            'expired_at' => $requiresPayment ? null : now()->addDays((int) $package->duration_in_days),
         ]);
 
         // Create domain for tenant
-        // Menambahkan prefix port pada URL bisa dilakukan jika di localhost, 
+        // Menambahkan prefix port pada URL bisa dilakukan jika di localhost,
         // tapi domain table hanya perlu domain-nya saja (tanpa port)
         $centralDomain = request()->getHost();
         if ($centralDomain === '127.0.0.1' || $centralDomain === 'localhost') {
@@ -104,16 +171,25 @@ class StoreController extends Controller
             ]);
         });
 
-        // Return success response with store data and admin credentials
-        return back()->with('success', [
-            'store_name' => $request->store_name,
+        $fullUrl = $scheme . '://' . $domain;
+        if ($port && !in_array((int) $port, [80, 443], true)) {
+            $fullUrl .= ':' . $port;
+        }
+
+        return [
+            'store_name' => $validated['store_name'],
             'subdomain' => $tenantId,
             'domain' => $domain,
-            'full_url' => 'http://' . $domain . ':8000',
-            'plan_name' => $plan->name,
+            'full_url' => $fullUrl,
+            'plan_name' => $package->name,
+            'status' => $tenant->status,
+            'requires_payment' => $requiresPayment,
+            'tenant_id' => $tenant->id,
+            'package_id' => $package->id,
+            'billing_checkout_endpoint' => route('api.billing.checkout'),
             'admin_email' => $user->email,
             'admin_note' => 'Gunakan password yang sama dengan akun central Anda',
-        ]);
+        ];
     }
 }
 

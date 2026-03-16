@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Landlord;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,27 +15,76 @@ class MyStoresController extends Controller
      */
     public function index(): Response
     {
-        $user = auth()->user();
-        
+        $user = Auth::user();
+        $scheme = request()->isSecure() ? 'https' : 'http';
+        $port = parse_url(config('app.url'), PHP_URL_PORT);
+
         // Get all stores owned by the user
         $stores = Tenant::where('owner_id', $user->id)
-            ->with(['plan', 'domains'])
+            ->with(['plan', 'package', 'domains'])
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($tenant) {
+            ->map(function ($tenant) use ($scheme, $port) {
                 $domain = $tenant->domains->first();
+                $fullUrl = null;
+                if ($domain) {
+                    $fullUrl = $scheme . '://' . $domain->domain;
+                    if ($port && !in_array((int) $port, [80, 443], true)) {
+                        $fullUrl .= ':' . $port;
+                    }
+                }
+
                 return [
                     'id' => $tenant->id,
                     'store_name' => $tenant->store_name,
                     'subdomain' => $tenant->id,
                     'domain' => $domain ? $domain->domain : null,
-                    'full_url' => $domain ? 'http://' . $domain->domain . ':8000' : null,
+                    'full_url' => $fullUrl,
                     'plan' => $tenant->plan ? [
                         'name' => $tenant->plan->name,
                         'slug' => $tenant->plan->slug,
-                    ] : null,
+                    ] : ($tenant->package ? [
+                        'name' => $tenant->package->name,
+                        'slug' => null,
+                    ] : null),
                     'status' => $tenant->status,
                     'subscription_status' => $tenant->subscription_status,
+                    'needs_payment' => $tenant->status === 'pending',
+                    'billing_checkout_url' => route('billing.checkout.page', ['tenant' => $tenant->id]),
+                    'sso_url' => route('sso.redirect', ['tenant' => $tenant->id]),
+                    'primary_action' => match ($tenant->status) {
+                        'pending' => [
+                            'label' => 'Continue Payment',
+                            'url' => route('billing.checkout.page', ['tenant' => $tenant->id]),
+                            'kind' => 'warning',
+                            'disabled' => false,
+                        ],
+                        'expired' => [
+                            'label' => 'Renew Now',
+                            'url' => route('billing.checkout.page', ['tenant' => $tenant->id]),
+                            'kind' => 'warning',
+                            'disabled' => false,
+                        ],
+                        'active' => [
+                            'label' => 'Enter Store',
+                            'url' => route('sso.redirect', ['tenant' => $tenant->id]),
+                            'kind' => 'primary',
+                            'disabled' => false,
+                        ],
+                        'suspended' => [
+                            'label' => 'Temporarily Suspended',
+                            'url' => null,
+                            'kind' => 'danger',
+                            'disabled' => true,
+                        ],
+                        default => null,
+                    },
+                    'status_note' => match ($tenant->status) {
+                        'pending' => 'Selesaikan pembayaran untuk mengaktifkan toko.',
+                        'expired' => 'Langganan habis. Perpanjang paket untuk aktif kembali.',
+                        'suspended' => $tenant->suspended_reason ?: 'Toko sedang dinonaktifkan sementara.',
+                        default => null,
+                    },
                     'created_at' => $tenant->created_at->format('M d, Y'),
                 ];
             });

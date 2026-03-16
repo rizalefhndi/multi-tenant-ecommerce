@@ -6,7 +6,9 @@ use App\Http\Controllers\Landlord\PricingController;
 use App\Http\Controllers\Landlord\SSOController;
 use App\Http\Controllers\Landlord\StoreController;
 use App\Http\Controllers\Landlord\TenantController;
+use App\Http\Controllers\Landlord\SubscriptionPaymentController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,7 +28,7 @@ Route::domain(env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io'))->group(function ()
     Route::get('/', function () {
         return Inertia::render('LandingPage', [
             'auth' => [
-                'user' => auth()->user(),
+                'user' => Auth::user(),
             ],
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
@@ -41,10 +43,32 @@ Route::domain(env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io'))->group(function ()
         Route::get('/create-store', [StoreController::class, 'create'])->name('store.create');
         Route::post('/create-store', [StoreController::class, 'store'])->name('store.store');
         Route::get('/my-stores', [MyStoresController::class, 'index'])->name('my-stores');
-        
+
+        // Billing pages (Onboarding custom checkout)
+        Route::get('/billing/{tenant}/checkout', [SubscriptionPaymentController::class, 'checkoutPage'])
+            ->name('billing.checkout.page');
+        Route::get('/billing/pending/{orderId}', [SubscriptionPaymentController::class, 'pendingPage'])
+            ->name('billing.pending.page');
+
+        // Onboarding API
+        Route::prefix('api/onboarding')->name('api.onboarding.')->group(function () {
+            Route::get('/subdomain-check', [StoreController::class, 'checkSubdomain'])->name('subdomain-check');
+            Route::post('/stores', [StoreController::class, 'storeApi'])->name('stores');
+        });
+
+        // Onboarding billing API (Midtrans Core)
+        Route::prefix('api/billing')->name('api.billing.')->group(function () {
+            Route::post('/checkout', [SubscriptionPaymentController::class, 'checkout'])->name('checkout');
+            Route::get('/status/{orderId}', [SubscriptionPaymentController::class, 'status'])->name('status');
+        });
+
         // SSO redirect to tenant
         Route::get('/sso/{tenant}', [SSOController::class, 'redirect'])->name('sso.redirect');
     });
+
+    // Midtrans webhook for onboarding subscription transactions
+    Route::post('/api/midtrans/webhook', [SubscriptionPaymentController::class, 'webhook'])
+        ->name('api.midtrans.webhook');
 
     // Auth routes (Breeze)
     require __DIR__.'/auth.php';

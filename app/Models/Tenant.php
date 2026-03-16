@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Package;
+use App\Models\SubscriptionTransaction;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
@@ -23,6 +25,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'owner_id',
             'store_name',
             'status',
+            'package_id',
+            'expired_at',
             'suspended_at',
             'suspended_reason',
             'plan_id',
@@ -43,6 +47,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     protected $casts = [
         'trial_ends_at' => 'datetime',
         'subscription_ends_at' => 'datetime',
+        'expired_at' => 'datetime',
         'usage_reset_date' => 'date',
         'suspended_at' => 'datetime',
         'product_count' => 'integer',
@@ -107,6 +112,22 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     public function invoices(): HasMany
     {
         return $this->hasMany(TenantInvoice::class);
+    }
+
+    /**
+     * Relationship: Tenant belongs to Package (new onboarding subscription package)
+     */
+    public function package(): BelongsTo
+    {
+        return $this->belongsTo(Package::class);
+    }
+
+    /**
+     * Relationship: Tenant has many subscription transactions
+     */
+    public function subscriptionTransactions(): HasMany
+    {
+        return $this->hasMany(SubscriptionTransaction::class);
     }
 
     // ==========================================
