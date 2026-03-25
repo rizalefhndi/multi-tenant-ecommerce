@@ -31,7 +31,7 @@ const showDropdown = ref(false);
                     <div class="hidden md:flex items-center gap-8">
                         <Link href="#features" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Features</Link>
                         <Link href="/pricing" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Pricing</Link>
-                        
+
                         <!-- Guest Nav -->
                         <div v-if="!auth?.user" class="flex items-center gap-8">
                             <Link :href="route('login')" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Login</Link>
@@ -127,7 +127,7 @@ const showDropdown = ref(false);
 
                 <!-- Visual Side -->
                 <div class="relative bg-black hidden lg:block overflow-hidden">
-                    <img 
+                    <img
                         src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1000&auto=format&fit=crop"
                         alt="Streetwear Model"
                         class="w-full h-full object-cover grayscale opacity-70 hover:scale-105 transition-transform duration-700"
@@ -149,10 +149,17 @@ const showDropdown = ref(false);
 
             <!-- Ticker -->
             <div class="bg-black text-white py-4 overflow-hidden whitespace-nowrap border-y border-white/10">
-                <div class="inline-flex gap-8 animate-marquee">
-                    <span v-for="i in 10" :key="i" class="text-2xl font-black uppercase italic tracking-widest mx-4">
-                        Unlimited Stores • Secure Payments • Custom Domains • 
-                    </span>
+                <div class="marquee-track inline-flex">
+                    <div class="inline-flex gap-8 animate-marquee">
+                        <span v-for="i in 10" :key="`a-${i}`" class="text-2xl font-black uppercase italic tracking-widest mx-4">
+                            Unlimited Stores • Secure Payments • Custom Domains •
+                        </span>
+                    </div>
+                    <div class="inline-flex gap-8 animate-marquee" aria-hidden="true">
+                        <span v-for="i in 10" :key="`b-${i}`" class="text-2xl font-black uppercase italic tracking-widest mx-4">
+                            Unlimited Stores • Secure Payments • Custom Domains •
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -236,5 +243,22 @@ const showDropdown = ref(false);
 .bg-clip-text {
     -webkit-background-clip: text;
     background-clip: text;
+}
+
+.marquee-track {
+    width: max-content;
+}
+
+.animate-marquee {
+    animation: marquee 36s linear infinite;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-100%);
+    }
 }
 </style>
