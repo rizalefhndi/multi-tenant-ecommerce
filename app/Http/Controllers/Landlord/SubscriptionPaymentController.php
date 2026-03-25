@@ -51,6 +51,10 @@ class SubscriptionPaymentController extends Controller
             ],
             'packages' => $packages,
             'defaultPackageId' => $tenant->package_id,
+            'snap' => [
+                'url' => $this->midtransService->getSnapUrl(),
+                'clientKey' => $this->midtransService->getClientKey(),
+            ],
         ]);
     }
 
@@ -150,6 +154,65 @@ class SubscriptionPaymentController extends Controller
                 'payment_details' => $transaction->payment_details,
             ],
             'midtrans' => $midtransResponse,
+        ]);
+    }
+
+    /**
+     * Create subscription transaction and return Midtrans Snap token.
+     */
+    public function snapToken(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'tenant_id' => ['required', 'string', 'exists:tenants,id'],
+            'package_id' => ['required', 'integer', 'exists:packages,id'],
+            'payment_type' => ['required', 'string', 'in:bank_transfer,ewallet,qris,gopay,shopeepay'],
+            'payment_provider' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $tenant = Tenant::where('id', $validated['tenant_id'])
+            ->where('owner_id', Auth::id())
+            ->firstOrFail();
+
+        $package = Package::findOrFail($validated['package_id']);
+
+        $transaction = SubscriptionTransaction::create([
+            'tenant_id' => $tenant->id,
+            'package_id' => $package->id,
+            'order_id' => $this->generateOrderId(),
+            'gross_amount' => $package->price,
+            'payment_type' => $validated['payment_type'],
+            'payment_provider' => $validated['payment_provider'] ?? null,
+            'status' => 'pending',
+        ]);
+
+        $snapResponse = $this->midtransService->createSubscriptionSnapToken(
+            $transaction,
+            $tenant,
+            $package,
+            $validated['payment_type'],
+            $validated['payment_provider'] ?? null,
+        );
+
+        if (!$snapResponse || empty($snapResponse['token'])) {
+            $transaction->update(['status' => 'failed']);
+
+            return response()->json([
+                'message' => 'Gagal membuat token Snap pembayaran.',
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Token Snap berhasil dibuat.',
+            'snap_token' => $snapResponse['token'],
+            'redirect_url' => $snapResponse['redirect_url'] ?? null,
+            'transaction' => [
+                'id' => $transaction->id,
+                'order_id' => $transaction->order_id,
+                'status' => $transaction->status,
+                'gross_amount' => $transaction->gross_amount,
+                'payment_type' => $transaction->payment_type,
+                'payment_provider' => $transaction->payment_provider,
+            ],
         ]);
     }
 

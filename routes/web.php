@@ -59,6 +59,7 @@ Route::domain(env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io'))->group(function ()
         // Onboarding billing API (Midtrans Core)
         Route::prefix('api/billing')->name('api.billing.')->group(function () {
             Route::post('/checkout', [SubscriptionPaymentController::class, 'checkout'])->name('checkout');
+            Route::post('/snap-token', [SubscriptionPaymentController::class, 'snapToken'])->name('snap-token');
             Route::get('/status/{orderId}', [SubscriptionPaymentController::class, 'status'])->name('status');
         });
 

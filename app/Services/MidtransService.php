@@ -77,6 +77,58 @@ class MidtransService
     }
 
     /**
+     * Create Snap transaction token for subscription checkout.
+     */
+    public function createSubscriptionSnapToken(
+        SubscriptionTransaction $subscriptionTransaction,
+        Tenant $tenant,
+        Package $package,
+        string $paymentType,
+        ?string $paymentProvider = null
+    ): ?array {
+        $payload = $this->buildSubscriptionSnapPayload(
+            $subscriptionTransaction,
+            $tenant,
+            $package,
+            $paymentType,
+            $paymentProvider
+        );
+
+        try {
+            $response = Http::withBasicAuth($this->serverKey, '')
+                ->post($this->baseUrl . '/snap/v1/transactions', $payload);
+
+            if (!$response->successful()) {
+                Log::error('Midtrans Subscription Snap Token Error', [
+                    'order_id' => $subscriptionTransaction->order_id,
+                    'payload' => $payload,
+                    'response' => $response->json(),
+                    'status' => $response->status(),
+                ]);
+
+                return null;
+            }
+
+            $result = $response->json();
+
+            $subscriptionTransaction->update([
+                'payment_type' => $paymentType,
+                'payment_provider' => $paymentProvider,
+                'status' => 'pending',
+            ]);
+
+            return $result;
+        } catch (\Throwable $e) {
+            Log::error('Midtrans Subscription Snap Token Exception', [
+                'order_id' => $subscriptionTransaction->order_id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
      * Create Snap Redirect URL
      */
     public function createSnapRedirectUrl(Order $order): ?string
@@ -614,6 +666,86 @@ class MidtransService
 
         $payload['payment_type'] = $type;
         return $payload;
+    }
+
+    /**
+     * Build payload for Midtrans Snap transaction.
+     */
+    protected function buildSubscriptionSnapPayload(
+        SubscriptionTransaction $subscriptionTransaction,
+        Tenant $tenant,
+        Package $package,
+        string $paymentType,
+        ?string $paymentProvider = null
+    ): array {
+        $enabledPayments = $this->mapSubscriptionEnabledPayments($paymentType, $paymentProvider);
+
+        return [
+            'transaction_details' => [
+                'order_id' => $subscriptionTransaction->order_id,
+                'gross_amount' => (int) $subscriptionTransaction->gross_amount,
+            ],
+            'item_details' => [[
+                'id' => 'PKG-' . $package->id,
+                'price' => (int) $subscriptionTransaction->gross_amount,
+                'quantity' => 1,
+                'name' => substr($package->name, 0, 50),
+            ]],
+            'customer_details' => [
+                'first_name' => $tenant->store_name ?? ('Tenant ' . $tenant->id),
+                'email' => $tenant->owner?->email,
+                'phone' => $tenant->owner?->phone ?? '',
+            ],
+            'enabled_payments' => $enabledPayments,
+            'expiry' => [
+                'start_time' => now()->format('Y-m-d H:i:s O'),
+                'unit' => 'minutes',
+                'duration' => (int) config('midtrans.expiry_duration', 1440),
+            ],
+        ];
+    }
+
+    /**
+     * Map onboarding selected payment to Midtrans enabled_payments for Snap.
+     */
+    protected function mapSubscriptionEnabledPayments(string $paymentType, ?string $paymentProvider = null): array
+    {
+        $type = strtolower($paymentType);
+        $provider = strtolower((string) ($paymentProvider ?: ''));
+
+        if ($type === 'bank_transfer') {
+            if ($provider === 'bca') {
+                return ['bca_va'];
+            }
+
+            if ($provider === 'bni') {
+                return ['bni_va'];
+            }
+
+            if ($provider === 'bri') {
+                return ['bri_va'];
+            }
+
+            if ($provider === 'permata') {
+                return ['permata_va'];
+            }
+
+            return ['other_va'];
+        }
+
+        if ($type === 'qris') {
+            return ['qris'];
+        }
+
+        if ($type === 'gopay') {
+            return ['gopay'];
+        }
+
+        if ($type === 'shopeepay') {
+            return ['shopeepay'];
+        }
+
+        return config('midtrans.enabled_payments', ['qris']);
     }
 
     /**

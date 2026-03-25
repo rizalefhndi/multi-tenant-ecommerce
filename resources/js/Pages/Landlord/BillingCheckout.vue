@@ -15,6 +15,13 @@ const props = defineProps({
         type: [Number, String, null],
         default: null,
     },
+    snap: {
+        type: Object,
+        default: () => ({
+            url: '',
+            clientKey: '',
+        }),
+    },
 });
 
 const selectedPackageId = ref(props.defaultPackageId || props.packages?.[0]?.id || null);
@@ -51,6 +58,44 @@ const selectedPaymentLabel = computed(() => {
     return selected?.label || paymentMethod.value;
 });
 
+let snapScriptPromise = null;
+
+const loadSnapScript = () => {
+    if (globalThis.snap) {
+        return Promise.resolve();
+    }
+
+    if (snapScriptPromise) {
+        return snapScriptPromise;
+    }
+
+    const scriptUrl = props.snap?.url;
+    const clientKey = props.snap?.clientKey;
+
+    if (!scriptUrl || !clientKey) {
+        return Promise.reject(new Error('Konfigurasi Snap belum tersedia.'));
+    }
+
+    snapScriptPromise = new Promise((resolve, reject) => {
+        const existingScript = document.querySelector('script[data-midtrans-snap="true"]');
+        if (existingScript) {
+            existingScript.addEventListener('load', () => resolve());
+            existingScript.addEventListener('error', () => reject(new Error('Gagal memuat Snap script.')));
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = scriptUrl;
+        script.dataset.clientKey = clientKey;
+        script.dataset.midtransSnap = 'true';
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Gagal memuat Snap script.'));
+        document.body.appendChild(script);
+    });
+
+    return snapScriptPromise;
+};
+
 const submitCheckout = async () => {
     errorMessage.value = '';
 
@@ -63,7 +108,7 @@ const submitCheckout = async () => {
 
     try {
         const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const response = await fetch(route('api.billing.checkout'), {
+        const response = await fetch(route('api.billing.snap-token'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -86,15 +131,31 @@ const submitCheckout = async () => {
             return;
         }
 
+        const snapToken = data?.snap_token;
         const orderId = data?.transaction?.order_id;
-        if (!orderId) {
-            errorMessage.value = 'Order ID tidak ditemukan dari respons pembayaran.';
+        if (!snapToken || !orderId) {
+            errorMessage.value = 'Token pembayaran tidak valid. Silakan coba lagi.';
             return;
         }
 
-        window.location.href = route('billing.pending.page', { orderId });
+        await loadSnapScript();
+
+        globalThis.snap.pay(snapToken, {
+            onSuccess: () => {
+                globalThis.location.href = route('billing.pending.page', { orderId });
+            },
+            onPending: () => {
+                globalThis.location.href = route('billing.pending.page', { orderId });
+            },
+            onClose: () => {
+                globalThis.location.href = route('billing.pending.page', { orderId });
+            },
+            onError: () => {
+                globalThis.location.href = route('billing.pending.page', { orderId });
+            },
+        });
     } catch (error) {
-        errorMessage.value = 'Terjadi kesalahan jaringan. Silakan coba lagi.';
+        errorMessage.value = error?.message || 'Terjadi kesalahan jaringan. Silakan coba lagi.';
     } finally {
         isSubmitting.value = false;
     }
