@@ -46,6 +46,11 @@ const isOptionSelected = (option) => {
     return paymentMethod.value === option.type && paymentProvider.value === option.provider;
 };
 
+const selectedPaymentLabel = computed(() => {
+    const selected = paymentOptions.find((option) => isOptionSelected(option));
+    return selected?.label || paymentMethod.value;
+});
+
 const submitCheckout = async () => {
     errorMessage.value = '';
 
@@ -173,7 +178,7 @@ const submitCheckout = async () => {
                             </div>
                             <div class="flex justify-between">
                                 <span>Metode</span>
-                                <span class="font-bold">{{ paymentMethod }}</span>
+                                <span class="font-bold">{{ selectedPaymentLabel }}</span>
                             </div>
                             <div class="border-t border-gray-300 pt-3 mt-3 flex justify-between text-base">
                                 <span class="font-bold">Total</span>
