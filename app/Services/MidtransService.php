@@ -483,19 +483,45 @@ class MidtransService
             return false;
         }
 
-        $transactionStatus = $notification['transaction_status'] ?? 'pending';
-        $fraudStatus = $notification['fraud_status'] ?? null;
+        return $this->applySubscriptionTransactionStatus($subscriptionTransaction, $notification);
+    }
+
+    /**
+     * Sync a subscription transaction status from Midtrans API by order ID.
+     */
+    public function syncSubscriptionStatusByOrderId(string $orderId): bool
+    {
+        $subscriptionTransaction = SubscriptionTransaction::where('order_id', $orderId)->first();
+        if (!$subscriptionTransaction) {
+            return false;
+        }
+
+        $statusResponse = $this->getTransactionStatus($orderId);
+        if (!$statusResponse) {
+            return false;
+        }
+
+        return $this->applySubscriptionTransactionStatus($subscriptionTransaction, $statusResponse);
+    }
+
+    /**
+     * Apply transaction status payload from Midtrans to subscription transaction and tenant.
+     */
+    protected function applySubscriptionTransactionStatus(SubscriptionTransaction $subscriptionTransaction, array $payload): bool
+    {
+        $transactionStatus = $payload['transaction_status'] ?? 'pending';
+        $fraudStatus = $payload['fraud_status'] ?? null;
 
         $subscriptionTransaction->update([
             'status' => $transactionStatus,
-            'payment_type' => $notification['payment_type'] ?? $subscriptionTransaction->payment_type,
+            'payment_type' => $payload['payment_type'] ?? $subscriptionTransaction->payment_type,
             'payment_provider' => $this->extractPaymentProviderFromResponse(
-                $notification,
-                $notification['payment_type'] ?? ($subscriptionTransaction->payment_type ?? ''),
+                $payload,
+                $payload['payment_type'] ?? ($subscriptionTransaction->payment_type ?? ''),
                 $subscriptionTransaction->payment_provider
             ),
-            'midtrans_transaction_id' => $notification['transaction_id'] ?? $subscriptionTransaction->midtrans_transaction_id,
-            'payment_details' => $this->extractPaymentDetails($notification),
+            'midtrans_transaction_id' => $payload['transaction_id'] ?? $subscriptionTransaction->midtrans_transaction_id,
+            'payment_details' => $this->extractPaymentDetails($payload),
             'paid_at' => in_array($transactionStatus, ['settlement', 'capture']) ? now() : $subscriptionTransaction->paid_at,
         ]);
 

@@ -48,6 +48,27 @@ const isPaid = computed(() => {
     return status === 'settlement' || status === 'capture';
 });
 
+const paymentTypeLabel = computed(() => {
+    const type = (tx.value?.payment_type || '').toLowerCase();
+    if (type === 'bank_transfer') return 'Bank Transfer';
+    if (type === 'qris') return 'QRIS';
+    if (type === 'gopay') return 'GoPay';
+    if (type === 'shopeepay') return 'ShopeePay';
+    return tx.value?.payment_type || '-';
+});
+
+const paymentProviderLabel = computed(() => {
+    const provider = (tx.value?.payment_provider || '').toLowerCase();
+    if (!provider) return '-';
+    if (provider === 'bca') return 'BCA';
+    if (provider === 'bni') return 'BNI';
+    if (provider === 'bri') return 'BRI';
+    if (provider === 'permata') return 'Permata';
+    if (provider === 'gopay') return 'GoPay';
+    if (provider === 'shopeepay') return 'ShopeePay';
+    return tx.value?.payment_provider;
+});
+
 const refreshStatus = async () => {
     if (!tx.value?.order_id) return;
 
@@ -128,7 +149,7 @@ onBeforeUnmount(() => {
 
                         <div v-if="isPaid" class="border-2 border-emerald-500 bg-emerald-50 p-4 mb-5">
                             <p class="font-bold text-emerald-700">Pembayaran berhasil diterima.</p>
-                            <p class="text-sm text-emerald-700">Tenant akan aktif otomatis setelah webhook diproses.</p>
+                            <p class="text-sm text-emerald-700">Toko kamu akan aktif otomatis dalam beberapa saat.</p>
                         </div>
 
                         <div v-if="tx.payment_details?.va_numbers?.length" class="mb-5">
@@ -182,11 +203,11 @@ onBeforeUnmount(() => {
                             </div>
                             <div class="flex justify-between">
                                 <span>Payment Type</span>
-                                <span class="font-bold uppercase">{{ tx.payment_type }}</span>
+                                <span class="font-bold">{{ paymentTypeLabel }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span>Provider</span>
-                                <span class="font-bold uppercase">{{ tx.payment_provider || '-' }}</span>
+                                <span class="font-bold">{{ paymentProviderLabel }}</span>
                             </div>
                             <div v-if="expiryText" class="border-t border-gray-300 pt-3 mt-3 flex justify-between">
                                 <span class="font-bold">Countdown</span>

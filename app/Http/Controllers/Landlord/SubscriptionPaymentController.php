@@ -165,6 +165,9 @@ class SubscriptionPaymentController extends Controller
             ->with(['tenant:id,owner_id,store_name,status,expired_at', 'package:id,name,duration_in_days'])
             ->firstOrFail();
 
+        $this->midtransService->syncSubscriptionStatusByOrderId($transaction->order_id);
+        $transaction->refresh()->load(['tenant:id,owner_id,store_name,status,expired_at', 'package:id,name,duration_in_days']);
+
         return response()->json([
             'transaction' => [
                 'id' => $transaction->id,
