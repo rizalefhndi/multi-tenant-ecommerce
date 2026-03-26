@@ -53,7 +53,7 @@ const copyToClipboard = (text) => {
                     </Link>
                     <div class="flex items-center gap-6">
                         <Link
-                            href="/create-store"
+                            href="/pricing"
                             class="text-sm font-bold uppercase tracking-wider text-gray-600 hover:text-black transition-colors"
                         >
                             + New Store

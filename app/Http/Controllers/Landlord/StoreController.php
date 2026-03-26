@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Landlord;
 use App\Http\Controllers\Controller;
 use App\Models\Package;
 use App\Models\Tenant;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,15 +19,19 @@ class StoreController extends Controller
     /**
      * Show the create store form
      */
-    public function create(Request $request): Response
+    public function create(Request $request): Response|RedirectResponse
     {
-        $packageSlug = $request->query('plan', 'basic');
+        $packageSlug = $request->query('plan');
+        if (!$packageSlug) {
+            return redirect()->route('pricing');
+        }
+
         $package = Package::query()
             ->get()
             ->first(fn ($item) => Str::slug($item->name) === $packageSlug);
 
         if (!$package) {
-            $package = Package::orderBy('price')->first();
+            return redirect()->route('pricing');
         }
 
         return Inertia::render('Landlord/CreateStore', [

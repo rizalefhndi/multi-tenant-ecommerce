@@ -36,6 +36,10 @@ const selectedPackage = computed(() => {
     return props.packages.find((pkg) => Number(pkg.id) === Number(selectedPackageId.value));
 });
 
+const isPackageSelectionLocked = computed(() => {
+    return props.tenant?.status === 'pending' && !!props.defaultPackageId;
+});
+
 const paymentOptions = [
     { type: 'qris', provider: null, label: 'QRIS', badge: 'Fastest' },
     { type: 'gopay', provider: 'gopay', label: 'GoPay', badge: 'Mobile friendly' },
@@ -59,6 +63,17 @@ const selectedPaymentLabel = computed(() => {
     const selected = paymentOptions.find((option) => isOptionSelected(option));
     return selected?.label || paymentMethod.value;
 });
+
+const packageDescriptionByName = {
+    basic: 'Basic package to start selling online.',
+    pro: 'Popular package for growing businesses.',
+    enterprise: 'Advanced package for large-scale needs.',
+};
+
+const getPackageDescription = (pkg) => {
+    const packageName = (pkg?.name || '').toLowerCase();
+    return packageDescriptionByName[packageName] || pkg?.description || '';
+};
 
 let snapScriptPromise = null;
 
@@ -197,7 +212,20 @@ const submitCheckout = async () => {
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <section class="lg:col-span-2 border-2 border-black p-6">
                         <h2 class="text-lg font-black uppercase mb-4">Select Package</h2>
-                        <div class="space-y-3 mb-8">
+                        <div v-if="isPackageSelectionLocked && selectedPackage" class="mb-8">
+                            <div class="flex items-center justify-between border-2 border-black bg-gray-100 p-4">
+                                <div>
+                                    <p class="font-bold uppercase">{{ selectedPackage.name }}</p>
+                                    <p class="text-sm text-gray-500">{{ getPackageDescription(selectedPackage) }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">Duration {{ selectedPackage.duration_in_days }} days</p>
+                                </div>
+                                <p class="font-black">{{ selectedPackage.formatted_price }}</p>
+                            </div>
+                            <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mt-2">
+                                Package is locked for this pending store.
+                            </p>
+                        </div>
+                        <div v-else class="space-y-3 mb-8">
                             <label
                                 v-for="pkg in packages"
                                 :key="pkg.id"
@@ -208,7 +236,7 @@ const submitCheckout = async () => {
                                     <input v-model="selectedPackageId" :value="pkg.id" type="radio" class="mt-1" />
                                     <div>
                                         <p class="font-bold uppercase">{{ pkg.name }}</p>
-                                        <p class="text-sm text-gray-500">{{ pkg.description }}</p>
+                                        <p class="text-sm text-gray-500">{{ getPackageDescription(pkg) }}</p>
                                         <p class="text-xs text-gray-500 mt-1">Duration {{ pkg.duration_in_days }} days</p>
                                     </div>
                                 </div>

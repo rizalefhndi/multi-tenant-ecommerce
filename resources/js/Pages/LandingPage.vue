@@ -43,8 +43,18 @@ const showDropdown = ref(false);
                             </Link>
                         </div>
 
+                        <div v-else class="flex items-center gap-6">
+                            <Link href="/my-stores" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">My Stores</Link>
+                            <Link
+                                href="/pricing"
+                                class="px-6 py-3 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
+                            >
+                                New Store
+                            </Link>
+                        </div>
+
                         <!-- Auth Nav -->
-                        <div v-else class="relative">
+                        <div v-if="auth?.user" class="relative">
                             <button
                                 @click="showDropdown = !showDropdown"
                                 class="flex items-center gap-2 px-4 py-2 border-2 border-transparent hover:border-black rounded-full transition-colors font-bold uppercase tracking-wider text-sm"
@@ -111,10 +121,10 @@ const showDropdown = ref(false);
 
                     <div class="flex flex-wrap gap-4">
                         <Link
-                            :href="route('register')"
+                            :href="auth?.user ? '/my-stores' : route('register')"
                             class="px-8 py-4 bg-black text-white font-black uppercase tracking-widest text-sm rounded-full hover:scale-105 transition-transform shadow-xl"
                         >
-                            Launch Now
+                            {{ auth?.user ? 'Go to My Stores' : 'Launch Now' }}
                         </Link>
                         <a
                             href="#features"
@@ -214,10 +224,10 @@ const showDropdown = ref(false);
                     Ready To Scale <br/> Your Brand?
                 </h2>
                 <Link
-                    :href="route('register')"
+                    :href="auth?.user ? '/pricing' : route('register')"
                     class="inline-block px-12 py-5 bg-white text-black font-black uppercase tracking-widest text-lg rounded-full hover:scale-105 hover:bg-gray-200 transition-all"
                 >
-                    Get Started Now
+                    {{ auth?.user ? 'Choose a Plan' : 'Get Started Now' }}
                 </Link>
             </section>
 
