@@ -710,42 +710,61 @@ class MidtransService
      */
     protected function mapSubscriptionEnabledPayments(string $paymentType, ?string $paymentProvider = null): array
     {
+        $defaultChannels = [
+            'bca_va',
+            'bni_va',
+            'bri_va',
+            'permata_va',
+            'other_va',
+            'qris',
+            'other_qris',
+            'gopay',
+            'shopeepay',
+        ];
+
+        $configuredChannels = config('midtrans.enabled_payments', $defaultChannels);
         $type = strtolower($paymentType);
         $provider = strtolower((string) ($paymentProvider ?: ''));
 
+        $selectedChannels = [];
+
         if ($type === 'bank_transfer') {
             if ($provider === 'bca') {
-                return ['bca_va'];
+                $selectedChannels = ['bca_va'];
             }
-
-            if ($provider === 'bni') {
-                return ['bni_va'];
+            elseif ($provider === 'bni') {
+                $selectedChannels = ['bni_va'];
             }
-
-            if ($provider === 'bri') {
-                return ['bri_va'];
+            elseif ($provider === 'bri') {
+                $selectedChannels = ['bri_va'];
             }
-
-            if ($provider === 'permata') {
-                return ['permata_va'];
+            elseif ($provider === 'permata') {
+                $selectedChannels = ['permata_va'];
+            } else {
+                $selectedChannels = ['other_va'];
             }
-
-            return ['other_va'];
+        }
+        elseif ($type === 'qris') {
+            $selectedChannels = ['qris', 'other_qris'];
+        }
+        elseif ($type === 'gopay') {
+            $selectedChannels = ['gopay'];
+        }
+        elseif ($type === 'shopeepay') {
+            $selectedChannels = ['shopeepay'];
         }
 
-        if ($type === 'qris') {
-            return ['qris'];
+        $enabledSelectedChannels = array_values(array_intersect($selectedChannels, $configuredChannels));
+
+        if (!empty($enabledSelectedChannels)) {
+            return $enabledSelectedChannels;
         }
 
-        if ($type === 'gopay') {
-            return ['gopay'];
+        if (!empty($selectedChannels)) {
+            return $selectedChannels;
         }
 
-        if ($type === 'shopeepay') {
-            return ['shopeepay'];
-        }
-
-        return config('midtrans.enabled_payments', ['qris']);
+        return $configuredChannels;
     }
 
     /**

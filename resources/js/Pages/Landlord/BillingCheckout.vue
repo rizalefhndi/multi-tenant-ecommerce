@@ -25,23 +25,25 @@ const props = defineProps({
 });
 
 const selectedPackageId = ref(props.defaultPackageId || props.packages?.[0]?.id || null);
-const paymentMethod = ref('bank_transfer');
-const paymentProvider = ref('bca');
+const paymentMethod = ref('qris');
+const paymentProvider = ref(null);
 const isSubmitting = ref(false);
 const errorMessage = ref('');
+const infoMessage = ref('');
+const pendingOrderId = ref(null);
 
 const selectedPackage = computed(() => {
     return props.packages.find((pkg) => Number(pkg.id) === Number(selectedPackageId.value));
 });
 
 const paymentOptions = [
+    { type: 'qris', provider: null, label: 'QRIS', badge: 'Paling cepat' },
+    { type: 'gopay', provider: 'gopay', label: 'GoPay', badge: 'Mobile friendly' },
+    { type: 'shopeepay', provider: 'shopeepay', label: 'ShopeePay', badge: 'Mobile friendly' },
     { type: 'bank_transfer', provider: 'bca', label: 'VA BCA' },
     { type: 'bank_transfer', provider: 'bni', label: 'VA BNI' },
     { type: 'bank_transfer', provider: 'bri', label: 'VA BRI' },
     { type: 'bank_transfer', provider: 'permata', label: 'VA Permata' },
-    { type: 'qris', provider: null, label: 'QRIS' },
-    { type: 'gopay', provider: 'gopay', label: 'GoPay' },
-    { type: 'shopeepay', provider: 'shopeepay', label: 'ShopeePay' },
 ];
 
 const selectPayment = (option) => {
@@ -98,6 +100,7 @@ const loadSnapScript = () => {
 
 const submitCheckout = async () => {
     errorMessage.value = '';
+    infoMessage.value = '';
 
     if (!selectedPackage.value) {
         errorMessage.value = 'Paket belum dipilih.';
@@ -138,6 +141,8 @@ const submitCheckout = async () => {
             return;
         }
 
+        pendingOrderId.value = orderId;
+
         await loadSnapScript();
 
         globalThis.snap.pay(snapToken, {
@@ -145,13 +150,13 @@ const submitCheckout = async () => {
                 globalThis.location.href = route('billing.pending.page', { orderId });
             },
             onPending: () => {
-                globalThis.location.href = route('billing.pending.page', { orderId });
+                infoMessage.value = 'Transaksi sudah dibuat. Klik "Lihat Status Pembayaran" untuk melanjutkan.';
             },
             onClose: () => {
-                globalThis.location.href = route('billing.pending.page', { orderId });
+                infoMessage.value = 'Popup pembayaran ditutup. Kamu bisa lanjutkan pembayaran kapan saja.';
             },
             onError: () => {
-                globalThis.location.href = route('billing.pending.page', { orderId });
+                errorMessage.value = 'Terjadi kendala pada popup pembayaran. Silakan coba lagi.';
             },
         });
     } catch (error) {
@@ -221,7 +226,14 @@ const submitCheckout = async () => {
                                 class="border-2 p-4 text-left font-bold uppercase text-sm transition-colors"
                                 :class="isOptionSelected(option) ? 'border-black bg-black text-white' : 'border-gray-300 hover:border-black'"
                             >
-                                {{ option.label }}
+                                <span class="block">{{ option.label }}</span>
+                                <span
+                                    v-if="option.badge"
+                                    class="mt-1 block text-[11px] font-semibold tracking-normal normal-case"
+                                    :class="isOptionSelected(option) ? 'text-gray-200' : 'text-gray-500'"
+                                >
+                                    {{ option.badge }}
+                                </span>
                             </button>
                         </div>
                     </section>
@@ -248,6 +260,16 @@ const submitCheckout = async () => {
                         </div>
 
                         <p v-if="errorMessage" class="text-red-600 text-sm font-bold mt-4">{{ errorMessage }}</p>
+                        <p v-if="infoMessage" class="text-amber-700 text-sm font-bold mt-3">{{ infoMessage }}</p>
+
+                        <button
+                            v-if="pendingOrderId"
+                            type="button"
+                            @click="globalThis.location.href = route('billing.pending.page', { orderId: pendingOrderId })"
+                            class="w-full mt-3 py-3 border-2 border-black text-sm font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
+                        >
+                            Lihat Status Pembayaran
+                        </button>
 
                         <button
                             type="button"

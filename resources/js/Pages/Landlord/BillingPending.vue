@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
     transaction: {
@@ -14,6 +14,9 @@ const isRefreshing = ref(false);
 const pollingInterval = ref(null);
 const nowTs = ref(Date.now());
 const countdownInterval = ref(null);
+const redirectTimeout = ref(null);
+const redirectCountdownInterval = ref(null);
+const redirectSeconds = ref(5);
 
 const statusColorClass = computed(() => {
     const status = (tx.value?.status || '').toLowerCase();
@@ -91,7 +94,52 @@ const refreshStatus = async () => {
     }
 };
 
+const clearAutoRedirectTimers = () => {
+    if (redirectTimeout.value) {
+        clearTimeout(redirectTimeout.value);
+        redirectTimeout.value = null;
+    }
+
+    if (redirectCountdownInterval.value) {
+        clearInterval(redirectCountdownInterval.value);
+        redirectCountdownInterval.value = null;
+    }
+};
+
+const startAutoRedirect = () => {
+    if (redirectTimeout.value) return;
+
+    redirectSeconds.value = 5;
+    redirectCountdownInterval.value = setInterval(() => {
+        if (redirectSeconds.value <= 1) {
+            redirectSeconds.value = 0;
+            clearAutoRedirectTimers();
+            return;
+        }
+
+        redirectSeconds.value -= 1;
+    }, 1000);
+
+    redirectTimeout.value = setTimeout(() => {
+        clearAutoRedirectTimers();
+        globalThis.location.href = '/my-stores';
+    }, 5000);
+};
+
+watch(isPaid, (paid) => {
+    if (paid) {
+        startAutoRedirect();
+        return;
+    }
+
+    clearAutoRedirectTimers();
+});
+
 onMounted(() => {
+    if (isPaid.value) {
+        startAutoRedirect();
+    }
+
     countdownInterval.value = setInterval(() => {
         nowTs.value = Date.now();
     }, 1000);
@@ -110,6 +158,8 @@ onBeforeUnmount(() => {
     if (countdownInterval.value) {
         clearInterval(countdownInterval.value);
     }
+
+    clearAutoRedirectTimers();
 });
 </script>
 
@@ -150,6 +200,9 @@ onBeforeUnmount(() => {
                         <div v-if="isPaid" class="border-2 border-emerald-500 bg-emerald-50 p-4 mb-5">
                             <p class="font-bold text-emerald-700">Pembayaran berhasil diterima.</p>
                             <p class="text-sm text-emerald-700">Toko kamu akan aktif otomatis dalam beberapa saat.</p>
+                            <p class="text-sm text-emerald-700 mt-1">
+                                Mengarahkan ke My Stores dalam {{ redirectSeconds }} detik...
+                            </p>
                         </div>
 
                         <div v-if="tx.payment_details?.va_numbers?.length" class="mb-5">

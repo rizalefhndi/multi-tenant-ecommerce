@@ -59,6 +59,7 @@ return [
         'gopay',
         'shopeepay',
         'qris',
+        'other_qris',
     ],
 
     // Credit card options
