@@ -188,7 +188,7 @@ class StoreController extends Controller
             'package_id' => $package->id,
             'billing_checkout_endpoint' => route('api.billing.checkout'),
             'admin_email' => $user->email,
-            'admin_note' => 'Gunakan password yang sama dengan akun central Anda',
+            'admin_note' => 'Use the same password as your central account',
         ];
     }
 }

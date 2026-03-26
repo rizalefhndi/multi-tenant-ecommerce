@@ -37,7 +37,7 @@ const selectedPackage = computed(() => {
 });
 
 const paymentOptions = [
-    { type: 'qris', provider: null, label: 'QRIS', badge: 'Paling cepat' },
+    { type: 'qris', provider: null, label: 'QRIS', badge: 'Fastest' },
     { type: 'gopay', provider: 'gopay', label: 'GoPay', badge: 'Mobile friendly' },
     { type: 'shopeepay', provider: 'shopeepay', label: 'ShopeePay', badge: 'Mobile friendly' },
     { type: 'bank_transfer', provider: 'bca', label: 'VA BCA' },
@@ -75,14 +75,14 @@ const loadSnapScript = () => {
     const clientKey = props.snap?.clientKey;
 
     if (!scriptUrl || !clientKey) {
-        return Promise.reject(new Error('Konfigurasi Snap belum tersedia.'));
+        return Promise.reject(new Error('Snap configuration is not available yet.'));
     }
 
     snapScriptPromise = new Promise((resolve, reject) => {
         const existingScript = document.querySelector('script[data-midtrans-snap="true"]');
         if (existingScript) {
             existingScript.addEventListener('load', () => resolve());
-            existingScript.addEventListener('error', () => reject(new Error('Gagal memuat Snap script.')));
+            existingScript.addEventListener('error', () => reject(new Error('Failed to load Snap script.')));
             return;
         }
 
@@ -91,7 +91,7 @@ const loadSnapScript = () => {
         script.dataset.clientKey = clientKey;
         script.dataset.midtransSnap = 'true';
         script.onload = () => resolve();
-        script.onerror = () => reject(new Error('Gagal memuat Snap script.'));
+        script.onerror = () => reject(new Error('Failed to load Snap script.'));
         document.body.appendChild(script);
     });
 
@@ -103,7 +103,7 @@ const submitCheckout = async () => {
     infoMessage.value = '';
 
     if (!selectedPackage.value) {
-        errorMessage.value = 'Paket belum dipilih.';
+        errorMessage.value = 'Please select a package.';
         return;
     }
 
@@ -130,14 +130,14 @@ const submitCheckout = async () => {
         const data = await response.json();
 
         if (!response.ok) {
-            errorMessage.value = data.message || 'Gagal membuat transaksi pembayaran.';
+            errorMessage.value = data.message || 'Failed to create payment transaction.';
             return;
         }
 
         const snapToken = data?.snap_token;
         const orderId = data?.transaction?.order_id;
         if (!snapToken || !orderId) {
-            errorMessage.value = 'Token pembayaran tidak valid. Silakan coba lagi.';
+            errorMessage.value = 'Invalid payment token. Please try again.';
             return;
         }
 
@@ -150,17 +150,17 @@ const submitCheckout = async () => {
                 globalThis.location.href = route('billing.pending.page', { orderId });
             },
             onPending: () => {
-                infoMessage.value = 'Transaksi sudah dibuat. Klik "Lihat Status Pembayaran" untuk melanjutkan.';
+                infoMessage.value = 'Popup was closed or transaction is still pending. Click "View Payment Status" to continue.';
             },
             onClose: () => {
-                infoMessage.value = 'Popup pembayaran ditutup. Kamu bisa lanjutkan pembayaran kapan saja.';
+                infoMessage.value = 'Popup was closed or transaction is still pending. Click "View Payment Status" to continue.';
             },
             onError: () => {
-                errorMessage.value = 'Terjadi kendala pada popup pembayaran. Silakan coba lagi.';
+                errorMessage.value = 'There was an issue with the payment popup. Please try again.';
             },
         });
     } catch (error) {
-        errorMessage.value = error?.message || 'Terjadi kesalahan jaringan. Silakan coba lagi.';
+        errorMessage.value = error?.message || 'A network error occurred. Please try again.';
     } finally {
         isSubmitting.value = false;
     }
@@ -190,13 +190,13 @@ const submitCheckout = async () => {
                     <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Phase 5 • Custom Checkout</p>
                     <h1 class="text-4xl sm:text-5xl font-black uppercase tracking-tighter mb-3">Complete Payment</h1>
                     <p class="text-gray-600">
-                        Toko <span class="font-bold">{{ tenant.store_name }}</span> menunggu aktivasi. Pilih paket & metode pembayaran.
+                        Store <span class="font-bold">{{ tenant.store_name }}</span> is waiting for activation. Select a package and payment method.
                     </p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <section class="lg:col-span-2 border-2 border-black p-6">
-                        <h2 class="text-lg font-black uppercase mb-4">Pilih Paket</h2>
+                        <h2 class="text-lg font-black uppercase mb-4">Select Package</h2>
                         <div class="space-y-3 mb-8">
                             <label
                                 v-for="pkg in packages"
@@ -209,14 +209,14 @@ const submitCheckout = async () => {
                                     <div>
                                         <p class="font-bold uppercase">{{ pkg.name }}</p>
                                         <p class="text-sm text-gray-500">{{ pkg.description }}</p>
-                                        <p class="text-xs text-gray-500 mt-1">Durasi {{ pkg.duration_in_days }} hari</p>
+                                        <p class="text-xs text-gray-500 mt-1">Duration {{ pkg.duration_in_days }} days</p>
                                     </div>
                                 </div>
                                 <p class="font-black">{{ pkg.formatted_price }}</p>
                             </label>
                         </div>
 
-                        <h2 class="text-lg font-black uppercase mb-4">Metode Pembayaran</h2>
+                        <h2 class="text-lg font-black uppercase mb-4">Payment Method</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <button
                                 v-for="option in paymentOptions"
@@ -239,18 +239,18 @@ const submitCheckout = async () => {
                     </section>
 
                     <aside class="border-2 border-black p-6 h-fit">
-                        <h2 class="text-lg font-black uppercase mb-4">Ringkasan</h2>
+                        <h2 class="text-lg font-black uppercase mb-4">Summary</h2>
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <span>Toko</span>
+                                <span>Store</span>
                                 <span class="font-bold">{{ tenant.store_name }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>Paket</span>
+                                <span>Package</span>
                                 <span class="font-bold">{{ selectedPackage?.name || '-' }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>Metode</span>
+                                <span>Method</span>
                                 <span class="font-bold">{{ selectedPaymentLabel }}</span>
                             </div>
                             <div class="border-t border-gray-300 pt-3 mt-3 flex justify-between text-base">
@@ -268,7 +268,7 @@ const submitCheckout = async () => {
                             @click="globalThis.location.href = route('billing.pending.page', { orderId: pendingOrderId })"
                             class="w-full mt-3 py-3 border-2 border-black text-sm font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
                         >
-                            Lihat Status Pembayaran
+                            View Payment Status
                         </button>
 
                         <button

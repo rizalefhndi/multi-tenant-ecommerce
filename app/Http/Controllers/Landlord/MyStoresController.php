@@ -80,9 +80,9 @@ class MyStoresController extends Controller
                         default => null,
                     },
                     'status_note' => match ($tenant->status) {
-                        'pending' => 'Selesaikan pembayaran untuk mengaktifkan toko.',
-                        'expired' => 'Langganan habis. Perpanjang paket untuk aktif kembali.',
-                        'suspended' => $tenant->suspended_reason ?: 'Toko sedang dinonaktifkan sementara.',
+                        'pending' => 'Complete payment to activate your store.',
+                        'expired' => 'Subscription expired. Renew your package to reactivate.',
+                        'suspended' => $tenant->suspended_reason ?: 'Your store is temporarily suspended.',
                         default => null,
                     },
                     'created_at' => $tenant->created_at->format('M d, Y'),

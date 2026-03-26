@@ -23,14 +23,14 @@ const getPrice = (plan) => {
 
 // Get billing cycle label
 const getBillingLabel = (plan) => {
-    if (plan.is_free) return 'Selamanya';
-    return isYearly.value ? '/tahun' : '/bulan';
+    if (plan.is_free) return 'Forever';
+    return isYearly.value ? '/year' : '/month';
 };
 
 // Get savings text for yearly
 const getSavingsText = (plan) => {
     if (!isYearly.value || plan.is_free || plan.yearly_savings_percent <= 0) return null;
-    return `Hemat ${plan.yearly_savings_percent}%`;
+    return `Save ${plan.yearly_savings_percent}%`;
 };
 </script>
 

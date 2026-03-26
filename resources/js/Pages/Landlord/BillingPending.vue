@@ -185,23 +185,23 @@ onBeforeUnmount(() => {
                 <div class="mb-8">
                     <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Phase 6 • Payment Instruction</p>
                     <h1 class="text-4xl sm:text-5xl font-black uppercase tracking-tighter mb-3">Waiting for Payment</h1>
-                    <p class="text-gray-600">Order <span class="font-bold">{{ tx.order_id }}</span> untuk toko {{ tx.tenant?.store_name }}</p>
+                    <p class="text-gray-600">Order <span class="font-bold">{{ tx.order_id }}</span> for store {{ tx.tenant?.store_name }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <section class="lg:col-span-2 border-2 border-black p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-black uppercase">Status Pembayaran</h2>
+                            <h2 class="text-lg font-black uppercase">Payment Status</h2>
                             <span :class="statusColorClass" class="px-3 py-1 text-white text-xs font-bold uppercase tracking-wider">
                                 {{ tx.status }}
                             </span>
                         </div>
 
                         <div v-if="isPaid" class="border-2 border-emerald-500 bg-emerald-50 p-4 mb-5">
-                            <p class="font-bold text-emerald-700">Pembayaran berhasil diterima.</p>
-                            <p class="text-sm text-emerald-700">Toko kamu akan aktif otomatis dalam beberapa saat.</p>
+                            <p class="font-bold text-emerald-700">Payment received successfully.</p>
+                            <p class="text-sm text-emerald-700">Your store will be activated automatically shortly.</p>
                             <p class="text-sm text-emerald-700 mt-1">
-                                Mengarahkan ke My Stores dalam {{ redirectSeconds }} detik...
+                                Redirecting to My Stores in {{ redirectSeconds }} seconds...
                             </p>
                         </div>
 
@@ -244,10 +244,10 @@ onBeforeUnmount(() => {
                     </section>
 
                     <aside class="border-2 border-black p-6 h-fit">
-                        <h2 class="text-lg font-black uppercase mb-4">Ringkasan</h2>
+                        <h2 class="text-lg font-black uppercase mb-4">Summary</h2>
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <span>Paket</span>
+                                <span>Package</span>
                                 <span class="font-bold">{{ tx.package?.name || '-' }}</span>
                             </div>
                             <div class="flex justify-between">

@@ -40,9 +40,9 @@ class PricingController extends Controller
                     'max_orders_display' => 'Unlimited',
                     'max_storage_display' => 'Unlimited',
                     'features' => [
-                        'Subdomain toko custom',
-                        'Onboarding cepat',
-                        'Integrasi pembayaran Midtrans',
+                        'Custom store subdomain',
+                        'Fast onboarding',
+                        'Midtrans payment integration',
                     ],
                     'is_featured' => $index === 1,
                     'is_custom' => false,

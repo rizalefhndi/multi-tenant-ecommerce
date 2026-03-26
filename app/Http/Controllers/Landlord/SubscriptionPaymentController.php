@@ -138,12 +138,12 @@ class SubscriptionPaymentController extends Controller
             $transaction->update(['status' => 'failed']);
 
             return response()->json([
-                'message' => 'Gagal membuat transaksi pembayaran ke Midtrans.',
+                'message' => 'Failed to create payment transaction to Midtrans.',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Transaksi berhasil dibuat.',
+            'message' => 'Transaction created successfully.',
             'transaction' => [
                 'id' => $transaction->id,
                 'order_id' => $transaction->order_id,
@@ -197,12 +197,12 @@ class SubscriptionPaymentController extends Controller
             $transaction->update(['status' => 'failed']);
 
             return response()->json([
-                'message' => 'Gagal membuat token Snap pembayaran.',
+                'message' => 'Failed to create Snap payment token.',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Token Snap berhasil dibuat.',
+            'message' => 'Snap token created successfully.',
             'snap_token' => $snapResponse['token'],
             'redirect_url' => $snapResponse['redirect_url'] ?? null,
             'transaction' => [

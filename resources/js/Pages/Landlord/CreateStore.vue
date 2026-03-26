@@ -68,22 +68,22 @@ const checkSubdomainAvailability = async () => {
             subdomainState.value = {
                 checked: true,
                 available: true,
-                message: 'Subdomain tersedia ✓',
+                message: 'Subdomain is available ✓',
             };
         } else {
             subdomainState.value = {
                 checked: true,
                 available: false,
                 message: data.reason === 'reserved'
-                    ? 'Subdomain ini termasuk reserved'
-                    : 'Subdomain sudah dipakai',
+                    ? 'This subdomain is reserved'
+                    : 'This subdomain is already taken',
             };
         }
     } catch {
         subdomainState.value = {
             checked: true,
             available: false,
-            message: 'Gagal cek subdomain, coba lagi',
+            message: 'Failed to check subdomain, please try again',
         };
     } finally {
         isCheckingSubdomain.value = false;
@@ -167,8 +167,8 @@ const visitStore = () => {
                     </h2>
                     <p class="text-gray-600 text-center mb-6">
                         <template v-if="createdStore?.requires_payment">
-                            Store <span class="font-bold">{{ createdStore?.store_name }}</span> berhasil dibuat.
-                            Lanjutkan pembayaran untuk aktivasi.
+                            Store <span class="font-bold">{{ createdStore?.store_name }}</span> has been created.
+                            Continue with payment to activate it.
                         </template>
                         <template v-else>
                             Your store <span class="font-bold">{{ createdStore?.store_name }}</span> is now live.
@@ -207,18 +207,18 @@ const visitStore = () => {
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-600">Password:</span>
-                                <span class="text-sm font-bold text-amber-700">Sama dengan akun Anda</span>
+                                <span class="text-sm font-bold text-amber-700">Same as your account password</span>
                             </div>
                         </div>
                         <p class="text-xs text-amber-600 mt-3 italic">
-                            Gunakan kredensial ini untuk login sebagai admin di toko Anda.
+                            Use these credentials to sign in as the admin of your store.
                         </p>
                     </div>
 
                     <div v-if="createdStore?.requires_payment" class="bg-amber-50 border-2 border-amber-400 p-4 mb-6">
                         <p class="text-xs font-bold uppercase tracking-widest text-amber-700 mb-2">Next Step</p>
                         <p class="text-sm text-amber-800">
-                            Buka flow checkout onboarding (Fase berikutnya) untuk melakukan pembayaran paket.
+                            Continue to onboarding checkout (next phase) to complete package payment.
                         </p>
                     </div>
 
