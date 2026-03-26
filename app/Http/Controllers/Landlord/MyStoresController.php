@@ -79,6 +79,10 @@ class MyStoresController extends Controller
                         ],
                         default => null,
                     },
+                    'cancel_action' => $tenant->status === 'pending' ? [
+                        'label' => 'Cancel Store',
+                        'url' => route('store.cancel', ['tenant' => $tenant->id]),
+                    ] : null,
                     'status_note' => match ($tenant->status) {
                         'pending' => 'Complete payment to activate your store.',
                         'expired' => 'Subscription expired. Renew your package to reactivate.',

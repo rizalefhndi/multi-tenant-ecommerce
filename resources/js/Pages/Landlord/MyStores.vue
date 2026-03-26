@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
     stores: {
@@ -37,6 +37,17 @@ const getSubscriptionLabel = (status) => {
 
 const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
+};
+
+const cancelStore = (store) => {
+    const confirmed = globalThis.confirm(`Cancel ${store.store_name}? This action cannot be undone.`);
+    if (!confirmed || !store?.cancel_action?.url) {
+        return;
+    }
+
+    router.post(store.cancel_action.url, {}, {
+        preserveScroll: true,
+    });
 };
 </script>
 
@@ -158,6 +169,15 @@ const copyToClipboard = (text) => {
                                     >
                                         {{ store.primary_action.label }}
                                     </a>
+
+                                    <button
+                                        v-if="store.cancel_action"
+                                        type="button"
+                                        @click="cancelStore(store)"
+                                        class="px-6 py-3 border-2 border-black text-black text-xs font-bold uppercase tracking-widest text-center hover:bg-black hover:text-white transition-colors"
+                                    >
+                                        {{ store.cancel_action.label }}
+                                    </button>
                                 </div>
                             </div>
                         </div>

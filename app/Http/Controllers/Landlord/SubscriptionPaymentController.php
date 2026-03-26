@@ -27,16 +27,24 @@ class SubscriptionPaymentController extends Controller
     {
         abort_if($tenant->owner_id !== Auth::id(), 403);
 
+        $billingCycle = $tenant->billing_cycle === 'yearly' ? 'yearly' : 'monthly';
+
         $packages = Package::query()
             ->orderBy('price')
             ->get()
-            ->map(function (Package $package) {
+            ->map(function (Package $package) use ($billingCycle) {
+                $monthlyPrice = (float) $package->price;
+                $yearlyPrice = $monthlyPrice * 12;
+                $selectedPrice = $billingCycle === 'yearly' ? $yearlyPrice : $monthlyPrice;
+
                 return [
                     'id' => $package->id,
                     'name' => $package->name,
                     'description' => $package->description,
-                    'price' => (float) $package->price,
-                    'formatted_price' => 'Rp ' . number_format((float) $package->price, 0, ',', '.'),
+                    'price' => $selectedPrice,
+                    'price_monthly' => $monthlyPrice,
+                    'price_yearly' => $yearlyPrice,
+                    'formatted_price' => 'Rp ' . number_format($selectedPrice, 0, ',', '.'),
                     'duration_in_days' => $package->duration_in_days,
                 ];
             })
@@ -48,6 +56,7 @@ class SubscriptionPaymentController extends Controller
                 'store_name' => $tenant->store_name,
                 'status' => $tenant->status,
                 'package_id' => $tenant->package_id,
+                'billing_cycle' => $billingCycle,
             ],
             'packages' => $packages,
             'defaultPackageId' => $tenant->package_id,
@@ -120,7 +129,7 @@ class SubscriptionPaymentController extends Controller
             'tenant_id' => $tenant->id,
             'package_id' => $package->id,
             'order_id' => $this->generateOrderId(),
-            'gross_amount' => $package->price,
+            'gross_amount' => $this->resolveGrossAmount($package, $tenant->billing_cycle),
             'payment_type' => $validated['payment_type'],
             'payment_provider' => $validated['payment_provider'] ?? null,
             'status' => 'pending',
@@ -179,7 +188,7 @@ class SubscriptionPaymentController extends Controller
             'tenant_id' => $tenant->id,
             'package_id' => $package->id,
             'order_id' => $this->generateOrderId(),
-            'gross_amount' => $package->price,
+            'gross_amount' => $this->resolveGrossAmount($package, $tenant->billing_cycle),
             'payment_type' => $validated['payment_type'],
             'payment_provider' => $validated['payment_provider'] ?? null,
             'status' => 'pending',
@@ -278,5 +287,13 @@ class SubscriptionPaymentController extends Controller
         $rand = strtoupper(Str::random(6));
 
         return "INV-ONYX-{$date}-{$rand}";
+    }
+
+    private function resolveGrossAmount(Package $package, ?string $billingCycle): float
+    {
+        $monthlyPrice = (float) $package->price;
+        return $billingCycle === 'yearly'
+            ? $monthlyPrice * 12
+            : $monthlyPrice;
     }
 }

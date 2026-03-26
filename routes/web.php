@@ -42,6 +42,8 @@ Route::domain(env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io'))->group(function ()
     Route::middleware(['auth'])->group(function () {
         Route::get('/create-store', [StoreController::class, 'create'])->name('store.create');
         Route::post('/create-store', [StoreController::class, 'store'])->name('store.store');
+        Route::post('/my-stores/{tenant}/cancel', [StoreController::class, 'cancel'])
+            ->name('store.cancel');
         Route::get('/my-stores', [MyStoresController::class, 'index'])->name('my-stores');
 
         // Billing pages (Onboarding custom checkout)

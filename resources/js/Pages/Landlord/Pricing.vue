@@ -32,6 +32,11 @@ const getSavingsText = (plan) => {
     if (!isYearly.value || plan.is_free || plan.yearly_savings_percent <= 0) return null;
     return `Save ${plan.yearly_savings_percent}%`;
 };
+
+const getCreateStoreHref = (plan) => {
+    const cycle = isYearly.value ? 'yearly' : 'monthly';
+    return `/create-store?plan=${plan.slug}&billing_cycle=${cycle}`;
+};
 </script>
 
 <template>
@@ -68,8 +73,18 @@ const getSavingsText = (plan) => {
                             </Link>
                         </div>
 
+                        <div v-else class="flex items-center gap-6">
+                            <Link href="/my-stores" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">My Stores</Link>
+                            <a
+                                href="#plans"
+                                class="px-6 py-3 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
+                            >
+                                Choose Plan
+                            </a>
+                        </div>
+
                         <!-- Authenticated Navigation -->
-                        <div v-else class="relative">
+                        <div v-if="auth.user" class="relative">
                             <button
                                 @click="showDropdown = !showDropdown"
                                 class="flex items-center gap-2 px-4 py-2 border-2 border-transparent hover:border-black rounded-full transition-colors font-bold uppercase tracking-wider text-sm"
@@ -158,7 +173,7 @@ const getSavingsText = (plan) => {
             </div>
 
             <!-- Pricing Grid -->
-            <div class="max-w-7xl mx-auto px-6 pb-32">
+            <div id="plans" class="max-w-7xl mx-auto px-6 pb-32">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border-2 border-black bg-black">
                     <div
                         v-for="plan in plans"
@@ -196,7 +211,7 @@ const getSavingsText = (plan) => {
                         <!-- CTA Button -->
                         <div class="mb-8">
                             <Link
-                                :href="plan.is_custom ? '/contact' : '/create-store?plan=' + plan.slug"
+                                :href="plan.is_custom ? '/contact' : getCreateStoreHref(plan)"
                                 class="block w-full text-center py-4 border-2 border-black font-black uppercase tracking-widest text-xs transition-all duration-300"
                                 :class="plan.is_featured
                                     ? 'bg-black text-white group-hover:bg-white group-hover:text-black'

@@ -599,12 +599,14 @@ class MidtransService
             ? Carbon::parse($tenant->expired_at)
             : now();
 
+        $durationDays = (int) $package->duration_in_days * ($tenant->billing_cycle === 'yearly' ? 12 : 1);
+
         $tenant->update([
             'status' => 'active',
             'subscription_status' => 'active',
             'package_id' => $package->id,
-            'subscription_ends_at' => $baseDate->copy()->addDays((int) $package->duration_in_days),
-            'expired_at' => $baseDate->copy()->addDays((int) $package->duration_in_days),
+            'subscription_ends_at' => $baseDate->copy()->addDays($durationDays),
+            'expired_at' => $baseDate->copy()->addDays($durationDays),
         ]);
 
         return true;

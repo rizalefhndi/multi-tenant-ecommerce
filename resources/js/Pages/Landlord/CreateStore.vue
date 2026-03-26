@@ -13,6 +13,12 @@ const form = useForm({
     store_name: '',
     subdomain: '',
     plan_id: props.plan?.id || null,
+    billing_cycle: props.plan?.billing_cycle || 'monthly',
+});
+
+const selectedBillingLabel = computed(() => {
+    if (props.plan?.is_free) return 'Forever';
+    return form.billing_cycle === 'yearly' ? '/year' : '/month';
 });
 
 // Success modal state
@@ -297,9 +303,9 @@ const visitStore = () => {
                             <p class="text-2xl font-black uppercase italic">{{ plan.name }}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-2xl font-black">{{ plan.formatted_price_monthly }}</p>
+                            <p class="text-2xl font-black">{{ plan.formatted_price_selected || plan.formatted_price_monthly }}</p>
                             <p class="text-xs font-bold uppercase tracking-widest text-gray-500">
-                                {{ plan.is_free ? 'Forever' : '/month' }}
+                                {{ selectedBillingLabel }}
                             </p>
                         </div>
                     </div>
@@ -365,6 +371,7 @@ const visitStore = () => {
 
                     <!-- Hidden Plan ID -->
                     <input type="hidden" v-model="form.plan_id" />
+                    <input type="hidden" v-model="form.billing_cycle" />
 
                     <!-- Submit Button -->
                     <div class="pt-4">
