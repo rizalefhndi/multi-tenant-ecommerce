@@ -18,6 +18,9 @@ class MyStoresController extends Controller
         $user = Auth::user();
         $scheme = request()->isSecure() ? 'https' : 'http';
         $port = parse_url(config('app.url'), PHP_URL_PORT);
+        if (!$port) {
+            $port = request()->getPort();
+        }
 
         // Get all stores owned by the user
         $stores = Tenant::where('owner_id', $user->id)
@@ -27,11 +30,13 @@ class MyStoresController extends Controller
             ->map(function ($tenant) use ($scheme, $port) {
                 $domain = $tenant->domains->first();
                 $fullUrl = null;
+                $displayDomain = null;
                 if ($domain) {
-                    $fullUrl = $scheme . '://' . $domain->domain;
+                    $displayDomain = $domain->domain;
                     if ($port && !in_array((int) $port, [80, 443], true)) {
-                        $fullUrl .= ':' . $port;
+                        $displayDomain .= ':' . $port;
                     }
+                    $fullUrl = $scheme . '://' . $displayDomain;
                 }
 
                 return [
@@ -39,6 +44,7 @@ class MyStoresController extends Controller
                     'store_name' => $tenant->store_name,
                     'subdomain' => $tenant->id,
                     'domain' => $domain ? $domain->domain : null,
+                    'display_domain' => $displayDomain,
                     'full_url' => $fullUrl,
                     'plan' => $tenant->plan ? [
                         'name' => $tenant->plan->name,

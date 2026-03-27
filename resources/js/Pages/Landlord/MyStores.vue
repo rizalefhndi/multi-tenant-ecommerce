@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
     stores: {
@@ -35,8 +36,30 @@ const getSubscriptionLabel = (status) => {
     return labels[status] || status;
 };
 
-const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
+const copiedStoreId = ref(null);
+
+const copyToClipboard = async (store) => {
+    const value = store?.full_url || (store?.display_domain ? `http://${store.display_domain}` : '');
+    if (!value) return;
+
+    try {
+        await navigator.clipboard.writeText(value);
+    } catch {
+        const textarea = document.createElement('textarea');
+        textarea.value = value;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'absolute';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        textarea.remove();
+    }
+
+    copiedStoreId.value = store.id;
+    setTimeout(() => {
+        copiedStoreId.value = null;
+    }, 1200);
 };
 
 const cancelStore = (store) => {
@@ -136,16 +159,19 @@ const cancelStore = (store) => {
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                                         </svg>
-                                        <span class="font-mono">{{ store.domain }}</span>
+                                        <span class="font-mono">{{ store.display_domain || store.domain }}</span>
                                         <button
-                                            @click="copyToClipboard(store.full_url)"
+                                            @click="copyToClipboard(store)"
                                             class="p-1 hover:bg-gray-200 rounded transition-colors"
-                                            title="Copy URL"
+                                            :title="copiedStoreId === store.id ? 'Copied!' : 'Copy URL'"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                             </svg>
                                         </button>
+                                        <span v-if="copiedStoreId === store.id" class="text-xs font-bold text-emerald-600">
+                                            Copied
+                                        </span>
                                     </div>
 
                                     <p class="text-xs text-gray-400 mt-2">
