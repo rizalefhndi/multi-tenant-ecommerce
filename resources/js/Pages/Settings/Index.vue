@@ -15,43 +15,71 @@ const icons = {
 </script>
 
 <template>
-    <Head title="Pengaturan" />
+    <Head>
+        <title>Pengaturan</title>
+    </Head>
 
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Pengaturan
-            </h2>
-        </template>
-
-        <div class="py-6">
-            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Link
-                        v-for="section in sections"
-                        :key="section.key"
-                        :href="route('settings.' + section.key)"
-                        class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow flex items-start gap-4 group"
-                    >
-                        <div 
-                            class="w-12 h-12 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors"
-                            v-html="icons[section.key]"
-                        ></div>
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
-                                {{ section.title }}
-                            </h3>
-                            <p class="text-sm text-gray-500 mt-1">
-                                {{ section.description }}
+        <div class="min-h-screen py-6 md:py-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+                <section class="onyx-panel p-6 md:p-8 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 onyx-kicker">Merchant Setup</div>
+                    <p class="onyx-kicker">Settings</p>
+                    <div class="mt-2 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                        <div>
+                            <h1 class="onyx-title text-2xl md:text-4xl">Configure Your Store</h1>
+                            <p class="mt-2 max-w-2xl text-black/65">
+                                Atur identitas brand, operasional pengiriman, dan metode pembayaran dalam satu command center.
                             </p>
                         </div>
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </Link>
-                </div>
+                        <div class="grid grid-cols-2 gap-3 w-full sm:w-auto">
+                            <div class="onyx-panel-soft px-4 py-3 text-center min-w-[150px]">
+                                <p class="onyx-kicker">Section</p>
+                                <p class="mt-1 text-2xl font-bold">{{ sections.length }}</p>
+                            </div>
+                            <div class="onyx-panel-soft px-4 py-3 text-center min-w-[150px]">
+                                <p class="onyx-kicker">Status</p>
+                                <p class="mt-1 text-sm font-semibold uppercase tracking-[0.1em]">Ready</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
+                <section class="onyx-panel p-4 md:p-6">
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <p class="onyx-kicker">Choose Section</p>
+                        <p class="text-xs uppercase tracking-[0.12em] text-black/55">{{ sections.length }} modules available</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Link
+                            v-for="section in sections"
+                            :key="section.key"
+                            :href="route('settings.' + section.key)"
+                            class="onyx-panel-soft p-5 md:p-6 flex items-start gap-4 group transition-transform hover:-translate-y-0.5"
+                        >
+                            <div
+                                class="w-12 h-12 shrink-0 border border-black bg-[#d8def7] text-[#3f46e8] flex items-center justify-center transition-colors group-hover:bg-black group-hover:text-white"
+                                v-html="icons[section.key]"
+                            ></div>
+
+                            <div class="flex-1 min-w-0">
+                                <h3 class="onyx-title text-base md:text-lg group-hover:underline underline-offset-4">
+                                    {{ section.title }}
+                                </h3>
+                                <p class="mt-1 text-sm text-black/60 leading-relaxed">
+                                    {{ section.description }}
+                                </p>
+                            </div>
+
+                            <div class="self-center">
+                                <svg class="w-5 h-5 text-black/40 transition-transform group-hover:translate-x-1 group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </Link>
+                    </div>
+                </section>
             </div>
         </div>
     </AuthenticatedLayout>
