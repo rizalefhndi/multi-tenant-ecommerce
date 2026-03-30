@@ -67,15 +67,15 @@ const copyToClipboard = (text) => {
 
 // Check if can upload proof
 const canUploadProof = computed(() => {
-    return props.order.status === 'pending_payment' 
-        && props.transaction 
+    return props.order.status === 'pending_payment'
+        && props.transaction
         && props.transaction.payment_method === 'bank_transfer'
         && !props.transaction.has_proof;
 });
 
 // Check if payment is waiting for verification
 const waitingVerification = computed(() => {
-    return props.transaction 
+    return props.transaction
         && props.transaction.payment_method === 'bank_transfer'
         && props.transaction.has_proof
         && props.transaction.status === 'pending';
@@ -83,39 +83,43 @@ const waitingVerification = computed(() => {
 </script>
 
 <template>
-    <Head :title="`Order ${order.order_number}`" />
+    <Head>
+        <title>Order Details</title>
+    </Head>
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex items-center gap-4">
-                <Link 
-                    :href="route('orders.index')"
-                    class="text-gray-500 hover:text-gray-700"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </Link>
-                <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Order Details</h2>
-                    <p class="text-sm text-gray-500 font-mono">{{ order.order_number }}</p>
-                </div>
-            </div>
-        </template>
+        <div class="min-h-screen py-6 md:py-8">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+                <section class="onyx-panel p-5 md:p-7">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            <Link
+                                :href="route('orders.index')"
+                                class="h-10 w-10 border border-black bg-white text-black hover:bg-black hover:text-white transition-colors flex items-center justify-center"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </Link>
+                            <div>
+                                <p class="onyx-kicker">Order Center</p>
+                                <h1 class="onyx-title text-2xl md:text-3xl mt-2">Order Details</h1>
+                                <p class="text-black/60 mt-2 font-mono text-sm">{{ order.order_number }}</p>
+                            </div>
+                        </div>
+                        <OrderStatusBadge :status="order.status" :label="order.status_label" size="lg" />
+                    </div>
+                </section>
 
-        <div class="py-12">
-            <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                <!-- Status Timeline -->
-                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <section class="onyx-panel p-5 md:p-6">
                     <div class="flex items-center justify-between">
                         <template v-for="(step, index) in statusTimeline" :key="step.status">
-                            <!-- Step -->
                             <div class="flex flex-col items-center flex-1">
-                                <div 
-                                    class="w-10 h-10 rounded-full flex items-center justify-center mb-2"
-                                    :class="step.is_completed || step.is_current 
-                                        ? 'bg-indigo-600 text-white' 
-                                        : 'bg-gray-200 text-gray-400'"
+                                <div
+                                    class="w-10 h-10 border flex items-center justify-center mb-2"
+                                    :class="step.is_completed || step.is_current
+                                        ? 'bg-black border-black text-white'
+                                        : 'bg-white border-black/25 text-black/35'"
                                 >
                                     <svg v-if="step.is_completed" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -136,37 +140,33 @@ const waitingVerification = computed(() => {
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
                                 </div>
-                                <span 
+                                <span
                                     class="text-xs font-medium text-center"
-                                    :class="step.is_completed || step.is_current ? 'text-indigo-600' : 'text-gray-400'"
+                                    :class="step.is_completed || step.is_current ? 'text-black' : 'text-black/35'"
                                 >
                                     {{ step.label }}
                                 </span>
                             </div>
-                            <!-- Connector -->
-                            <div 
+                            <div
                                 v-if="index < statusTimeline.length - 1"
                                 class="flex-1 h-0.5 mx-2"
-                                :class="step.is_completed ? 'bg-indigo-600' : 'bg-gray-200'"
+                                :class="step.is_completed ? 'bg-black' : 'bg-black/15'"
                             ></div>
                         </template>
                     </div>
-                </div>
+                </section>
 
-                <!-- Order Status & Actions -->
-                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <section class="onyx-panel p-5 md:p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <OrderStatusBadge :status="order.status" :label="order.status_label" size="lg" />
-                            <p class="text-sm text-gray-500 mt-2">Created on {{ order.created_at }}</p>
+                            <p class="text-sm text-black/60 mt-2">Created on {{ order.created_at }}</p>
                         </div>
 
                         <div class="flex flex-wrap gap-2">
-                            <!-- Upload Proof Button -->
                             <button
                                 v-if="canUploadProof"
                                 @click="showUploadModal = true"
-                                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+                                class="onyx-action"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
@@ -174,11 +174,10 @@ const waitingVerification = computed(() => {
                                 Upload Transfer Proof
                             </button>
 
-                            <!-- Confirm Received Button -->
                             <button
                                 v-if="order.status === 'shipped'"
                                 @click="confirmReceived"
-                                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+                                class="inline-flex items-center justify-center border border-emerald-900/60 bg-emerald-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-emerald-900 hover:bg-emerald-200"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -186,11 +185,10 @@ const waitingVerification = computed(() => {
                                 Order Received
                             </button>
 
-                            <!-- Reorder Button -->
                             <button
                                 v-if="order.status === 'delivered' || order.status === 'cancelled'"
                                 @click="reorder"
-                                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+                                class="onyx-action"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -198,11 +196,10 @@ const waitingVerification = computed(() => {
                                 Reorder
                             </button>
 
-                            <!-- Cancel Button -->
                             <button
                                 v-if="order.can_cancel"
                                 @click="cancelOrder"
-                                class="px-4 py-2 border border-red-300 text-red-600 hover:bg-red-50 font-medium rounded-lg transition-colors flex items-center gap-2"
+                                class="inline-flex items-center justify-center border border-red-900 bg-red-700 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-white hover:bg-red-800"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -211,25 +208,23 @@ const waitingVerification = computed(() => {
                             </button>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Waiting Verification Notice -->
-                <div v-if="waitingVerification" class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                <section v-if="waitingVerification" class="onyx-panel p-4 border-amber-900/50 bg-amber-50">
                     <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <div>
-                            <h4 class="font-medium text-amber-800">Waiting for Verification</h4>
+                            <h4 class="font-medium text-amber-800 uppercase tracking-[0.08em]">Waiting for Verification</h4>
                             <p class="text-sm text-amber-700 mt-1">Transfer proof has been uploaded. Please wait for admin verification.</p>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Payment Info (Bank Transfer) -->
-                <div v-if="transaction && transaction.payment_method === 'bank_transfer' && !transaction.has_proof && order.status === 'pending_payment'" 
-                     class="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6">
-                    <h4 class="font-semibold text-amber-800 mb-4 flex items-center gap-2">
+                <div v-if="transaction && transaction.payment_method === 'bank_transfer' && !transaction.has_proof && order.status === 'pending_payment'"
+                     class="onyx-panel p-6 border-amber-900/50 bg-amber-50">
+                    <h4 class="font-semibold text-amber-800 mb-4 flex items-center gap-2 uppercase tracking-[0.08em]">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -240,18 +235,18 @@ const waitingVerification = computed(() => {
                         Please transfer to the following account before <span class="font-medium">{{ transaction.expires_at }}</span>
                     </p>
 
-                    <div v-if="transaction.bank_transfer_info" class="bg-white rounded-lg p-4 border border-amber-200 space-y-3">
+                    <div v-if="transaction.bank_transfer_info" class="bg-white p-4 border border-amber-300 space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Bank</span>
-                            <span class="font-medium text-gray-900">{{ transaction.bank_transfer_info.bank_name }}</span>
+                            <span class="text-sm text-black/60">Bank</span>
+                            <span class="font-medium text-black">{{ transaction.bank_transfer_info.bank_name }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Account Number</span>
+                            <span class="text-sm text-black/60">Account Number</span>
                             <div class="flex items-center gap-2">
-                                <span class="font-mono font-medium text-gray-900">{{ transaction.bank_transfer_info.account_number }}</span>
-                                <button 
+                                <span class="font-mono font-medium text-black">{{ transaction.bank_transfer_info.account_number }}</span>
+                                <button
                                     @click="copyToClipboard(transaction.bank_transfer_info.account_number)"
-                                    class="text-indigo-600 hover:text-indigo-800"
+                                    class="text-black/70 hover:text-black"
                                     title="Copy"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,16 +256,16 @@ const waitingVerification = computed(() => {
                             </div>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Account Holder</span>
-                            <span class="font-medium text-gray-900">{{ transaction.bank_transfer_info.account_holder }}</span>
+                            <span class="text-sm text-black/60">Account Holder</span>
+                            <span class="font-medium text-black">{{ transaction.bank_transfer_info.account_holder }}</span>
                         </div>
-                        <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                            <span class="text-sm text-gray-600">Transfer Amount</span>
+                        <div class="flex justify-between items-center pt-3 border-t border-black/15">
+                            <span class="text-sm text-black/60">Transfer Amount</span>
                             <div class="flex items-center gap-2">
-                                <span class="font-bold text-xl text-indigo-600">{{ transaction.formatted_amount }}</span>
-                                <button 
+                                <span class="font-bold text-xl text-black">{{ transaction.formatted_amount }}</span>
+                                <button
                                     @click="copyToClipboard(transaction.amount.toString())"
-                                    class="text-indigo-600 hover:text-indigo-800"
+                                    class="text-black/70 hover:text-black"
                                     title="Copy"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -282,160 +277,148 @@ const waitingVerification = computed(() => {
                     </div>
                 </div>
 
-                <!-- Order Items -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-                    <div class="p-6 border-b border-gray-100">
-                        <h3 class="font-semibold text-gray-900">Order Items</h3>
+                <section class="onyx-panel overflow-hidden">
+                    <div class="p-6 border-b border-black/10">
+                        <h3 class="onyx-title text-base">Order Items</h3>
                     </div>
-                    <div class="divide-y divide-gray-100">
-                        <div 
-                            v-for="item in items" 
+                    <div class="divide-y divide-black/10">
+                        <div
+                            v-for="item in items"
                             :key="item.id"
-                            class="p-4 flex gap-4"
+                            class="p-4 flex gap-4 hover:bg-black/[0.03]"
                         >
-                            <!-- Product Image -->
-                            <div class="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                                <img 
+                            <div class="w-20 h-20 bg-black/5 border border-black/10 overflow-hidden flex-shrink-0">
+                                <img
                                     v-if="item.product_image"
-                                    :src="item.product_image" 
+                                    :src="item.product_image"
                                     :alt="item.product_name"
                                     class="w-full h-full object-cover"
                                 />
                                 <div v-else class="w-full h-full flex items-center justify-center">
-                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-8 h-8 text-black/35" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                 </div>
                             </div>
-                            
-                            <!-- Item Info -->
+
                             <div class="flex-1 min-w-0">
-                                <Link 
+                                <Link
                                     v-if="item.product_id"
                                     :href="route('products.show', item.product_id)"
-                                    class="font-medium text-gray-900 hover:text-indigo-600"
+                                    class="font-medium text-black hover:underline"
                                 >
                                     {{ item.product_name }}
                                 </Link>
-                                <p v-else class="font-medium text-gray-900">{{ item.product_name }}</p>
-                                <p v-if="item.product_sku" class="text-xs text-gray-400 font-mono mt-0.5">SKU: {{ item.product_sku }}</p>
-                                <p class="text-sm text-gray-600 mt-1">{{ item.quantity }} x {{ item.formatted_price }}</p>
+                                <p v-else class="font-medium text-black">{{ item.product_name }}</p>
+                                <p v-if="item.product_sku" class="text-xs text-black/45 font-mono mt-0.5">SKU: {{ item.product_sku }}</p>
+                                <p class="text-sm text-black/65 mt-1">{{ item.quantity }} x {{ item.formatted_price }}</p>
                             </div>
 
-                            <!-- Item Subtotal -->
                             <div class="text-right">
-                                <p class="font-medium text-gray-900">{{ item.formatted_subtotal }}</p>
+                                <p class="font-medium text-black">{{ item.formatted_subtotal }}</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Order Summary & Shipping -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <!-- Shipping Address -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <section class="onyx-panel p-6">
+                        <h3 class="onyx-title text-sm mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             </svg>
                             Shipping Address
                         </h3>
-                        <div v-if="order.shipping_address" class="text-gray-600">
-                            <p class="font-medium text-gray-900">{{ order.shipping_address.recipient_name }}</p>
+                        <div v-if="order.shipping_address" class="text-black/70">
+                            <p class="font-medium text-black">{{ order.shipping_address.recipient_name }}</p>
                             <p class="text-sm">{{ order.shipping_address.phone }}</p>
                             <p class="text-sm mt-2">{{ order.shipping_address.full_address || order.shipping_address.address }}</p>
                         </div>
 
-                        <!-- Tracking Info -->
-                        <div v-if="order.shipping_tracking_number" class="mt-4 pt-4 border-t border-gray-200">
-                            <p class="text-sm text-gray-500">Tracking Number</p>
+                        <div v-if="order.shipping_tracking_number" class="mt-4 pt-4 border-t border-black/15">
+                            <p class="text-sm text-black/55">Tracking Number</p>
                             <div class="flex items-center gap-2 mt-1">
-                                <span class="font-mono font-medium text-gray-900">{{ order.shipping_tracking_number }}</span>
-                                <button 
+                                <span class="font-mono font-medium text-black">{{ order.shipping_tracking_number }}</span>
+                                <button
                                     @click="copyToClipboard(order.shipping_tracking_number)"
-                                    class="text-indigo-600 hover:text-indigo-800"
+                                    class="text-black/70 hover:text-black"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
                                 </button>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1">{{ order.shipping_courier }} {{ order.shipping_service }}</p>
+                            <p class="text-sm text-black/55 mt-1">{{ order.shipping_courier }} {{ order.shipping_service }}</p>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Payment Summary -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <section class="onyx-panel p-6">
+                        <h3 class="onyx-title text-sm mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             Payment Summary
                         </h3>
                         <div class="space-y-2">
-                            <div class="flex justify-between text-gray-600">
+                            <div class="flex justify-between text-black/70">
                                 <span>Subtotal</span>
                                 <span>{{ order.formatted_subtotal }}</span>
                             </div>
-                            <div v-if="order.shipping_cost > 0" class="flex justify-between text-gray-600">
+                            <div v-if="order.shipping_cost > 0" class="flex justify-between text-black/70">
                                 <span>Shipping</span>
                                 <span>{{ order.formatted_shipping_cost }}</span>
                             </div>
-                            <div v-if="order.discount > 0" class="flex justify-between text-green-600">
+                            <div v-if="order.discount > 0" class="flex justify-between text-emerald-700">
                                 <span>Discount</span>
                                 <span>-Rp {{ order.discount.toLocaleString('id-ID') }}</span>
                             </div>
-                            <div class="flex justify-between text-lg font-semibold text-gray-900 pt-3 border-t border-gray-200">
+                            <div class="flex justify-between text-lg font-semibold text-black pt-3 border-t border-black/15">
                                 <span>Total</span>
-                                <span class="text-indigo-600">{{ order.formatted_total }}</span>
+                                <span>{{ order.formatted_total }}</span>
                             </div>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-gray-200">
-                            <p class="text-sm text-gray-500">Payment Method</p>
-                            <p class="font-medium text-gray-900">{{ order.payment_method === 'bank_transfer' ? 'Manual Bank Transfer' : order.payment_method }}</p>
-                            <p v-if="order.paid_at" class="text-sm text-green-600 mt-1">Paid on {{ order.paid_at }}</p>
+                        <div class="mt-4 pt-4 border-t border-black/15">
+                            <p class="text-sm text-black/55">Payment Method</p>
+                            <p class="font-medium text-black">{{ order.payment_method === 'bank_transfer' ? 'Manual Bank Transfer' : order.payment_method }}</p>
+                            <p v-if="order.paid_at" class="text-sm text-emerald-700 mt-1">Paid on {{ order.paid_at }}</p>
                         </div>
-                    </div>
+                    </section>
                 </div>
 
-                <!-- Customer Notes -->
-                <div v-if="order.customer_notes" class="bg-white rounded-xl shadow-sm p-6 mb-6">
-                    <h3 class="font-semibold text-gray-900 mb-2">Notes</h3>
-                    <p class="text-gray-600">{{ order.customer_notes }}</p>
-                </div>
+                <section v-if="order.customer_notes" class="onyx-panel p-6">
+                    <h3 class="onyx-title text-sm mb-2">Notes</h3>
+                    <p class="text-black/70">{{ order.customer_notes }}</p>
+                </section>
             </div>
         </div>
 
-        <!-- Upload Proof Modal -->
         <Modal :show="showUploadModal" @close="showUploadModal = false" max-width="md">
             <div class="p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Upload Transfer Proof</h3>
+                <h3 class="onyx-title text-lg mb-4">Upload Transfer Proof</h3>
 
                 <form @submit.prevent="submitProof">
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Transfer Proof Photo</label>
-                        
-                        <!-- Preview -->
+                        <p class="text-sm font-medium text-black mb-2">Transfer Proof Photo</p>
+
                         <div v-if="previewUrl" class="mb-3">
-                            <img :src="previewUrl" class="max-h-60 rounded-lg border border-gray-300 mx-auto" />
+                            <img :src="previewUrl" alt="Transfer proof preview" class="max-h-60 border border-black/20 mx-auto" />
                         </div>
 
-                        <!-- File Input -->
                         <div class="flex items-center justify-center w-full">
-                            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <label class="flex flex-col items-center justify-center w-full h-32 border border-black/35 border-dashed cursor-pointer bg-black/[0.03] hover:bg-black/[0.06] transition-colors">
                                 <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <svg class="w-8 h-8 mb-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-8 h-8 mb-2 text-black/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    <p class="text-sm text-gray-500">
-                                        <span class="font-medium text-indigo-600">Choose file</span> or drag & drop
+                                    <p class="text-sm text-black/60">
+                                        <span class="font-medium text-black">Choose file</span> or drag & drop
                                     </p>
-                                    <p class="text-xs text-gray-400 mt-1">PNG, JPG (max. 2MB)</p>
+                                    <p class="text-xs text-black/45 mt-1">PNG, JPG (max. 2MB)</p>
                                 </div>
-                                <input 
-                                    type="file" 
-                                    class="hidden" 
+                                <input
+                                    type="file"
+                                    class="hidden"
                                     accept="image/*"
                                     @change="handleFileSelect"
                                 />
@@ -451,14 +434,14 @@ const waitingVerification = computed(() => {
                         <button
                             type="button"
                             @click="showUploadModal = false"
-                            class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            class="onyx-action-ghost"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             :disabled="!uploadForm.transfer_proof || uploadForm.processing"
-                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors"
+                            class="onyx-action disabled:bg-black/25 disabled:text-black/50 disabled:border-black/20 disabled:hover:bg-black/25 disabled:hover:text-black/50"
                         >
                             {{ uploadForm.processing ? 'Uploading...' : 'Upload' }}
                         </button>
