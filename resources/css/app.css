@@ -1,3 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	:root {
+		--onyx-ink: #0a0a0a;
+		--onyx-paper: #f7f6f2;
+		--onyx-line: #151515;
+		--onyx-muted: #5c5c56;
+		--onyx-accent: #f59e0b;
+	}
+}
+
+@layer components {
+	.onyx-admin-scope {
+		font-family: 'Space Grotesk', sans-serif;
+		color: var(--onyx-ink);
+		background:
+			radial-gradient(circle at 16% 14%, rgba(245, 158, 11, 0.12), transparent 36%),
+			radial-gradient(circle at 85% 8%, rgba(10, 10, 10, 0.08), transparent 28%),
+			linear-gradient(180deg, #faf9f4 0%, #f1efe9 100%);
+	}
+
+	.onyx-panel {
+		@apply border border-black/90 bg-white shadow-[4px_4px_0_0_rgba(10,10,10,0.95)];
+	}
+
+	.onyx-panel-soft {
+		@apply border border-black/70 bg-white/90 shadow-[3px_3px_0_0_rgba(10,10,10,0.75)];
+	}
+
+	.onyx-kicker {
+		font-family: 'IBM Plex Mono', monospace;
+		@apply text-[10px] uppercase tracking-[0.32em] text-black/60;
+	}
+
+	.onyx-title {
+		@apply text-black uppercase tracking-[0.08em] font-bold;
+	}
+
+	.onyx-chip {
+		font-family: 'IBM Plex Mono', monospace;
+		@apply inline-flex items-center border border-black px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-black;
+	}
+
+	.onyx-action {
+		@apply inline-flex items-center justify-center border border-black bg-black px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-white hover:text-black;
+	}
+
+	.onyx-action-ghost {
+		@apply inline-flex items-center justify-center border border-black bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-black transition-colors hover:bg-black hover:text-white;
+	}
+
+	.onyx-grid-bg {
+		background-image:
+			linear-gradient(to right, rgba(10, 10, 10, 0.05) 1px, transparent 1px),
+			linear-gradient(to bottom, rgba(10, 10, 10, 0.05) 1px, transparent 1px);
+		background-size: 30px 30px;
+	}
+}
