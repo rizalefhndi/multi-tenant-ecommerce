@@ -30,10 +30,10 @@ const submit = () => {
 
 const uploadLogo = () => {
     if (!logoFile.value) return;
-    
+
     const formData = new FormData();
     formData.append('logo', logoFile.value);
-    
+
     router.post(route('settings.upload.logo'), formData, {
         preserveScroll: true,
         onSuccess: () => {
@@ -44,10 +44,10 @@ const uploadLogo = () => {
 
 const uploadFavicon = () => {
     if (!faviconFile.value) return;
-    
+
     const formData = new FormData();
     formData.append('favicon', faviconFile.value);
-    
+
     router.post(route('settings.upload.favicon'), formData, {
         preserveScroll: true,
     });
@@ -55,10 +55,10 @@ const uploadFavicon = () => {
 
 const uploadBanner = () => {
     if (!bannerFile.value) return;
-    
+
     const formData = new FormData();
     formData.append('banner', bannerFile.value);
-    
+
     router.post(route('settings.upload.banner'), formData, {
         preserveScroll: true,
     });
@@ -80,285 +80,160 @@ const applyPreset = (preset) => {
 </script>
 
 <template>
-    <Head title="Tampilan Toko" />
+    <Head>
+        <title>Tampilan Toko</title>
+    </Head>
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex items-center gap-2">
-                <Link :href="route('settings.index')" class="text-gray-500 hover:text-gray-700">
-                    Pengaturan
-                </Link>
-                <span class="text-gray-400">/</span>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                    Tampilan Toko
-                </h2>
-            </div>
-        </template>
-
-        <div class="py-6">
-            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6">
-                
-                <!-- Logo & Images -->
-                <div class="bg-white rounded-xl shadow-sm p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Logo & Gambar</h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Logo Upload -->
+        <div class="min-h-screen py-6 md:py-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+                <section class="onyx-panel p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Logo Toko</label>
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                                <img 
-                                    v-if="settings.logo_url" 
-                                    :src="settings.logo_url" 
-                                    alt="Logo" 
-                                    class="h-16 mx-auto mb-2 object-contain"
-                                />
-                                <div v-else class="text-gray-400 mb-2">
-                                    <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <input 
-                                    type="file" 
-                                    @change="logoFile = $event.target.files[0]"
-                                    accept="image/*"
-                                    class="text-sm"
-                                />
-                                <button 
-                                    v-if="logoFile"
-                                    @click="uploadLogo"
-                                    class="mt-2 px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg"
-                                >
-                                    Upload
-                                </button>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Max 2MB, PNG/JPG/SVG</p>
+                            <p class="onyx-kicker">Settings / Theme</p>
+                            <h1 class="onyx-title text-2xl md:text-4xl mt-2">Tampilan Toko</h1>
+                            <p class="mt-2 text-black/60">Atur identitas visual brand untuk pengalaman pelanggan yang konsisten.</p>
                         </div>
-
-                        <!-- Favicon Upload -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Favicon</label>
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                                <img 
-                                    v-if="settings.favicon_url" 
-                                    :src="settings.favicon_url" 
-                                    alt="Favicon" 
-                                    class="h-8 w-8 mx-auto mb-2"
-                                />
-                                <div v-else class="text-gray-400 mb-2">
-                                    <div class="w-8 h-8 bg-gray-200 rounded mx-auto"></div>
-                                </div>
-                                <input 
-                                    type="file" 
-                                    @change="faviconFile = $event.target.files[0]"
-                                    accept=".png,.ico"
-                                    class="text-sm"
-                                />
-                                <button 
-                                    v-if="faviconFile"
-                                    @click="uploadFavicon"
-                                    class="mt-2 px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg"
-                                >
-                                    Upload
-                                </button>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">32x32, PNG/ICO</p>
-                        </div>
-
-                        <!-- Banner Upload -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Banner</label>
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                                <img 
-                                    v-if="settings.banner_url" 
-                                    :src="settings.banner_url" 
-                                    alt="Banner" 
-                                    class="h-16 mx-auto mb-2 object-cover rounded"
-                                />
-                                <div v-else class="text-gray-400 mb-2">
-                                    <div class="w-full h-12 bg-gray-200 rounded"></div>
-                                </div>
-                                <input 
-                                    type="file" 
-                                    @change="bannerFile = $event.target.files[0]"
-                                    accept="image/*"
-                                    class="text-sm"
-                                />
-                                <button 
-                                    v-if="bannerFile"
-                                    @click="uploadBanner"
-                                    class="mt-2 px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg"
-                                >
-                                    Upload
-                                </button>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Max 5MB, 1920x400</p>
-                        </div>
+                        <Link :href="route('settings.index')" class="onyx-action-ghost w-full md:w-auto">Kembali ke Settings</Link>
                     </div>
-                </div>
+                </section>
 
-                <!-- Color Scheme -->
-                <form @submit.prevent="submit" class="bg-white rounded-xl shadow-sm p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Skema Warna</h3>
+                <section class="onyx-panel p-5 md:p-6">
+                    <div class="mb-4 flex items-center justify-between">
+                        <p class="onyx-kicker">Asset Upload</p>
+                        <p class="text-xs uppercase tracking-[0.1em] text-black/55">Logo, favicon, banner</p>
+                    </div>
 
-                    <!-- Presets -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Preset Warna</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <article class="onyx-panel-soft p-4 space-y-3">
+                            <p class="onyx-kicker">Logo Toko</p>
+                            <div class="border border-dashed border-black/40 bg-white p-4 min-h-[130px] flex items-center justify-center">
+                                <img v-if="settings.logo_url" :src="settings.logo_url" alt="Logo" class="h-16 object-contain" />
+                                <span v-else class="text-xs uppercase tracking-[0.12em] text-black/50">No Logo</span>
+                            </div>
+                            <input type="file" @change="logoFile = $event.target.files[0]" accept="image/*" class="block w-full border border-black/30 bg-white px-3 py-2 text-sm" />
+                            <button v-if="logoFile" @click="uploadLogo" class="onyx-action w-full">Upload Logo</button>
+                            <p class="text-xs text-black/50">Max 2MB, PNG/JPG/SVG</p>
+                        </article>
+
+                        <article class="onyx-panel-soft p-4 space-y-3">
+                            <p class="onyx-kicker">Favicon</p>
+                            <div class="border border-dashed border-black/40 bg-white p-4 min-h-[130px] flex items-center justify-center">
+                                <img v-if="settings.favicon_url" :src="settings.favicon_url" alt="Favicon" class="h-10 w-10 object-contain" />
+                                <span v-else class="text-xs uppercase tracking-[0.12em] text-black/50">No Favicon</span>
+                            </div>
+                            <input type="file" @change="faviconFile = $event.target.files[0]" accept=".png,.ico" class="block w-full border border-black/30 bg-white px-3 py-2 text-sm" />
+                            <button v-if="faviconFile" @click="uploadFavicon" class="onyx-action w-full">Upload Favicon</button>
+                            <p class="text-xs text-black/50">32x32, PNG/ICO</p>
+                        </article>
+
+                        <article class="onyx-panel-soft p-4 space-y-3">
+                            <p class="onyx-kicker">Banner</p>
+                            <div class="border border-dashed border-black/40 bg-white p-4 min-h-[130px] flex items-center justify-center">
+                                <img v-if="settings.banner_url" :src="settings.banner_url" alt="Banner" class="h-16 w-full object-cover" />
+                                <span v-else class="text-xs uppercase tracking-[0.12em] text-black/50">No Banner</span>
+                            </div>
+                            <input type="file" @change="bannerFile = $event.target.files[0]" accept="image/*" class="block w-full border border-black/30 bg-white px-3 py-2 text-sm" />
+                            <button v-if="bannerFile" @click="uploadBanner" class="onyx-action w-full">Upload Banner</button>
+                            <p class="text-xs text-black/50">Max 5MB, 1920x400</p>
+                        </article>
+                    </div>
+                </section>
+
+                <form @submit.prevent="submit" class="onyx-panel p-5 md:p-6 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <p class="onyx-kicker">Theme System</p>
+                        <span class="onyx-chip">Live Preview</span>
+                    </div>
+
+                    <div>
+                        <p class="onyx-kicker mb-2">Preset Warna</p>
                         <div class="flex flex-wrap gap-2">
                             <button
                                 v-for="preset in presetColors"
                                 :key="preset.name"
                                 type="button"
                                 @click="applyPreset(preset)"
-                                class="flex items-center gap-2 px-3 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
+                                class="border border-black bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] hover:bg-black hover:text-white transition-colors"
                             >
-                                <div class="flex">
-                                    <div class="w-4 h-4 rounded-full" :style="{ backgroundColor: preset.primary }"></div>
-                                    <div class="w-4 h-4 rounded-full -ml-1" :style="{ backgroundColor: preset.secondary }"></div>
-                                    <div class="w-4 h-4 rounded-full -ml-1" :style="{ backgroundColor: preset.accent }"></div>
-                                </div>
-                                <span class="text-sm">{{ preset.name }}</span>
+                                {{ preset.name }}
                             </button>
                         </div>
                     </div>
 
-                    <!-- Color Pickers -->
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Primer</label>
-                            <div class="flex items-center gap-2">
-                                <input 
-                                    type="color" 
-                                    v-model="form.primary_color"
-                                    class="w-10 h-10 rounded cursor-pointer"
-                                />
-                                <input 
-                                    type="text" 
-                                    v-model="form.primary_color"
-                                    class="flex-1 text-xs border-gray-300 rounded-lg"
-                                />
+                            <p class="onyx-kicker mb-1.5 block">Primer</p>
+                            <div class="flex gap-2">
+                                <input type="color" v-model="form.primary_color" class="h-10 w-12 border border-black bg-white p-1" />
+                                <input type="text" v-model="form.primary_color" class="h-10 w-full border border-black bg-white px-2 text-xs" />
                             </div>
                         </div>
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Sekunder</label>
-                            <div class="flex items-center gap-2">
-                                <input 
-                                    type="color" 
-                                    v-model="form.secondary_color"
-                                    class="w-10 h-10 rounded cursor-pointer"
-                                />
-                                <input 
-                                    type="text" 
-                                    v-model="form.secondary_color"
-                                    class="flex-1 text-xs border-gray-300 rounded-lg"
-                                />
+                            <p class="onyx-kicker mb-1.5 block">Sekunder</p>
+                            <div class="flex gap-2">
+                                <input type="color" v-model="form.secondary_color" class="h-10 w-12 border border-black bg-white p-1" />
+                                <input type="text" v-model="form.secondary_color" class="h-10 w-full border border-black bg-white px-2 text-xs" />
                             </div>
                         </div>
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Aksen</label>
-                            <div class="flex items-center gap-2">
-                                <input 
-                                    type="color" 
-                                    v-model="form.accent_color"
-                                    class="w-10 h-10 rounded cursor-pointer"
-                                />
-                                <input 
-                                    type="text" 
-                                    v-model="form.accent_color"
-                                    class="flex-1 text-xs border-gray-300 rounded-lg"
-                                />
+                            <p class="onyx-kicker mb-1.5 block">Aksen</p>
+                            <div class="flex gap-2">
+                                <input type="color" v-model="form.accent_color" class="h-10 w-12 border border-black bg-white p-1" />
+                                <input type="text" v-model="form.accent_color" class="h-10 w-full border border-black bg-white px-2 text-xs" />
                             </div>
                         </div>
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Background</label>
-                            <div class="flex items-center gap-2">
-                                <input 
-                                    type="color" 
-                                    v-model="form.background_color"
-                                    class="w-10 h-10 rounded cursor-pointer"
-                                />
-                                <input 
-                                    type="text" 
-                                    v-model="form.background_color"
-                                    class="flex-1 text-xs border-gray-300 rounded-lg"
-                                />
+                            <p class="onyx-kicker mb-1.5 block">Background</p>
+                            <div class="flex gap-2">
+                                <input type="color" v-model="form.background_color" class="h-10 w-12 border border-black bg-white p-1" />
+                                <input type="text" v-model="form.background_color" class="h-10 w-full border border-black bg-white px-2 text-xs" />
                             </div>
                         </div>
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Teks</label>
-                            <div class="flex items-center gap-2">
-                                <input 
-                                    type="color" 
-                                    v-model="form.text_color"
-                                    class="w-10 h-10 rounded cursor-pointer"
-                                />
-                                <input 
-                                    type="text" 
-                                    v-model="form.text_color"
-                                    class="flex-1 text-xs border-gray-300 rounded-lg"
-                                />
+                            <p class="onyx-kicker mb-1.5 block">Teks</p>
+                            <div class="flex gap-2">
+                                <input type="color" v-model="form.text_color" class="h-10 w-12 border border-black bg-white p-1" />
+                                <input type="text" v-model="form.text_color" class="h-10 w-full border border-black bg-white px-2 text-xs" />
                             </div>
                         </div>
                     </div>
 
-                    <!-- Preview -->
-                    <div class="mb-6 p-4 rounded-lg" :style="{ backgroundColor: form.background_color }">
-                        <p class="text-sm font-medium mb-2" :style="{ color: form.text_color }">Preview:</p>
-                        <div class="flex gap-2">
-                            <button 
-                                type="button"
-                                class="px-4 py-2 rounded-lg text-white text-sm font-medium"
-                                :style="{ backgroundColor: form.primary_color }"
-                            >
-                                Tombol Primer
-                            </button>
-                            <button 
-                                type="button"
-                                class="px-4 py-2 rounded-lg text-white text-sm font-medium"
-                                :style="{ backgroundColor: form.secondary_color }"
-                            >
-                                Tombol Sekunder
-                            </button>
-                            <button 
-                                type="button"
-                                class="px-4 py-2 rounded-lg text-white text-sm font-medium"
-                                :style="{ backgroundColor: form.accent_color }"
-                            >
-                                Aksen
-                            </button>
+                    <div class="onyx-panel-soft p-4" :style="{ backgroundColor: form.background_color }">
+                        <p class="onyx-kicker mb-2" :style="{ color: form.text_color }">Preview</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="border border-black px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white" :style="{ backgroundColor: form.primary_color }">Primary</button>
+                            <button type="button" class="border border-black px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white" :style="{ backgroundColor: form.secondary_color }">Secondary</button>
+                            <button type="button" class="border border-black px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white" :style="{ backgroundColor: form.accent_color }">Accent</button>
                         </div>
                     </div>
 
-                    <!-- Font -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Font</label>
-                        <select v-model="form.font_family" class="w-full md:w-1/3 border-gray-300 rounded-lg">
-                            <option v-for="(name, key) in fonts" :key="key" :value="key">
-                                {{ name }}
-                            </option>
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="onyx-kicker mb-1.5 block">Font</p>
+                            <select v-model="form.font_family" class="h-11 w-full border border-black bg-white px-3 text-sm">
+                                <option v-for="(name, key) in fonts" :key="key" :value="key">{{ name }}</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-end">
+                            <label class="flex items-center gap-3 border border-black bg-white px-3 py-3 w-full h-11">
+                                <input type="checkbox" v-model="form.dark_mode" class="rounded border-black text-black focus:ring-0" />
+                                <span class="text-sm font-medium uppercase tracking-[0.08em]">Aktifkan Dark Mode</span>
+                            </label>
+                        </div>
                     </div>
 
-                    <!-- Dark Mode -->
-                    <div class="mb-6">
-                        <label class="flex items-center gap-3">
-                            <input type="checkbox" v-model="form.dark_mode" class="rounded border-gray-300 text-indigo-600">
-                            <span class="text-sm font-medium text-gray-700">Aktifkan Dark Mode</span>
-                        </label>
-                    </div>
-
-                    <!-- Submit -->
                     <div class="flex justify-end">
-                        <button 
-                            type="submit"
-                            :disabled="form.processing"
-                            class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-                        >
+                        <button type="submit" :disabled="form.processing" class="onyx-action disabled:opacity-60">
                             {{ form.processing ? 'Menyimpan...' : 'Simpan Perubahan' }}
                         </button>
                     </div>
                 </form>
-
             </div>
         </div>
     </AuthenticatedLayout>

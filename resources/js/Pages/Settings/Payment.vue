@@ -31,151 +31,108 @@ const submit = () => {
 };
 
 const bankList = [
-    'BCA', 'BNI', 'BRI', 'Mandiri', 'CIMB Niaga', 
+    'BCA', 'BNI', 'BRI', 'Mandiri', 'CIMB Niaga',
     'Permata', 'BTN', 'Danamon', 'OCBC NISP', 'Maybank'
 ];
 </script>
 
 <template>
-    <Head title="Pengaturan Pembayaran" />
+    <Head>
+        <title>Pengaturan Pembayaran</title>
+    </Head>
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex items-center gap-2">
-                <Link :href="route('settings.index')" class="text-gray-500 hover:text-gray-700">
-                    Pengaturan
-                </Link>
-                <span class="text-gray-400">/</span>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                    Pembayaran
-                </h2>
-            </div>
-        </template>
+        <div class="min-h-screen py-6 md:py-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+                <section class="onyx-panel p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                        <div>
+                            <p class="onyx-kicker">Settings / Payment</p>
+                            <h1 class="onyx-title text-2xl md:text-4xl mt-2">Pembayaran</h1>
+                            <p class="mt-2 text-black/60">Aktifkan metode pembayaran yang ingin ditawarkan ke pelanggan.</p>
+                        </div>
+                        <Link :href="route('settings.index')" class="onyx-action-ghost w-full md:w-auto">Kembali ke Settings</Link>
+                    </div>
+                </section>
 
-        <div class="py-6">
-            <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-                
                 <form @submit.prevent="submit" class="space-y-6">
-                    
-                    <!-- Payment Methods -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Metode Pembayaran Aktif</h3>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <label 
-                                v-for="(label, method) in paymentMethods" 
+                    <section class="onyx-panel p-5 md:p-6">
+                        <div class="mb-4 flex items-center justify-between">
+                            <p class="onyx-kicker">Metode Pembayaran Aktif</p>
+                            <span class="onyx-chip">{{ form.enabled_payment_methods.length }} aktif</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                            <label
+                                v-for="(label, method) in paymentMethods"
                                 :key="method"
-                                class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors"
-                                :class="form.enabled_payment_methods.includes(method) 
-                                    ? 'border-indigo-500 bg-indigo-50' 
-                                    : 'border-gray-200 hover:border-gray-300'"
+                                class="flex items-center gap-3 p-3 border cursor-pointer transition-colors"
+                                :class="form.enabled_payment_methods.includes(method) ? 'border-black bg-black text-white' : 'border-black/30 bg-white hover:border-black'"
                             >
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     :checked="form.enabled_payment_methods.includes(method)"
                                     @change="togglePaymentMethod(method)"
-                                    class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                    class="rounded border-black text-black focus:ring-0"
                                 />
-                                <span class="text-sm font-medium text-gray-700">{{ label }}</span>
+                                <span class="text-sm font-semibold uppercase tracking-[0.06em]">{{ label }}</span>
                             </label>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Bank Transfer Settings -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Rekening Transfer Manual</h3>
-                        <p class="text-sm text-gray-500 mb-4">
-                            Rekening ini akan ditampilkan kepada pembeli untuk transfer manual.
-                        </p>
-                        
+                    <section class="onyx-panel p-5 md:p-6">
+                        <p class="onyx-kicker mb-4">Rekening Transfer Manual</p>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Bank</label>
-                                <select 
-                                    v-model="form.bank_name"
-                                    class="w-full border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                                >
+                                <p class="onyx-kicker mb-1.5 block">Nama Bank</p>
+                                <select v-model="form.bank_name" class="h-11 w-full border border-black bg-white px-3 text-sm">
                                     <option value="">Pilih Bank</option>
-                                    <option v-for="bank in bankList" :key="bank" :value="bank">
-                                        {{ bank }}
-                                    </option>
+                                    <option v-for="bank in bankList" :key="bank" :value="bank">{{ bank }}</option>
                                 </select>
                             </div>
-                            
+
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening</label>
-                                <input 
-                                    type="text" 
-                                    v-model="form.bank_account_number"
-                                    class="w-full border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                                    placeholder="1234567890"
-                                />
+                                <p class="onyx-kicker mb-1.5 block">Nomor Rekening</p>
+                                <input type="text" v-model="form.bank_account_number" class="h-11 w-full border border-black bg-white px-3 text-sm" placeholder="1234567890" />
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pemilik</label>
-                                <input 
-                                    type="text" 
-                                    v-model="form.bank_account_holder"
-                                    class="w-full border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                                    placeholder="Nama sesuai rekening"
-                                />
+                                <p class="onyx-kicker mb-1.5 block">Nama Pemilik</p>
+                                <input type="text" v-model="form.bank_account_holder" class="h-11 w-full border border-black bg-white px-3 text-sm" placeholder="Nama sesuai rekening" />
                             </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Midtrans Settings -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
-                        <div class="flex items-center justify-between mb-4">
+                    <section class="onyx-panel p-5 md:p-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Payment Gateway (Midtrans)</h3>
-                                <p class="text-sm text-gray-500">
-                                    Aktifkan untuk menerima pembayaran otomatis via VA, QRIS, e-Wallet
-                                </p>
+                                <p class="onyx-kicker">Payment Gateway</p>
+                                <h2 class="onyx-title text-lg mt-1">Midtrans</h2>
                             </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input 
-                                    type="checkbox" 
-                                    v-model="form.midtrans_enabled" 
-                                    class="sr-only peer"
-                                />
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+
+                            <label class="flex items-center gap-3 border border-black bg-white px-3 py-2 h-11 cursor-pointer">
+                                <input type="checkbox" v-model="form.midtrans_enabled" class="rounded border-black text-black focus:ring-0" />
+                                <span class="text-xs font-semibold uppercase tracking-[0.1em]">{{ form.midtrans_enabled ? 'Enabled' : 'Disabled' }}</span>
                             </label>
                         </div>
 
-                        <div v-if="form.midtrans_enabled" class="p-4 bg-green-50 border border-green-200 rounded-lg">
-                            <div class="flex items-start gap-3">
-                                <svg class="w-5 h-5 text-green-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-                                <div>
-                                    <p class="text-sm font-medium text-green-800">Midtrans Aktif</p>
-                                    <p class="text-sm text-green-600">
-                                        Payment gateway sudah dikonfigurasi. Pembeli bisa membayar via Virtual Account, QRIS, GoPay, ShopeePay, dan Kartu Kredit.
-                                    </p>
-                                </div>
-                            </div>
+                        <div v-if="form.midtrans_enabled" class="onyx-panel-soft p-4">
+                            <p class="text-sm font-semibold uppercase tracking-[0.08em]">Midtrans Aktif</p>
+                            <p class="text-sm text-black/65 mt-1">Pelanggan dapat membayar via VA, QRIS, GoPay, ShopeePay, dan kartu kredit.</p>
                         </div>
 
-                        <div v-else class="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                            <p class="text-sm text-gray-600">
-                                Aktifkan Midtrans untuk menerima pembayaran otomatis. Hubungi admin untuk setup API key.
-                            </p>
+                        <div v-else class="onyx-panel-soft p-4">
+                            <p class="text-sm font-semibold uppercase tracking-[0.08em]">Midtrans Belum Aktif</p>
+                            <p class="text-sm text-black/65 mt-1">Aktifkan Midtrans untuk menerima pembayaran otomatis dari checkout.</p>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Submit -->
                     <div class="flex justify-end">
-                        <button 
-                            type="submit"
-                            :disabled="form.processing"
-                            class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-                        >
+                        <button type="submit" :disabled="form.processing" class="onyx-action disabled:opacity-60">
                             {{ form.processing ? 'Menyimpan...' : 'Simpan Perubahan' }}
                         </button>
                     </div>
                 </form>
-
             </div>
         </div>
     </AuthenticatedLayout>
