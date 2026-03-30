@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ProductCard from '@/Components/ProductCard.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     products: Object,
@@ -55,279 +55,206 @@ watch(search, () => {
 watch([status, stock], () => {
     applyFilters();
 });
+
+const hasFilters = computed(() => Boolean(search.value || status.value || stock.value));
+const totalProducts = computed(() => props.products?.total || 0);
+const activeProducts = computed(() => props.products?.data?.filter((p) => p.is_active).length || 0);
+const inStockProducts = computed(() => props.products?.data?.filter((p) => p.stock > 0).length || 0);
+const outOfStockProducts = computed(() => props.products?.data?.filter((p) => p.stock <= 0).length || 0);
 </script>
 
 <template>
-    <Head title="Produk" />
+    <Head>
+        <title>Products</title>
+    </Head>
 
     <AuthenticatedLayout>
-        <div class="min-h-screen">
-            <!-- Hero Section -->
-            <div class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 overflow-hidden">
-                <!-- Decorative Elements -->
-                <div class="absolute inset-0">
-                    <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                    <div class="absolute bottom-0 left-0 w-72 h-72 bg-pink-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-                </div>
-
-                <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
-                        <!-- Text Content -->
-                        <div class="text-center lg:text-left">
-                            <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4">
-                                Manage Your Products
-                            </h1>
-                            <p class="text-lg text-white/80 max-w-xl mb-6">
-                                Add, edit, and manage all your store products easily. Monitor stock and product status in one place.
-                            </p>
-                            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                                <Link
-                                    :href="route('products.create')"
-                                    class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors shadow-lg"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    Add New Product
-                                </Link>
-                                <button
-                                    @click="resetFilters"
-                                    class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/20 text-white font-semibold rounded-xl hover:bg-white/30 transition-colors backdrop-blur-sm"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                    Refresh Data
-                                </button>
-                            </div>
+        <div class="min-h-screen py-6 md:py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+                <section class="onyx-panel p-6 md:p-8 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 onyx-kicker">Inventory Command</div>
+                    <p class="onyx-kicker">Products</p>
+                    <div class="mt-2 flex flex-col lg:flex-row gap-6 lg:items-end lg:justify-between">
+                        <div>
+                            <h1 class="onyx-title text-2xl md:text-4xl">Manage Product Catalog</h1>
+                            <p class="text-black/60 mt-2 max-w-2xl">Control product status, monitor stock movement, and curate your catalog from one ONYX console.</p>
                         </div>
-
-                        <!-- Stats Cards -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
-                                <p class="text-4xl font-bold text-white">{{ products?.total || 0 }}</p>
-                                <p class="text-white/80 text-sm mt-1">Total Products</p>
-                            </div>
-                            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
-                                <p class="text-4xl font-bold text-white">{{ products?.data?.filter(p => p.is_active).length || 0 }}</p>
-                                <p class="text-white/80 text-sm mt-1">Active Products</p>
-                            </div>
-                            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
-                                <p class="text-4xl font-bold text-white">{{ products?.data?.filter(p => p.stock > 0).length || 0 }}</p>
-                                <p class="text-white/80 text-sm mt-1">In Stock</p>
-                            </div>
-                            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
-                                <p class="text-4xl font-bold text-white">{{ products?.data?.filter(p => p.stock === 0).length || 0 }}</p>
-                                <p class="text-white/80 text-sm mt-1">Out of Stock</p>
-                            </div>
+                        <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                            <Link :href="route('products.create')" class="onyx-action w-full sm:w-auto">Add Product</Link>
+                            <button @click="resetFilters" class="onyx-action-ghost w-full sm:w-auto">Refresh View</button>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Main Content -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                
-                <!-- Filters Section -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-                    <div class="flex flex-col lg:flex-row gap-4">
-                        <!-- Search -->
-                        <div class="flex-1">
-                            <div class="relative group">
-                                <!-- Search Icon / Loading Spinner -->
-                                <div class="absolute left-4 top-1/2 -translate-y-1/2">
-                                    <svg v-if="!isSearching" class="w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="mt-6 grid grid-cols-2 xl:grid-cols-4 gap-3">
+                        <div class="onyx-panel-soft p-4 text-center">
+                            <p class="onyx-kicker">Total</p>
+                            <p class="text-3xl font-bold mt-2">{{ totalProducts }}</p>
+                        </div>
+                        <div class="onyx-panel-soft p-4 text-center">
+                            <p class="onyx-kicker">Active</p>
+                            <p class="text-3xl font-bold mt-2">{{ activeProducts }}</p>
+                        </div>
+                        <div class="onyx-panel-soft p-4 text-center">
+                            <p class="onyx-kicker">In Stock</p>
+                            <p class="text-3xl font-bold mt-2">{{ inStockProducts }}</p>
+                        </div>
+                        <div class="onyx-panel-soft p-4 text-center">
+                            <p class="onyx-kicker">Out</p>
+                            <p class="text-3xl font-bold mt-2">{{ outOfStockProducts }}</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="onyx-panel p-5 md:p-6">
+                    <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+                        <p class="onyx-kicker">Filter Products</p>
+                        <p class="text-xs uppercase tracking-[0.08em] text-black/55">Live search updates automatically</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-3 items-end">
+                        <div class="md:col-span-2 xl:col-span-6">
+                            <p class="onyx-kicker mb-1.5">Search</p>
+                            <div class="relative">
+                                <div class="absolute left-3 top-1/2 -translate-y-1/2">
+                                    <svg v-if="!isSearching" class="w-4 h-4 text-black/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
-                                    <svg v-else class="w-5 h-5 text-indigo-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <svg v-else class="w-4 h-4 text-black animate-spin" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                     </svg>
                                 </div>
-                                
+
                                 <input
                                     ref="searchInput"
                                     v-model="search"
                                     type="text"
-                                    placeholder="Search products..."
-                                    class="w-full pl-12 pr-24 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900 placeholder-gray-400"
+                                    placeholder="Search products"
+                                    class="h-11 w-full border border-black py-2.5 pl-10 pr-12 text-sm bg-white focus:outline-none"
                                 />
-                                
-                                <!-- Clear Button & Shortcut -->
-                                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                                    <!-- Clear Button -->
-                                    <button
-                                        v-if="search"
-                                        @click="clearSearch"
-                                        class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                                        title="Clear search"
-                                    >
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                    <!-- Shortcut Hint -->
-                                    <kbd class="hidden sm:inline-flex items-center px-2 py-1 text-xs font-medium text-gray-400 bg-gray-100 rounded-md">
-                                        Ctrl+K
-                                    </kbd>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Status Filter -->
-                        <div class="w-full lg:w-48">
-                            <div class="relative">
-                                <select
-                                    v-model="status"
-                                    class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white appearance-none cursor-pointer"
+                                <button
+                                    v-if="search"
+                                    @click="clearSearch"
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center border border-black/70 text-black hover:bg-black hover:text-white transition-colors"
+                                    title="Clear search"
                                 >
-                                    <option value="">All Status</option>
-                                    <option value="active">✓ Active</option>
-                                    <option value="inactive">✗ Inactive</option>
-                                </select>
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
-                                </div>
+                                </button>
                             </div>
                         </div>
 
-                        <!-- Stock Filter -->
-                        <div class="w-full lg:w-48">
-                            <div class="relative">
-                                <select
-                                    v-model="stock"
-                                    class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white appearance-none cursor-pointer"
-                                >
-                                    <option value="">All Stock</option>
-                                    <option value="in_stock">📦 In Stock</option>
-                                    <option value="out_of_stock">⚠️ Out of Stock</option>
-                                </select>
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                            </div>
+                        <div class="xl:col-span-2">
+                            <p class="onyx-kicker mb-1.5">Status</p>
+                            <select
+                                v-model="status"
+                                class="h-11 w-full border border-black bg-white px-3 text-sm focus:outline-none"
+                            >
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
                         </div>
 
-                        <!-- Reset Button -->
-                        <button
-                            v-if="search || status || stock"
-                            @click="resetFilters"
-                            class="px-4 py-3.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            Reset
-                        </button>
+                        <div class="xl:col-span-2">
+                            <p class="onyx-kicker mb-1.5">Stock</p>
+                            <select
+                                v-model="stock"
+                                class="h-11 w-full border border-black bg-white px-3 text-sm focus:outline-none"
+                            >
+                                <option value="">All Stock</option>
+                                <option value="in_stock">In Stock</option>
+                                <option value="out_of_stock">Out of Stock</option>
+                            </select>
+                        </div>
+
+                        <div class="xl:col-span-2">
+                            <p class="onyx-kicker mb-1.5">Actions</p>
+                            <button
+                                @click="resetFilters"
+                                :disabled="!hasFilters"
+                                class="onyx-action-ghost h-11 w-full disabled:border-black/20 disabled:text-black/35 disabled:hover:bg-white disabled:hover:text-black/35"
+                            >
+                                Reset
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Active Filters Tags -->
-                    <div v-if="search || status || stock" class="mt-4 flex flex-wrap gap-2">
-                        <span class="text-sm text-gray-500">Active filters:</span>
-                        <span 
-                            v-if="search"
-                            class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"
-                        >
-                            "{{ search }}"
-                            <button @click="search = ''; applyFilters()" class="hover:text-indigo-900">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                    <div v-if="hasFilters" class="mt-4 flex flex-wrap items-center gap-2">
+                        <span class="onyx-kicker">Active Filters</span>
+
+                        <span v-if="search" class="onyx-chip gap-2">
+                            {{ search }}
+                            <button @click="search = ''; applyFilters()" class="text-black/70 hover:text-black">x</button>
                         </span>
-                        <span 
-                            v-if="status"
-                            class="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm"
-                        >
-                            {{ status === 'active' ? 'Aktif' : 'Nonaktif' }}
-                            <button @click="status = ''; applyFilters()" class="hover:text-purple-900">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+
+                        <span v-if="status" class="onyx-chip gap-2">
+                            {{ status === 'active' ? 'Active' : 'Inactive' }}
+                            <button @click="status = ''; applyFilters()" class="text-black/70 hover:text-black">x</button>
                         </span>
-                        <span 
-                            v-if="stock"
-                            class="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm"
-                        >
-                            {{ stock === 'in_stock' ? 'Tersedia' : 'Habis' }}
-                            <button @click="stock = ''; applyFilters()" class="hover:text-orange-900">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+
+                        <span v-if="stock" class="onyx-chip gap-2">
+                            {{ stock === 'in_stock' ? 'In Stock' : 'Out of Stock' }}
+                            <button @click="stock = ''; applyFilters()" class="text-black/70 hover:text-black">x</button>
                         </span>
                     </div>
-                </div>
+                </section>
 
-                <!-- Products Grid -->
-                <div v-if="products.data.length > 0">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                <div v-if="products.data.length > 0" class="space-y-6">
+                    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                         <ProductCard
                             v-for="product in products.data"
                             :key="product.id"
                             :product="product"
                         />
-                    </div>
+                    </section>
 
-                    <!-- Pagination -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div class="text-sm text-gray-600">
-                                Showing <span class="font-semibold">{{ products.from }}</span> - <span class="font-semibold">{{ products.to }}</span> of <span class="font-semibold">{{ products.total }}</span> products
-                            </div>
+                    <section class="onyx-panel p-4">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                            <p class="text-sm text-black/70">
+                                Showing <span class="font-semibold text-black">{{ products.from }}</span> to <span class="font-semibold text-black">{{ products.to }}</span> of <span class="font-semibold text-black">{{ products.total }}</span> products
+                            </p>
 
-                            <div class="flex gap-2">
+                            <div class="flex flex-wrap gap-2">
                                 <template v-for="link in products.links" :key="link.label">
                                     <Link
                                         v-if="link.url"
                                         :href="link.url"
                                         :class="[
-                                            'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                                            'px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] border transition-colors',
                                             link.active
-                                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                                                : 'bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-200'
+                                                ? 'bg-black text-white border-black'
+                                                : 'bg-white text-black border-black hover:bg-black hover:text-white'
                                         ]"
                                     >
                                         <span v-html="link.label"></span>
                                     </Link>
                                     <span
                                         v-else
-                                        class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-400 border-2 border-gray-100 cursor-not-allowed"
+                                        class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.1em] border border-black/20 bg-black/5 text-black/40 cursor-not-allowed"
                                     >
                                         <span v-html="link.label"></span>
                                     </span>
                                 </template>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 </div>
 
-                <!-- Empty State -->
-                <div v-else class="bg-white rounded-2xl shadow-sm border border-gray-100 p-16 text-center">
-                    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <section v-else class="onyx-panel p-12 md:p-16 text-center">
+                    <div class="w-16 h-16 border border-black bg-black/5 flex items-center justify-center mx-auto mb-5">
+                        <svg class="w-8 h-8 text-black/55" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-                    <p class="text-gray-500 mb-6 max-w-md mx-auto">
-                        {{ filters.search ? 'Try changing your search term or filters' : 'Start by adding your first product' }}
+                    <h3 class="onyx-title text-xl">No Products Found</h3>
+                    <p class="text-black/60 mt-2 mb-6 max-w-md mx-auto">
+                        {{ filters.search ? 'Try changing your search keyword or filters.' : 'Start your catalog by adding the first product.' }}
                     </p>
-                    <Link
-                        :href="route('products.create')"
-                        class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg"
-                    >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Add Product
-                    </Link>
-                </div>
+                    <Link :href="route('products.create')" class="onyx-action">Add Product</Link>
+                </section>
             </div>
         </div>
     </AuthenticatedLayout>
