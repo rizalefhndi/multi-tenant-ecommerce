@@ -151,14 +151,7 @@ Route::middleware([
         // ==========================================
         // CUSTOMER HOME (Customer View)
         // ==========================================
-        Route::get('/shop', function () {
-            $products = \App\Models\Product::where('is_active', true)
-                ->latest()
-                ->paginate(12);
-            return Inertia::render('Customer/Shop', [
-                'products' => $products,
-            ]);
-        })->name('customer.home');
+        // Moved to public routes below
 
         // ==========================================
         // PROFILE
@@ -178,9 +171,7 @@ Route::middleware([
                 ->name('products.toggle-status');
         });
 
-        // Product show route - accessible by all authenticated users
-        // Must be defined AFTER resource routes to avoid matching 'create' as product ID
-        Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
+        // Product show route - Moved to public routes below
 
         // ==========================================
         // CART
@@ -328,8 +319,7 @@ Route::middleware([
         // SHIPPING API (RajaOngkir)
         // ==========================================
         Route::prefix('api/shipping')->name('api.shipping.')->group(function () {
-            Route::get('/provinces', [\App\Http\Controllers\ShippingController::class, 'provinces'])->name('provinces');
-            Route::get('/cities/{provinceId?}', [\App\Http\Controllers\ShippingController::class, 'cities'])->name('cities');
+            Route::get('/search-destination', [\App\Http\Controllers\ShippingController::class, 'searchDestination'])->name('search-destination');
             Route::get('/subdistricts/{cityId}', [\App\Http\Controllers\ShippingController::class, 'subdistricts'])->name('subdistricts');
             Route::get('/search-city', [\App\Http\Controllers\ShippingController::class, 'searchCity'])->name('search-city');
             Route::get('/couriers', [\App\Http\Controllers\ShippingController::class, 'couriers'])->name('couriers');
@@ -339,6 +329,20 @@ Route::middleware([
         });
 
     });
+
+    // ==========================================
+    // PUBLIC CUSTOMER ROUTES
+    // ==========================================
+    Route::get('/shop', function () {
+        $products = \App\Models\Product::where('is_active', true)
+            ->latest()
+            ->paginate(12);
+        return Inertia::render('Customer/Shop', [
+            'products' => $products,
+        ]);
+    })->name('customer.home');
+
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
 
     // ==========================================
     // PAYMENT WEBHOOKS (No Auth Required)

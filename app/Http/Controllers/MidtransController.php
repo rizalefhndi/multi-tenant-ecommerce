@@ -160,14 +160,15 @@ class MidtransController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $status = $this->midtransService->getTransactionStatus($orderNumber);
+        $this->midtransService->syncOrderStatusByOrderNumber($orderNumber);
 
-        if (!$status) {
-            return response()->json([
-                'error' => 'Status tidak ditemukan'
-            ], 404);
-        }
-
-        return response()->json($status);
+        $order->refresh();
+        $transaction = $order->transactions()->where('type', \App\Models\Transaction::TYPE_PAYMENT)->latest()->first();
+        
+        return response()->json([
+            'status' => 'ok',
+            'order' => $order,
+            'transaction' => $transaction,
+        ]);
     }
 }

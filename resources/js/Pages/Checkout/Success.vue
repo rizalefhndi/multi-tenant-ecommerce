@@ -1,7 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, onMounted, computed } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
     order: Object,
@@ -11,13 +12,79 @@ const props = defineProps({
 
 // Animation state
 const showConfetti = ref(true);
+const isPaying = ref(false);
+
+const isMidtransPayment = computed(() => {
+    if (!props.transaction) return false;
+    return ['virtual_account', 'gopay', 'shopeepay', 'qris'].includes(props.transaction.payment_method);
+});
 
 onMounted(() => {
-    // Hide confetti after 5 seconds
-    setTimeout(() => {
+    if (props.order.status === 'payment_received' || props.order.status === 'processing') {
+        // Hide confetti after 5 seconds
+        setTimeout(() => {
+            showConfetti.value = false;
+        }, 5000);
+    } else {
         showConfetti.value = false;
-    }, 5000);
+        
+        // Auto trigger payment for midtrans if pending
+        if (isMidtransPayment.value && props.order.status === 'pending_payment') {
+            payNow();
+        }
+    }
 });
+
+const loadSnapScript = (clientKey) => {
+    return new Promise((resolve) => {
+        if (window.snap) {
+            resolve();
+            return;
+        }
+        const script = document.createElement('script');
+        // TODO: Update URL based on env (sandbox/production)
+        script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
+        script.setAttribute('data-client-key', clientKey);
+        script.onload = () => resolve();
+        document.head.appendChild(script);
+    });
+};
+
+const payNow = async () => {
+    if (isPaying.value) return;
+    isPaying.value = true;
+    
+    try {
+        const response = await axios.post('/api/payment/snap-token', {
+            order_id: props.order.id
+        });
+        
+        const { snap_token, client_key } = response.data;
+        
+        await loadSnapScript(client_key);
+        
+        window.snap.pay(snap_token, {
+            onSuccess: function(result) {
+                router.reload();
+            },
+            onPending: function(result) {
+                // Do nothing, already pending
+                console.log('Pending', result);
+            },
+            onError: function(result) {
+                alert('Payment failed');
+                console.error(result);
+            },
+            onClose: function() {
+                isPaying.value = false;
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        alert('Gagal memuat pembayaran');
+        isPaying.value = false;
+    }
+};
 
 // Copy to clipboard
 const copyToClipboard = (text) => {
@@ -42,7 +109,16 @@ const copyToClipboard = (text) => {
                         </div>
 
                         <!-- Success Icon -->
-                        <div class="relative z-10">
+                        <div v-if="order.status === 'pending_payment'" class="relative z-10">
+                            <div class="mx-auto w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h1 class="text-3xl font-bold mb-2">Menunggu Pembayaran</h1>
+                            <p class="text-green-100">Silakan selesaikan pembayaran Anda</p>
+                        </div>
+                        <div v-else class="relative z-10">
                             <div class="mx-auto w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 animate-bounce-once">
                                 <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -127,6 +203,19 @@ const copyToClipboard = (text) => {
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Midtrans Payment CTA -->
+                    <div v-if="isMidtransPayment && order.status === 'pending_payment'" class="p-6 bg-indigo-50 border-b border-indigo-100 text-center">
+                        <h4 class="font-semibold text-indigo-900 mb-2">Lanjutkan Pembayaran</h4>
+                        <p class="text-sm text-indigo-700 mb-4">Selesaikan pembayaran Anda menggunakan {{ transaction.payment_method_label || 'Midtrans' }}</p>
+                        <button 
+                            @click="payNow" 
+                            :disabled="isPaying"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-sm transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
+                        >
+                            {{ isPaying ? 'Memuat...' : 'Bayar Sekarang' }}
+                        </button>
                     </div>
 
                     <!-- Order Items -->

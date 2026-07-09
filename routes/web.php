@@ -22,7 +22,10 @@ use Inertia\Inertia;
 |
 */
 
-Route::domain(env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io'))->group(function () {
+$centralDomains = config('tenancy.central_domains', [env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io')]);
+
+if (app()->runningInConsole() || in_array(request()->getHost(), $centralDomains)) {
+    Route::domain(env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io'))->group(function () {
     // Public landing page
     // Public landing page
     Route::get('/', function () {
@@ -97,7 +100,8 @@ Route::domain(env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io'))->group(function ()
             Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
         });
     });
-});
+    });
+}
 
 /*
 |--------------------------------------------------------------------------

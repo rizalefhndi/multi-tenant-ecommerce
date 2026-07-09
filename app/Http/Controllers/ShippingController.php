@@ -2,17 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\RajaOngkirService;
+use App\Services\KomerceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ShippingController extends Controller
 {
-    protected RajaOngkirService $rajaOngkirService;
+    protected KomerceService $komerceService;
 
-    public function __construct(RajaOngkirService $rajaOngkirService)
+    public function __construct(KomerceService $komerceService)
     {
-        $this->rajaOngkirService = $rajaOngkirService;
+        $this->komerceService = $komerceService;
+    }
+
+    /**
+     * Search destination (Autocomplete for Komerce)
+     * 
+     * Route: GET /api/shipping/search-destination
+     */
+    public function searchDestination(Request $request): JsonResponse
+    {
+        $search = $request->query('q', '');
+        
+        if (strlen($search) < 3) {
+            return response()->json([
+                'success' => true,
+                'data' => []
+            ]);
+        }
+
+        $destinations = $this->komerceService->searchDestination($search);
+
+        return response()->json([
+            'success' => true,
+            'data' => $destinations
+        ]);
     }
 
     /**
@@ -22,7 +46,7 @@ class ShippingController extends Controller
      */
     public function provinces(): JsonResponse
     {
-        $provinces = $this->rajaOngkirService->getProvinces();
+        $provinces = $this->komerceService->getProvinces();
 
         return response()->json([
             'success' => true,
@@ -37,7 +61,7 @@ class ShippingController extends Controller
      */
     public function cities(?int $provinceId = null): JsonResponse
     {
-        $cities = $this->rajaOngkirService->getCities($provinceId);
+        $cities = $this->komerceService->getCities($provinceId);
 
         return response()->json([
             'success' => true,
@@ -91,7 +115,7 @@ class ShippingController extends Controller
      */
     public function couriers(): JsonResponse
     {
-        $couriers = collect(config('rajaongkir.couriers', []))
+        $couriers = collect(config('komerce.couriers', []))
             ->filter(fn($c) => $c['enabled'] ?? false)
             ->values()
             ->all();
@@ -117,7 +141,7 @@ class ShippingController extends Controller
 
         // If specific courier
         if (!empty($validated['courier'])) {
-            $result = $this->rajaOngkirService->getCost(
+            $result = $this->komerceService->getCost(
                 $validated['destination_id'],
                 $validated['weight'],
                 $validated['courier']
@@ -130,7 +154,7 @@ class ShippingController extends Controller
         }
 
         // Get all enabled couriers
-        $results = $this->rajaOngkirService->getMultipleCouriersCost(
+        $results = $this->komerceService->getMultipleCouriersCost(
             $validated['destination_id'],
             $validated['weight']
         );
@@ -153,7 +177,7 @@ class ShippingController extends Controller
             'courier' => 'required|string',
         ]);
 
-        $result = $this->rajaOngkirService->trackShipment(
+        $result = $this->komerceService->trackShipment(
             $validated['awb'],
             $validated['courier']
         );
@@ -179,45 +203,50 @@ class ShippingController extends Controller
     public function options(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'city_id' => 'required|integer',
-            'weight' => 'required|integer|min:1',
+            'city_id' => 'required|string', // Komerce destination ID (can be large int stored as string)
+            'weight'  => 'required|integer|min:1',
         ]);
 
-        $couriers = $this->rajaOngkirService->getEnabledCouriers();
-        $options = [];
+        $couriers = $this->komerceService->getEnabledCouriers();
+        $options  = [];
 
         foreach ($couriers as $courierCode) {
-            $cost = $this->rajaOngkirService->getCost(
+            $cost = $this->komerceService->getCost(
                 $validated['city_id'],
                 $validated['weight'],
                 $courierCode
             );
 
             if (!empty($cost['services'])) {
-                $courierInfo = $this->rajaOngkirService->getCourierInfo($courierCode);
+                $courierInfo = $this->komerceService->getCourierInfo($courierCode);
 
                 foreach ($cost['services'] as $service) {
+                    // Komerce V2: cost is a flat int, not nested array
+                    $costValue = is_array($service['cost'])
+                        ? ($service['cost'][0]['value'] ?? 0)
+                        : ((int) $service['cost']);
+
                     $options[] = [
-                        'courier_code' => $courierCode,
-                        'courier_name' => $courierInfo['name'] ?? strtoupper($courierCode),
-                        'courier_logo' => $courierInfo['logo'] ?? null,
-                        'service' => $service['service'],
-                        'description' => $service['description'],
-                        'cost' => $service['cost'],
-                        'formatted_cost' => 'Rp ' . number_format($service['cost'], 0, ',', '.'),
-                        'etd' => $service['etd'],
-                        'value' => $courierCode . '_' . $service['service'], // for select value
+                        'courier_code'   => $courierCode,
+                        'courier_name'   => $courierInfo['name'] ?? strtoupper($courierCode),
+                        'courier_logo'   => $courierInfo['logo'] ?? null,
+                        'service'        => $service['service'],
+                        'description'    => $service['description'],
+                        'cost'           => $costValue,
+                        'formatted_cost' => 'Rp ' . number_format($costValue, 0, ',', '.'),
+                        'etd'            => $service['etd'],
+                        'value'          => $courierCode . '_' . $service['service'],
                     ];
                 }
             }
         }
 
-        // Sort by cost
+        // Sort by cost ascending
         usort($options, fn($a, $b) => $a['cost'] - $b['cost']);
 
         return response()->json([
             'success' => true,
-            'data' => $options,
+            'data'    => $options,
         ]);
     }
 }

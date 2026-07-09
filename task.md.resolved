@@ -1,0 +1,22 @@
+# Onyx Onboarding & Midtrans Core Integration Tasks
+
+- [/] 1. Persiapan Database & Model
+  - [ ] Migrasi tabel `packages` dan seeder data awal (Basic, Pro, dsb).
+  - [ ] Modifikasi schema `tenants` (tambah status dan expired_at).
+  - [ ] Migrasi tabel `transactions` untuk history langganan (billing).
+  - [ ] Update relasi antar Entity/Model.
+- [/] 2. Integrasi Midtrans Service (Backend)
+  - [x] Siapkan konfigurasi (`.env` & [config/midtrans.php](file:///d:/Efendi/multi-tenant/multi-tenant-ecommerce/config/midtrans.php)).
+  - [x] Buat `MidtransService` atau Class sejenis untuk handle `/v2/charge`.
+  - [x] Buat Route & Controller Webhook untuk terima callback notifikasi pembayaran (`signature_key` validation).
+- [/] 3. Onboarding & Checkout API (Backend)
+  - [x] API pembuatan Tenant & generate URL (Validasi subdomain).
+  - [x] API untuk execute checkout (Order).
+- [x] 4. Frontend UI Builder (Vue + Inertia)
+  - [x] Halaman Setup Toko (Kuesioner/Subdomain).
+  - [x] Halaman Pricing Plan.
+  - [x] Halaman Custom Checkout (Pilih VA/QRIS seperti referensi UI Dark Mode).
+  - [x] Halaman Instruksi Pembayaran (Pending State, tampil No VA/QRIS).
+- [x] 5. Proteksi & Middleware
+  - [x] Middleware pengecekan masa aktif (`expired_at`).
+  - [x] Lock access untuk toko tenant yang statusnya 'expired' atau 'pending'.

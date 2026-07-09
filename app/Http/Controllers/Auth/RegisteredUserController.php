@@ -36,11 +36,13 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $role = tenant() ? 'customer' : 'staff';
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'staff', // Set default role for new users
+            'role' => $role, // Set default role based on context
         ]);
 
         event(new Registered($user));

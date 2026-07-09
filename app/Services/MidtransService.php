@@ -53,6 +53,9 @@ class MidtransService
 
         try {
             $response = Http::withBasicAuth($this->serverKey, '')
+                ->withHeaders([
+                    'X-Override-Notification' => route('webhook.midtrans'),
+                ])
                 ->post($this->baseUrl . '/snap/v1/transactions', $params);
 
             if ($response->successful()) {
@@ -96,6 +99,9 @@ class MidtransService
 
         try {
             $response = Http::withBasicAuth($this->serverKey, '')
+                ->withHeaders([
+                    'X-Override-Notification' => route('api.midtrans.webhook'),
+                ])
                 ->post($this->baseUrl . '/snap/v1/transactions', $payload);
 
             if (!$response->successful()) {
@@ -554,6 +560,56 @@ class MidtransService
         }
 
         return $this->applySubscriptionTransactionStatus($subscriptionTransaction, $statusResponse);
+    }
+
+    /**
+     * Sync an order transaction status from Midtrans API by order number.
+     */
+    public function syncOrderStatusByOrderNumber(string $orderNumber): bool
+    {
+        $statusResponse = $this->getTransactionStatus($orderNumber);
+        if (!$statusResponse) {
+            return false;
+        }
+
+        $order = Order::where('order_number', $orderNumber)->first();
+        if (!$order) {
+            return false;
+        }
+
+        $transactionStatus = $statusResponse['transaction_status'] ?? '';
+        $fraudStatus = $statusResponse['fraud_status'] ?? '';
+        $paymentType = $statusResponse['payment_type'] ?? '';
+
+        $transaction = $order->transactions()
+            ->where('type', Transaction::TYPE_PAYMENT)
+            ->latest()
+            ->first();
+
+        if (!$transaction) {
+            if (!$paymentType) return false;
+            $transaction = Transaction::createPayment($order, $paymentType, [
+                'payment_channel' => 'midtrans',
+            ]);
+        }
+
+        $transaction->update([
+            'gateway_response' => $statusResponse,
+            'gateway_transaction_id' => $statusResponse['transaction_id'] ?? null,
+            'payment_method' => $paymentType ? $this->mapPaymentType($paymentType) : $transaction->payment_method,
+            'payment_channel' => $paymentType ?: $transaction->payment_channel,
+        ]);
+
+        if ($transactionStatus) {
+            return $this->processTransactionStatus(
+                $order,
+                $transaction,
+                $transactionStatus,
+                $fraudStatus
+            );
+        }
+
+        return false;
     }
 
     /**

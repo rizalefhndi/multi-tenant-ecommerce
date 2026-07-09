@@ -3,32 +3,25 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | RajaOngkir Configuration
+    | Komerce API Configuration
     |--------------------------------------------------------------------------
     |
-    | Konfigurasi untuk integrasi RajaOngkir API
-    | Dapatkan API key dari https://rajaongkir.com
+    | Konfigurasi untuk integrasi Komerce API (pengganti RajaOngkir)
+    | Dapatkan API key dari https://collaborator.komerce.id
     |
     */
 
-    // API Key dari RajaOngkir
-    'api_key' => env('RAJAONGKIR_API_KEY', ''),
+    // API Key dari Komerce (Shipping Cost)
+    'api_key' => env('KOMERCE_API_KEY', ''),
 
-    // Account type: starter, basic, pro
-    'account_type' => env('RAJAONGKIR_ACCOUNT_TYPE', 'starter'),
+    // Base URL untuk Komerce API V2 (RajaOngkir endpoints)
+    'base_url' => env('KOMERCE_BASE_URL', 'https://rajaongkir.komerce.id/api/v1'),
 
-    // Base URL berdasarkan account type
-    'base_url' => [
-        'starter' => 'https://api.rajaongkir.com/starter',
-        'basic' => 'https://api.rajaongkir.com/basic',
-        'pro' => 'https://pro.rajaongkir.com/api',
-    ],
+    // Default origin (city_id / district_id toko)
+    'origin' => env('KOMERCE_ORIGIN', ''),
 
-    // Default origin (city_id toko)
-    'origin' => env('RAJAONGKIR_ORIGIN', ''),
-
-    // Origin type: city atau subdistrict (pro only)
-    'origin_type' => env('RAJAONGKIR_ORIGIN_TYPE', 'city'),
+    // Origin type: city atau subdistrict
+    'origin_type' => env('KOMERCE_ORIGIN_TYPE', 'city'),
 
     // Enabled couriers
     'couriers' => [
@@ -50,23 +43,22 @@ return [
             'enabled' => true,
             'logo' => '/images/couriers/pos.png',
         ],
-        // Basic & Pro only
         'jnt' => [
             'code' => 'jnt',
             'name' => 'J&T Express',
-            'enabled' => false, // Enable if using basic/pro
+            'enabled' => true, 
             'logo' => '/images/couriers/jnt.png',
         ],
         'sicepat' => [
             'code' => 'sicepat',
             'name' => 'SiCepat',
-            'enabled' => false,
+            'enabled' => true,
             'logo' => '/images/couriers/sicepat.png',
         ],
         'anteraja' => [
             'code' => 'anteraja',
             'name' => 'AnterAja',
-            'enabled' => false,
+            'enabled' => true,
             'logo' => '/images/couriers/anteraja.png',
         ],
     ],
@@ -74,7 +66,7 @@ return [
     // Cache settings
     'cache' => [
         'enabled' => true,
-        'prefix' => 'rajaongkir_',
+        'prefix' => 'komerce_',
         'ttl' => [
             'provinces' => 86400 * 7, // 7 days
             'cities' => 86400 * 7,    // 7 days

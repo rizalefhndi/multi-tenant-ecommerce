@@ -28,9 +28,9 @@ class UpdateAddressRequest extends FormRequest
             'address_line_1' => ['required', 'string', 'max:255'],
             'address_line_2' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:100'],
-            'city_id' => ['nullable', 'string', 'max:10'],
+            'city_id' => ['nullable', 'string', 'max:255'],
             'province' => ['required', 'string', 'max:100'],
-            'province_id' => ['nullable', 'string', 'max:10'],
+            'province_id' => ['nullable', 'string', 'max:255'],
             'postal_code' => ['required', 'string', 'max:10'],
             'is_default' => ['nullable', 'boolean'],
         ];

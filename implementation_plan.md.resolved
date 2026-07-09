@@ -1,0 +1,78 @@
+# Rancangan Implementasi B2B SaaS Onboarding & Flow Pembayaran (Midtrans Core)
+
+Dokumen ini menjelaskan strategi teknis dan arsitektur untuk sistem registrasi tenant baru, pemilihan paket, dan pembayaran menggunakan **Midtrans Core API** pada proyek Onyx (Multi-Tenant E-Commerce).
+
+## 1. User Journey (Alur Pengguna)
+
+1. **Registrasi Akun:** User mendaftar melalui halaman Register dan login sebagai Landlord (calon pemilik entitas tenant).
+2. **Setup Toko (Onboarding Wizard):**
+   - **Step 1:** Isi kuesioner dasar (jenis bisnis, produk, dsb). *Opsional untuk analitik.*
+   - **Step 2:** Setup Nama Toko & Pemilihan Subdomain (Validasi realtime ketersediaan `namatoko.onyx.com`).
+3. **Pemilihan Paket (Pricing):** User dialihkan ke halaman Pricing untuk memilih paket langganan (Contoh: Basic, Pro, Enterprise) dan durasi (1 bulan / 1 tahun).
+4. **Checkout Custom (Midtrans Core):**
+   - User melihat ringkasan pesanan dan memilih **Metode Pembayaran** (Virtual Account, E-Wallet, QRIS) di UI khusus (Dark mode Onyx).
+   - User klik **"Pay Now"**.
+5. **Menunggu Pembayaran (Pending State):** 
+   - Sistem menampilkan Instruksi Pembayaran (Nomor VA, Barcode QRIS). Toko tenant berstatus "Pending Payment".
+6. **Pembayaran Berhasil:** Midtrans mengirimkan notifikasi. Masa aktif toko diperpanjang (`expired_at` diupdate), dan tenant otomatis aktif.
+
+## 2. Rancangan Database (Database Schema/Migration)
+
+Perubahan dan penambahan yang diperlukan pada schema database (di tabel central/landlord database):
+
+### A. Tabel `packages` (Daftar Harga)
+- `id`
+- `name` (misal: "Pro")
+- `description`
+- `price` (misal: 150000)
+- `duration_in_days` (misal: 30)
+
+### B. Modifikasi Tabel `tenants`
+- Tambahkan string `status` (misal: 'pending', 'active', 'suspended', 'expired').
+- Tambahkan datetime `expired_at` (menentukan kapan toko tidak bisa diakses/jatuh tempo).
+- Tambahkan foreignId `package_id`.
+
+### C. Tabel `transactions` (Riwayat Pembayaran)
+- `id`
+- `tenant_id`
+- `package_id`
+- `order_id` (Generate unik, contoh: `INV-ONYX-2026-X8Y1`)
+- `gross_amount` (Total pembayaran)
+- `payment_type` (bank_transfer, ewallet, qris)
+- `payment_provider` (bca, bni, gopay, shopeepay)
+- `status` (pending, settlement, expire, cancel)
+- `midtrans_transaction_id` (Menyimpan respon dari Midtrans)
+- `payment_details` (JSON) -> Menyimpan Nomor VA atau URL Cek Status Midtrans
+- `paid_at` (Waktu dibayar)
+
+## 3. Sistem Midtrans Core API & Webhook
+
+1. **Frontend Request:** Saat Checkout, Vue mengirimkan data *[Toko, Paket, Metode Pembayaran]* ke Controller.
+2. **Controller ke Midtrans:** Backend Onyx menggunakan Guzzle/Http Client menembak `/v2/charge`. Parameter `transaction_details.order_id` menggunakan `INV-ONYX-...`.
+3. **Respon Midtrans ke Frontend:** Backend meneruskan respon (seperti `va_numbers` atau URL `actions` dari Gopay/QRIS) ke Frontend Onyx untuk dirender.
+4. **Webhook Handler:**
+   - Midtrans mengontak endpoint POST webhook di Onyx (misal: `/api/midtrans/webhook`).
+   - Onyx memvalidasi `signature_key` dari Midtrans (Sangat penting!).
+   - Jika `transaction_status` == 'settlement' atau 'capture':
+     - Update `transactions.status` = 'settlement'.
+     - Update `tenants.status` = 'active', `tenants.expired_at` = *hari ini + duration_in_days paket*.
+
+## 4. Aliran Implementasi (Development Steps)
+
+Kita akan mengeksekusi ini dalam beberapa fase iteratif:
+1. **Fase 1: Database & Model Preparation.** Membuat migrasi untuk `packages`, `transactions`, dan mengubah struktur `tenants`.
+2. **Fase 2: Backend Logic Midtrans.** Membuat class helper/service `MidtransService` dan endpoint webhook yang aman.
+3. **Fase 3: API Endpoint.** Membuat route API internal untuk request proses payment dan status cek.
+4. **Fase 4: Frontend Onboarding Wizard & Pricing.** Mendesain UI Vue form pendaftaran toko dan daftar harga.
+5. **Fase 5: Frontend Custom Checkout.** Membuat UI seperti referensi gambar (Pilihan Payment Method + Summary) menggunakan data real.
+6. **Fase 6: Halaman Instruksi/Menunggu Pembayaran.** Menampilkan Nomor VA atau QR Code, lengkap dengan timer/kadaluarsa.
+
+## 5. Pertimbangan & Edge Case
+
+- **Toko Expired:** Bagaimana agar tenant yang `expired_at`-nya lewat otomatis dialihkan halamannya menjadi "Billing / Perpanjang" dan tidak bisa mengakses halaman Tenant Dashboard, maupun customer front-end mereka diblokir sementara?
+- **Pembersihan Data:** Transaksi yang kadaluarsa (user tidak bayar-bayar) dihapus atau dibiarkan `expire` secara kronologis histori.
+- **Midtrans Keys:** Akan menggunakan API Key Sandbox (Testing) terlebih dahulu. Perlu menyimpan kunci di `.env`.
+
+---
+> [!NOTE]
+> *Silakan setujui rencana ini agar saya dapat mulai menulis migrasi database, atau berikan tanggapan jika Anda memiliki preferensi tambahan!*

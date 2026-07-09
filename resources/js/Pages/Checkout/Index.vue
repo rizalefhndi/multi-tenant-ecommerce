@@ -1,7 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import axios from 'axios';
 import AddressCard from '@/Components/AddressCard.vue';
 import AddressFormModal from '@/Components/AddressFormModal.vue';
 
@@ -29,6 +30,9 @@ const form = useForm({
 // State
 const isProcessing = ref(false);
 const showAddressModal = ref(false);
+const shippingOptions = ref([]);
+const isLoadingShipping = ref(false);
+
 const selectedAddress = computed(() => {
     return props.addresses.find(addr => addr.id === form.address_id);
 });
@@ -73,10 +77,69 @@ const handleAddressSaved = (address) => {
     form.address_id = address.id;
 };
 
+// Fetch Shipping Options
+const fetchShippingOptions = async () => {
+    if (!selectedAddress.value || !selectedAddress.value.city_id) {
+        shippingOptions.value = [];
+        return;
+    }
+
+    isLoadingShipping.value = true;
+    shippingOptions.value = [];
+    form.shipping_courier = null;
+    form.shipping_service = null;
+    form.shipping_cost = 0;
+
+    try {
+        const response = await axios.post('/api/shipping/options', {
+            city_id: selectedAddress.value.city_id,
+            weight: props.totalWeight || 1000 // default 1kg if 0
+        });
+
+        if (response.data.success) {
+            shippingOptions.value = response.data.data;
+            // Auto select first option if available
+            if (shippingOptions.value.length > 0) {
+                selectShippingOption(shippingOptions.value[0]);
+            }
+        }
+    } catch (error) {
+        console.error('Failed to fetch shipping options', error);
+        alert('Gagal mengambil opsi pengiriman. Silakan coba lagi.');
+    } finally {
+        isLoadingShipping.value = false;
+    }
+};
+
+// Select Shipping Option
+const selectShippingOption = (option) => {
+    form.shipping_courier = option.courier_code;
+    form.shipping_service = option.service;
+    form.shipping_cost = option.cost;
+};
+
+// Watch for address changes to refetch shipping
+watch(() => form.address_id, (newVal) => {
+    if (newVal) {
+        fetchShippingOptions();
+    }
+});
+
+onMounted(() => {
+    if (form.address_id) {
+        fetchShippingOptions();
+    }
+});
+
 // Submit checkout
 const submitCheckout = () => {
     if (!form.address_id) {
         alert('Please select a shipping address');
+        return;
+    }
+
+    if (!form.shipping_courier) {
+        alert('Please select a shipping method');
         return;
     }
 
@@ -212,6 +275,68 @@ const submitCheckout = () => {
                                                 <p class="mt-1 text-sm font-medium text-gray-700">{{ address.recipient_name }}</p>
                                                 <p class="text-sm text-gray-500">{{ address.phone }}</p>
                                                 <p class="mt-1 text-sm text-gray-600 line-clamp-2">{{ address.full_address }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Method -->
+                        <div v-if="form.address_id" class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <div class="p-6 border-b border-gray-100">
+                                <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    Shipping Method
+                                </h3>
+                            </div>
+
+                            <div class="p-6">
+                                <div v-if="isLoadingShipping" class="flex justify-center py-6">
+                                    <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                                <div v-else-if="shippingOptions.length === 0" class="text-center py-6 text-gray-500">
+                                    Tidak ada opsi pengiriman tersedia untuk alamat ini.
+                                </div>
+                                <div v-else class="space-y-3">
+                                    <div
+                                        v-for="option in shippingOptions"
+                                        :key="option.value"
+                                        @click="selectShippingOption(option)"
+                                        class="relative p-4 border-2 rounded-lg cursor-pointer transition-all"
+                                        :class="(form.shipping_courier === option.courier_code && form.shipping_service === option.service)
+                                            ? 'border-indigo-600 bg-indigo-50' 
+                                            : 'border-gray-200 hover:border-gray-300'"
+                                    >
+                                        <div class="flex items-center gap-4">
+                                            <!-- Radio Button -->
+                                            <div 
+                                                class="w-5 h-5 border-2 rounded-full flex items-center justify-center flex-shrink-0"
+                                                :class="(form.shipping_courier === option.courier_code && form.shipping_service === option.service)
+                                                    ? 'border-indigo-600' 
+                                                    : 'border-gray-300'"
+                                            >
+                                                <div 
+                                                    v-if="form.shipping_courier === option.courier_code && form.shipping_service === option.service"
+                                                    class="w-3 h-3 bg-indigo-600 rounded-full"
+                                                ></div>
+                                            </div>
+
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex justify-between items-start">
+                                                    <div>
+                                                        <p class="font-medium text-gray-900">{{ option.courier_name }} - {{ option.service }}</p>
+                                                        <p class="text-sm text-gray-500">{{ option.description }} (Estimasi: {{ option.etd }} hari)</p>
+                                                    </div>
+                                                    <div class="text-right flex-shrink-0">
+                                                        <p class="font-semibold text-gray-900">{{ option.formatted_cost }}</p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -369,10 +494,9 @@ const submitCheckout = () => {
                                     </div>
                                 </div>
 
-                                <!-- Checkout Button -->
                                 <button
                                     @click="submitCheckout"
-                                    :disabled="isProcessing || !form.address_id || (stockIssues && stockIssues.length > 0)"
+                                    :disabled="isProcessing || !form.address_id || !form.shipping_courier || (stockIssues && stockIssues.length > 0)"
                                     class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
                                 >
                                     <svg v-if="isProcessing" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
