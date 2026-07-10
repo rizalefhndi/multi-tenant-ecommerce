@@ -207,16 +207,13 @@ class StoreController extends Controller
         ]);
 
         // Create domain for tenant
-        // Menambahkan prefix port pada URL bisa dilakukan jika di localhost,
-        // tapi domain table hanya perlu domain-nya saja (tanpa port)
+        // Dalam arsitektur Path-based, kita tidak perlu membuat data di tabel domains.
+        // Kita gunakan host utama sebagai basis URL.
         $centralDomain = request()->getHost();
         if ($centralDomain === '127.0.0.1' || $centralDomain === 'localhost') {
-            $centralDomain = env('CENTRAL_DOMAIN', 'onyx.127.0.0.1.nip.io');
+            $centralDomain = env('CENTRAL_DOMAIN', '127.0.0.1');
         }
-        $domain = $tenantId . '.' . $centralDomain;
-        $tenant->domains()->create([
-            'domain' => $domain,
-        ]);
+        $domain = $centralDomain;
 
         // Create admin user in tenant database
         $tenant->run(function () use ($user) {
@@ -233,6 +230,7 @@ class StoreController extends Controller
         if ($port && !in_array((int) $port, [80, 443], true)) {
             $fullUrl .= ':' . $port;
         }
+        $fullUrl .= '/store/' . $tenantId;
 
         return [
             'store_name' => $validated['store_name'],

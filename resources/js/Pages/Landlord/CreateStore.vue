@@ -114,7 +114,8 @@ watch(() => form.subdomain, () => {
 
 // Full domain preview
 const domainPreview = computed(() => {
-    return form.subdomain ? `${form.subdomain}.localhost:8000` : 'yourstore.localhost:8000';
+    const host = typeof window !== 'undefined' ? window.location.host : 'onyx-app.fly.dev';
+    return form.subdomain ? `${host}/store/${form.subdomain}` : `${host}/store/yourstore`;
 });
 
 const submit = () => {

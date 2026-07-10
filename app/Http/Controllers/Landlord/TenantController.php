@@ -42,7 +42,6 @@ class TenantController extends Controller
             'id' => 'required|string|max:255|unique:tenants,id|alpha_dash',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'domain' => 'required|string|max:255|unique:domains,domain',
         ]);
 
         try {
@@ -53,10 +52,7 @@ class TenantController extends Controller
                 'email' => $validated['email'],
             ]);
 
-            // Create domain
-            $tenant->domains()->create([
-                'domain' => $validated['domain'],
-            ]);
+            // Domain creation is no longer required for path-based routing.
 
             // Run migrations untuk tenant baru
             \Artisan::call('tenants:migrate', [

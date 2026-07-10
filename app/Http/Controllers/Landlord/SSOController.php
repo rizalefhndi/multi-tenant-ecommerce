@@ -48,12 +48,7 @@ class SSOController extends Controller
             abort(403, 'You do not have access to this store.');
         }
 
-        // Get tenant domain
-        $domain = $tenant->domains()->first();
-
-        if (!$domain) {
-            abort(404, 'Store domain not found.');
-        }
+        $domain = request()->getHost();
 
         // Generate login token
         $loginToken = TenantLoginToken::generateForUser($user, $tenantId);
@@ -61,11 +56,11 @@ class SSOController extends Controller
         // Redirect to tenant SSO endpoint
         $scheme = $request->isSecure() ? 'https' : 'http';
         $port = parse_url(config('app.url'), PHP_URL_PORT);
-        $ssoUrl = $scheme . '://' . $domain->domain;
+        $ssoUrl = $scheme . '://' . $domain;
         if ($port && !in_array((int) $port, [80, 443], true)) {
             $ssoUrl .= ':' . $port;
         }
-        $ssoUrl .= '/sso?token=' . $loginToken->token;
+        $ssoUrl .= '/store/' . $tenantId . '/sso?token=' . $loginToken->token;
 
         return redirect()->away($ssoUrl);
     }

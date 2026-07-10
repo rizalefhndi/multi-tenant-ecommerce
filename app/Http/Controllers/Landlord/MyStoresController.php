@@ -28,22 +28,18 @@ class MyStoresController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($tenant) use ($scheme, $port) {
-                $domain = $tenant->domains->first();
-                $fullUrl = null;
-                $displayDomain = null;
-                if ($domain) {
-                    $displayDomain = $domain->domain;
-                    if ($port && !in_array((int) $port, [80, 443], true)) {
-                        $displayDomain .= ':' . $port;
-                    }
-                    $fullUrl = $scheme . '://' . $displayDomain;
+                $displayDomain = request()->getHost();
+                if ($port && !in_array((int) $port, [80, 443], true)) {
+                    $displayDomain .= ':' . $port;
                 }
+                $displayDomain .= '/store/' . $tenant->id;
+                $fullUrl = $scheme . '://' . $displayDomain;
 
                 return [
                     'id' => $tenant->id,
                     'store_name' => $tenant->store_name,
                     'subdomain' => $tenant->id,
-                    'domain' => $domain ? $domain->domain : null,
+                    'domain' => null,
                     'display_domain' => $displayDomain,
                     'full_url' => $fullUrl,
                     'plan' => $tenant->plan ? [

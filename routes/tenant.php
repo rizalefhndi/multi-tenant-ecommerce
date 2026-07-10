@@ -12,8 +12,7 @@ use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +22,8 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 Route::middleware([
     'web',
-    InitializeTenancyByDomain::class,
-    PreventAccessFromCentralDomains::class,
+    InitializeTenancyByPath::class,
+    \App\Http\Middleware\SetTenantUrlDefault::class,
     'tenant.active', // Check if tenant is not suspended
 ])->group(function () {
 
