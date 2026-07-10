@@ -1,0 +1,24 @@
+Saya menyisipkannya di 2 file utama yang menjadi pintu masuk aplikasi Laravel Anda:
+
+1. bootstrap/app.php (untuk menangani akses dari browser web).
+2. artisan (untuk menangani akses saat Anda menjalankan perintah seperti php artisan serve).
+Dengan baris kode tersebut, PHP akan tetap menampilkan pesan Error sungguhan jika ada masalah pada kode Anda, tetapi PHP tidak akan lagi cerewet menampilkan pesan peringatan mengenai fungsi-fungsi yang sudah usang (deprecated).
+
+Sekarang Anda sudah tidak akan melihat peringatan PDO::MYSQL_ATTR_SSL_CA lagi saat menjalankan Laravel! Silakan dilanjutkan pekerjaannya.
+
+
+
+- testing ongkir
+- memperbaiki tampilan
+- setup railway atau server dan domain free
+
+
+rizal@mail.com
+@Rizal123
+
+rizalsel@mail.com
+@Rizalsel123
+
+
+password db supabase multitenant
+@Tambalban123
