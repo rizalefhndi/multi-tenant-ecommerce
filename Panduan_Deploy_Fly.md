@@ -105,3 +105,8 @@ C:\Users\admin\.fly\bin\flyctl.exe ssh console -C "php artisan db:seed --force"
 
 🎉 **SELESAI!**
 Website Laravel Multi-Tenant Anda sudah berhasil online sepenuhnya. Anda bisa mengaksesnya di `https://nama-aplikasi-anda.fly.dev`.
+
+
+
+C:\Users\admin\.fly\bin\flyctl.exe auth login       
+C:\Users\admin\.fly\bin\flyctl.exe deploy                             
