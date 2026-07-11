@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 
 const props = defineProps({
@@ -20,6 +20,8 @@ const form = useForm({
     remember: false,
 });
 
+const page = usePage();
+
 const showPassword = ref(false);
 const showSuccessAlert = ref(false);
 
@@ -34,7 +36,7 @@ const closeAlert = () => {
 };
 
 const submit = () => {
-    form.post('/login', {
+    form.post(route(page.props.authRoutePrefix + 'login'), {
         onFinish: () => form.reset('password'),
     });
 };
@@ -171,7 +173,7 @@ const submit = () => {
                             </label>
                             <Link
                                 v-if="canResetPassword"
-                                :href="route('password.request')"
+                                :href="route($page.props.authRoutePrefix + 'password.request')"
                                 class="text-xs font-bold text-gray-400 hover:text-black uppercase tracking-wider transition-colors"
                             >
                                 Forgot?
@@ -256,7 +258,7 @@ const submit = () => {
                     <div class="text-center pt-2">
                         <p class="text-sm text-gray-500">
                             New here?
-                            <Link :href="route('register')" class="font-black text-black hover:underline uppercase tracking-wide ml-1">
+                            <Link :href="route($page.props.authRoutePrefix + 'register')" class="font-black text-black hover:underline uppercase tracking-wide ml-1">
                                 Create Account
                             </Link>
                         </p>

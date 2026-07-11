@@ -34,9 +34,9 @@ const showDropdown = ref(false);
 
                         <!-- Guest Nav -->
                         <div v-if="!auth?.user" class="flex items-center gap-8">
-                            <Link :href="route('login')" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Login</Link>
+                            <Link :href="route('central.login')" class="text-sm font-bold uppercase tracking-wider hover:underline underline-offset-4 decoration-2">Login</Link>
                             <Link
-                                :href="route('register')"
+                                :href="route('central.register')"
                                 class="px-6 py-3 bg-black text-white text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
                             >
                                 Start Free
@@ -121,7 +121,7 @@ const showDropdown = ref(false);
 
                     <div class="flex flex-wrap gap-4">
                         <Link
-                            :href="auth?.user ? '/my-stores' : route('register')"
+                            :href="auth?.user ? '/my-stores' : route('central.register')"
                             class="px-8 py-4 bg-black text-white font-black uppercase tracking-widest text-sm rounded-full hover:scale-105 transition-transform shadow-xl"
                         >
                             {{ auth?.user ? 'Go to My Stores' : 'Launch Now' }}
@@ -224,7 +224,7 @@ const showDropdown = ref(false);
                     Ready To Scale <br/> Your Brand?
                 </h2>
                 <Link
-                    :href="auth?.user ? '/pricing' : route('register')"
+                    :href="auth?.user ? '/pricing' : route('central.register')"
                     class="inline-block px-12 py-5 bg-white text-black font-black uppercase tracking-widest text-lg rounded-full hover:scale-105 hover:bg-gray-200 transition-all"
                 >
                     {{ auth?.user ? 'Choose a Plan' : 'Get Started Now' }}

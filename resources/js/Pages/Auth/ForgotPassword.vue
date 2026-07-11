@@ -16,8 +16,10 @@ const form = useForm({
     email: '',
 });
 
+const page = usePage();
+
 const submit = () => {
-    form.post(route('password.email'));
+    form.post(route(page.props.authRoutePrefix + 'password.email'));
 };
 </script>
 

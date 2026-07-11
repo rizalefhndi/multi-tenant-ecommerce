@@ -77,7 +77,9 @@ if (app()->runningInConsole() || in_array(request()->getHost(), $centralDomains)
         ->name('api.midtrans.webhook');
 
     // Auth routes (Breeze)
-    require __DIR__.'/auth.php';
+    Route::name('central.')->group(function () {
+        require __DIR__.'/auth.php';
+    });
 
     // Landlord protected routes - Only Super Admin can access
     Route::middleware(['auth', 'superadmin'])->prefix('landlord')->name('landlord.')->group(function () {

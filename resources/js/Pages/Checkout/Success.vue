@@ -55,7 +55,7 @@ const payNow = async () => {
     isPaying.value = true;
     
     try {
-        const response = await axios.post('/api/payment/snap-token', {
+        const response = await axios.post(route('api.payment.snap-token'), {
             order_id: props.order.id
         });
         

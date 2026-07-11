@@ -91,7 +91,7 @@ const fetchShippingOptions = async () => {
     form.shipping_cost = 0;
 
     try {
-        const response = await axios.post('/api/shipping/options', {
+        const response = await axios.post(route('api.shipping.options'), {
             city_id: selectedAddress.value.city_id,
             weight: props.totalWeight || 1000 // default 1kg if 0
         });

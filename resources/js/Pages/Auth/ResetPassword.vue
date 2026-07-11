@@ -24,8 +24,10 @@ const form = useForm({
     password_confirmation: '',
 });
 
+const page = usePage();
+
 const submit = () => {
-    form.post(route('password.store'), {
+    form.post(route(page.props.authRoutePrefix + 'password.store'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };

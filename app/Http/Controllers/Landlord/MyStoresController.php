@@ -69,7 +69,7 @@ class MyStoresController extends Controller
                         ],
                         'active' => [
                             'label' => 'Enter Store',
-                            'url' => route('sso.redirect', ['tenant' => $tenant->id]),
+                            'url' => $fullUrl,
                             'kind' => 'primary',
                             'disabled' => false,
                         ],

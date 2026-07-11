@@ -13,6 +13,22 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->redirectUsersTo(function (\Illuminate\Http\Request $request) {
+            $tenantParam = $request->route('tenant');
+            if ($tenantParam && \Illuminate\Support\Facades\Route::has('dashboard')) {
+                return route('dashboard', ['tenant' => $tenantParam]);
+            }
+            return route('landlord.dashboard');
+        });
+
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            $tenantParam = $request->route('tenant');
+            if ($tenantParam && \Illuminate\Support\Facades\Route::has('login')) {
+                return route('login', ['tenant' => $tenantParam]);
+            }
+            return route('central.login');
+        });
+
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,

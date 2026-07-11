@@ -10,6 +10,8 @@ const form = useForm({
     password: '',
 });
 
+const page = usePage();
+
 const submit = () => {
     form.post(route('password.confirm'), {
         onFinish: () => form.reset(),

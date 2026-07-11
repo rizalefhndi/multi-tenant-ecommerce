@@ -21,7 +21,7 @@ class SSOController extends Controller
         // Debug: Check if user is authenticated
         if (!$user) {
             Log::error('SSO Redirect: User not authenticated');
-            return redirect()->route('login')->with('error', 'Please login first.');
+            return redirect()->route('central.login')->with('error', 'Please login first.');
         }
 
         Log::info('SSO Redirect Debug', [

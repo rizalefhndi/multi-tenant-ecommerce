@@ -33,13 +33,13 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        // Check if we're in a tenant context using tenancy helper or host check
-        $host = $request->getHost();
-        $isCentralDomain = in_array($host, config('tenancy.central_domains', ['127.0.0.1', 'localhost', 'onyx.127.0.0.1.nip.io']));
-
-        if (!$isCentralDomain) {
-            // We're on a tenant subdomain, redirect to tenant dashboard
-            return redirect('/dashboard');
+        // Check if we're in a tenant context
+        if (tenant()) {
+            $user = $request->user();
+            if ($user->role === 'admin' || $user->role === 'superadmin') {
+                return redirect()->route('admin.dashboard', ['tenant' => tenant('id')]);
+            }
+            return redirect()->route('customer.home', ['tenant' => tenant('id')]);
         }
 
         // Super admin goes to landlord dashboard
@@ -77,6 +77,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->to(tenant() ? route('login', ['tenant' => tenant('id')]) : route('central.login'));
     }
 }

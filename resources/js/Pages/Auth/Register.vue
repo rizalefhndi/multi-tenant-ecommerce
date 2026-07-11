@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const form = useForm({
@@ -9,11 +9,13 @@ const form = useForm({
     password_confirmation: '',
 });
 
+const page = usePage();
+
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
 const submit = () => {
-    form.post(route('register'), {
+    form.post(route(page.props.authRoutePrefix + 'register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
@@ -182,7 +184,7 @@ const submit = () => {
                      <div class="text-center pt-2">
                         <p class="text-sm text-gray-500">
                             Already have an account?
-                            <Link :href="route('login')" class="font-black text-black hover:underline uppercase tracking-wide ml-1">
+                            <Link :href="route($page.props.authRoutePrefix + 'login')" class="font-black text-black hover:underline uppercase tracking-wide ml-1">
                                 Log in
                             </Link>
                         </p>

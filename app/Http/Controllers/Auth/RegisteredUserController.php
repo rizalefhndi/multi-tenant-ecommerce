@@ -48,7 +48,7 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         // Don't auto-login, redirect to login page with success message
-        return redirect(route('login'))
+        return redirect((tenant() ? route('login', ['tenant' => tenant('id')]) : route('central.login')))
             ->with('success', 'Account created successfully! Please login to continue.');
     }
 }

@@ -108,5 +108,7 @@ Website Laravel Multi-Tenant Anda sudah berhasil online sepenuhnya. Anda bisa me
 
 
 
-C:\Users\admin\.fly\bin\flyctl.exe auth login       
+C:\Users\admin\.fly\bin\flyctl.exe auth login  
+C:\Users\EFENDI\.fly\bin\flyctl.exe auth login
+C:\Users\EFENDI\.fly\bin\flyctl.exe deploy
 C:\Users\admin\.fly\bin\flyctl.exe deploy                             

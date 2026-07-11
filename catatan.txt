@@ -22,3 +22,21 @@ rizalsel@mail.com
 
 password db supabase multitenant
 @Tambalban123
+
+
+benerin tenant - domain
+testing keseluruhan flow
+- create user
+- user login
+- create tenant
+- pembayaran tenant
+- domain tenant
+- login admin tenant
+- buat product
+- user login store
+- checkout
+- pembayaran dan ongkir
+- cek data masuk di admin tenant
+
+benerin ui agar konsisten
+benerin 419 expire ketika pindah pages
