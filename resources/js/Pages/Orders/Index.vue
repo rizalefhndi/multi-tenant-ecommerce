@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StoreLayout from '@/Layouts/StoreLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, computed, watch } from 'vue';
 import OrderStatusBadge from '@/Components/OrderStatusBadge.vue';
@@ -36,8 +36,8 @@ const getStatusLabel = (status) => {
         <title>Orders</title>
     </Head>
 
-    <AuthenticatedLayout>
-        <div class="min-h-screen py-6 md:py-8">
+    <StoreLayout>
+        <div class="min-h-screen py-6 md:py-12 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
                 <section class="onyx-panel p-5 md:p-7">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -220,5 +220,5 @@ const getStatusLabel = (status) => {
                 </section>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </StoreLayout>
 </template>

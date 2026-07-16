@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StoreLayout from '@/Layouts/StoreLayout.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import OrderStatusBadge from '@/Components/OrderStatusBadge.vue';
@@ -106,8 +106,8 @@ const refreshStatus = async () => {
         <title>Order Details</title>
     </Head>
 
-    <AuthenticatedLayout>
-        <div class="min-h-screen py-6 md:py-8">
+    <StoreLayout>
+        <div class="min-h-screen py-6 md:py-12 bg-white">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
                 <section class="onyx-panel p-5 md:p-7">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -485,5 +485,5 @@ const refreshStatus = async () => {
                 </form>
             </div>
         </Modal>
-    </AuthenticatedLayout>
+    </StoreLayout>
 </template>
