@@ -25,18 +25,13 @@ const props = defineProps({
 
 // Fallback data for empty dashboard states
 const stats = computed(() => ({
-    totalProducts: props.stats?.totalProducts || 12,
-    totalOrders: props.stats?.totalOrders || 48,
-    totalRevenue: props.stats?.totalRevenue || 15750000,
-    pendingOrders: props.stats?.pendingOrders || 5,
+    totalProducts: props.stats?.totalProducts ?? 0,
+    totalOrders: props.stats?.totalOrders ?? 0,
+    totalRevenue: props.stats?.totalRevenue ?? 0,
+    pendingOrders: props.stats?.pendingOrders ?? 0,
 }));
 
-const recentOrders = computed(() => props.recentOrders?.length ? props.recentOrders : [
-    { id: 1, order_number: 'ORD-001', customer: 'John Doe', total: 350000, status: 'processing', created_at: '2024-12-27' },
-    { id: 2, order_number: 'ORD-002', customer: 'Jane Smith', total: 175000, status: 'pending', created_at: '2024-12-27' },
-    { id: 3, order_number: 'ORD-003', customer: 'Bob Wilson', total: 520000, status: 'shipped', created_at: '2024-12-26' },
-    { id: 4, order_number: 'ORD-004', customer: 'Alice Brown', total: 89000, status: 'completed', created_at: '2024-12-26' },
-]);
+const recentOrders = computed(() => props.recentOrders ?? []);
 
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('id-ID', {
