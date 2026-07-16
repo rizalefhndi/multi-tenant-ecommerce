@@ -49,34 +49,31 @@ const addToCart = () => {
     <Head :title="product.name" />
 
     <StoreLayout>
-        <div class="min-h-screen bg-white">
-            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-12">
+        <div class="min-h-screen bg-white text-black selection:bg-black selection:text-white pb-24">
+            <div class="max-w-[1440px] mx-auto px-6 lg:px-12 py-12">
                 <!-- Breadcrumb -->
-                <nav class="text-sm font-bold uppercase tracking-wide text-gray-400 mb-8">
-                    <Link :href="route('customer.home')" class="hover:text-black transition-colors">Shop</Link>
+                <nav class="text-sm font-black uppercase tracking-widest text-black mb-12 border-b-4 border-black pb-4">
+                    <Link :href="route('customer.home')" class="hover:underline underline-offset-8 decoration-4">Shop</Link>
                     <span class="mx-3">/</span>
-                    <span class="text-black">{{ product.name }}</span>
+                    <span class="bg-black text-white px-2 py-1">{{ product.name }}</span>
                 </nav>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
                     <!-- Left: Gallery (Visual) -->
                     <div class="lg:col-span-5 relative">
-                        <!-- Abstract Background Shapes -->
-                        <div class="absolute top-[-5%] left-[-10%] w-[80%] h-[80%] bg-[#f0f0f0] rounded-[3rem] -z-10 transform -rotate-2"></div>
-                        <div class="absolute bottom-[-5%] right-[-5%] w-[60%] h-[60%] bg-[#FF6B6B]/10 rounded-[4rem] -z-10 transform rotate-3"></div>
-
-                        <div class="aspect-[4/5] w-full bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-gray-100 relative group">
+                        <!-- Brutalist Frame -->
+                        <div class="aspect-[4/5] w-full bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative group">
                             <img 
                                 :src="product.image || 'https://via.placeholder.com/800'" 
                                 :alt="product.name"
-                                class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+                                class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                             />
                             <!-- Tag Overlay -->
-                             <div class="absolute top-6 left-6 flex flex-col gap-2">
-                                <span v-if="product.stock < 5" class="px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider rounded-full">
+                             <div class="absolute top-4 left-4 flex flex-col gap-3">
+                                <span v-if="product.stock < 5" class="px-4 py-2 bg-white border-4 border-black text-black text-xs font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                     Low Stock
                                 </span>
-                                <span class="px-4 py-2 bg-white/80 backdrop-blur-md text-black text-xs font-bold uppercase tracking-wider rounded-full">
+                                <span class="px-4 py-2 bg-black border-4 border-black text-white text-xs font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                     New Arrival
                                 </span>
                             </div>
@@ -85,53 +82,53 @@ const addToCart = () => {
 
                     <!-- Right: Info (Sticky) -->
                     <div class="lg:col-span-7 relative">
-                        <div class="sticky top-32">
+                        <div class="sticky top-32 border-4 border-black p-8 md:p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white">
                             <!-- Header -->
-                            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 leading-[0.9] tracking-tighter mb-4 uppercase break-words">
+                            <h1 class="text-5xl md:text-7xl font-black text-black leading-[0.85] tracking-tighter mb-6 uppercase break-words">
                                 {{ product.name }}
                             </h1>
                             
-                            <div class="flex items-center gap-6 mb-8 border-b border-gray-100 pb-8">
-                                <p class="text-3xl font-black text-[#FF6B6B]">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-6 mb-8 border-b-4 border-black pb-8">
+                                <p class="text-4xl font-black text-black bg-gray-100 px-4 py-2 border-4 border-black">
                                     {{ formatCurrency(product.price) }}
                                 </p>
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-3">
                                     <span 
                                         v-if="product.stock > 0"
-                                        class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"
+                                        class="w-4 h-4 bg-black border-2 border-black animate-pulse"
                                     ></span>
-                                    <span v-else class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                                    <span class="text-xs font-bold uppercase tracking-wide text-gray-500">
+                                    <span v-else class="w-4 h-4 border-4 border-black bg-white"></span>
+                                    <span class="text-sm font-black uppercase tracking-widest text-black">
                                         {{ product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
                                     </span>
                                 </div>
                             </div>
 
                             <!-- Description -->
-                            <div class="mb-8">
-                                <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">Description</h3>
-                                <p class="text-base text-gray-600 leading-relaxed font-medium max-w-xl">
+                            <div class="mb-12">
+                                <h3 class="text-sm font-black uppercase tracking-widest text-black mb-4 bg-gray-100 px-2 py-1 inline-block border-2 border-black">Description</h3>
+                                <p class="text-lg text-black leading-relaxed font-bold max-w-xl">
                                     {{ product.description || 'Elevate your style with this premium piece. Designed for those who dare to stand out.' }}
                                 </p>
                             </div>
 
                             <!-- Actions -->
-                            <div v-if="product.stock > 0" class="space-y-6">
+                            <div v-if="product.stock > 0" class="space-y-8 border-t-4 border-black pt-8">
                                 <!-- Quantity -->
                                 <div>
-                                    <h3 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">Quantity</h3>
-                                    <div class="inline-flex items-center bg-gray-100 rounded-full p-1">
+                                    <h3 class="text-sm font-black uppercase tracking-widest text-black mb-4">Quantity</h3>
+                                    <div class="inline-flex items-center border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                         <button 
                                             @click="decreaseQuantity"
-                                            class="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-50 text-black shadow-sm transition-all text-lg font-bold"
+                                            class="w-16 h-16 flex items-center justify-center bg-white hover:bg-black hover:text-white transition-none text-2xl font-black border-r-4 border-black"
                                             :disabled="quantity <= 1"
                                         >
                                             -
                                         </button>
-                                        <span class="w-12 text-center text-lg font-bold">{{ quantity }}</span>
+                                        <span class="w-20 text-center text-2xl font-black">{{ quantity }}</span>
                                         <button 
                                             @click="increaseQuantity"
-                                            class="w-10 h-10 flex items-center justify-center rounded-full bg-black hover:bg-gray-800 text-white shadow-lg shadow-black/20 transition-all text-lg font-bold"
+                                            class="w-16 h-16 flex items-center justify-center bg-white hover:bg-black hover:text-white transition-none text-2xl font-black border-l-4 border-black"
                                             :disabled="quantity >= product.stock"
                                         >
                                             +
@@ -143,25 +140,25 @@ const addToCart = () => {
                                 <button 
                                     @click="addToCart"
                                     :disabled="isAddingToCart"
-                                    class="w-full max-w-sm py-4 bg-black text-white text-base font-black uppercase tracking-wider rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-black/20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    class="w-full py-6 bg-white border-4 border-black text-black text-xl font-black uppercase tracking-widest hover:bg-black hover:text-white transition-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[8px] hover:translate-y-[8px] flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <span v-if="isAddingToCart">Processing...</span>
                                     <span v-else>Add to Cart</span>
-                                    <svg v-if="!isAddingToCart" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    <svg v-if="!isAddingToCart" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                     </svg>
                                 </button>
                                 
-                                <p class="text-center text-xs text-gray-400 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                    Secure Checkout • Free Shipping Over Rp 500k
+                                <p class="text-center text-sm text-black font-black uppercase tracking-widest flex items-center justify-center gap-2 pt-4">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    Secure Checkout • Free Shipping
                                 </p>
                             </div>
 
-                             <div v-else class="mt-8">
+                             <div v-else class="mt-8 border-t-4 border-black pt-8">
                                 <button 
                                     disabled
-                                    class="w-full py-6 bg-gray-100 text-gray-400 text-xl font-black uppercase tracking-wider rounded-full cursor-not-allowed"
+                                    class="w-full py-6 bg-gray-200 border-4 border-gray-400 text-gray-500 text-xl font-black uppercase tracking-widest cursor-not-allowed"
                                 >
                                     Sold Out
                                 </button>
@@ -171,10 +168,10 @@ const addToCart = () => {
                 </div>
 
                 <!-- Related Products -->
-                <div v-if="relatedProducts?.length > 0" class="mt-32 border-t border-gray-100 pt-16">
+                <div v-if="relatedProducts?.length > 0" class="mt-32 border-t-4 border-black pt-16">
                     <div class="flex items-end justify-between mb-12">
-                        <h2 class="text-4xl font-black text-gray-900 tracking-tight uppercase">You May Also Like</h2>
-                        <Link href="#" class="hidden sm:block font-bold border-b-2 border-black pb-1 hover:text-[#FF6B6B] hover:border-[#FF6B6B] transition-colors">
+                        <h2 class="text-5xl font-black text-black tracking-tighter uppercase leading-none">More <br/> <span class="bg-black text-white px-2">Drops</span></h2>
+                        <Link href="#" class="hidden sm:block font-black uppercase tracking-widest border-b-4 border-black pb-1 hover:bg-black hover:text-white transition-none">
                             View Collection
                         </Link>
                     </div>
@@ -184,18 +181,19 @@ const addToCart = () => {
                             v-for="related in relatedProducts" 
                             :key="related.id"
                             :href="route('products.show', related.id)"
-                            class="group cursor-pointer"
+                            class="group cursor-crosshair border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:bg-black hover:text-white transition-none"
                         >
-                            <div class="aspect-[4/5] bg-gray-100 rounded-3xl overflow-hidden mb-4 relative">
+                            <div class="aspect-[4/5] bg-gray-100 border-b-4 border-black overflow-hidden relative">
                                 <img 
                                     :src="related.image || 'https://via.placeholder.com/300'" 
                                     :alt="related.name"
-                                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                                 />
-                                <div class="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors"></div>
                             </div>
-                            <h3 class="font-bold text-lg text-gray-900 group-hover:underline decoration-2 underline-offset-4 decoration-[#FF6B6B] truncate">{{ related.name }}</h3>
-                            <p class="text-gray-500 font-bold mt-1">{{ formatCurrency(related.price) }}</p>
+                            <div class="p-6">
+                                <h3 class="font-black text-xl uppercase tracking-tighter mb-2 line-clamp-1">{{ related.name }}</h3>
+                                <p class="font-bold text-lg">{{ formatCurrency(related.price) }}</p>
+                            </div>
                         </Link>
                     </div>
                 </div>

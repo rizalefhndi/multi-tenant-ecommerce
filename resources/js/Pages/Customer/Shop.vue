@@ -50,251 +50,156 @@ const addToCart = (productId) => {
     <Head title="Shop" />
 
     <StoreLayout>
-        <div class="min-h-screen bg-white overflow-x-hidden">
-            <!-- Hero Section (Edgy/Vibe) -->
-            <div class="relative pt-12 pb-24 px-4 sm:px-6 lg:px-8">
+        <div class="min-h-screen bg-white overflow-x-hidden text-black selection:bg-black selection:text-white">
+            <!-- Hero Section (Brutalist) -->
+            <div class="relative pt-12 pb-24 px-4 sm:px-6 lg:px-8 border-b-4 border-black">
                 <!-- Background Typography -->
-                <div class="absolute inset-0 pointer-events-none overflow-hidden select-none">
-                     <span class="absolute top-[5%] left-[-2%] text-[10rem] md:text-[14rem] font-black text-gray-50 opacity-0 md:opacity-100 uppercase tracking-tighter leading-none whitespace-nowrap z-0">
-                        Redefine
-                    </span>
-                    <span class="absolute top-[20%] right-[-5%] text-[10rem] md:text-[14rem] font-black text-gray-50 opacity-0 md:opacity-100 uppercase tracking-tighter leading-none whitespace-nowrap z-0">
-                        Style
+                <div class="absolute inset-0 pointer-events-none overflow-hidden select-none flex flex-col justify-center opacity-10">
+                     <span class="text-[12rem] md:text-[20rem] font-black uppercase tracking-tighter leading-none whitespace-nowrap -ml-20">
+                        BRUTAL
                     </span>
                 </div>
 
-                <div class="max-w-[1400px] mx-auto relative z-10 hidden md:block">
-                     <!-- Top Heading Layout using Grid -->
-                     <div class="flex justify-between items-end mb-[-60px] relative z-20 px-12">
-                         <h1 class="text-7xl font-black text-gray-900 tracking-tighter transform -rotate-2">
-                             Redefine <br/>
-                             <span class="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600">YOUR</span>
-                         </h1>
-                         <h1 class="text-7xl font-black text-gray-900 tracking-tighter transform rotate-2 text-right">
-                             Unique <br/>
-                             <span class="text-black">STYLE</span>
-                         </h1>
-                     </div>
-                </div>
-
-                <!-- Main Hero Card -->
-                <div class="max-w-7xl mx-auto relative mt-8 md:mt-24">
-                    <div class="bg-[#FF6B6B] rounded-[3rem] p-8 md:p-16 relative overflow-visible shadow-2xl min-h-[500px] md:min-h-[600px] flex items-center">
-                        
-                        <!-- Content Left -->
-                        <div class="relative z-20 w-full md:w-1/2 text-white">
-                            <span class="inline-block px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-sm font-bold uppercase tracking-wider mb-6">
-                                New Arrivals 2024
-                            </span>
-                            <h2 class="text-5xl md:text-6xl font-black leading-tight mb-8">
-                                Where Art Meets <br/>
-                                <span class="italic text-[#FFD93D]">Streetwear</span>
-                            </h2>
-                            <p class="text-white/80 text-lg font-medium mb-10 max-w-md">
-                                Step into the future of fashion. Bold cuts, premium fabrics, and designs that speak louder than words.
-                            </p>
-                            
-                            <div class="flex items-center gap-6">
-                                <button class="px-8 py-4 bg-white text-[#FF6B6B] rounded-full font-black text-lg hover:bg-gray-100 hover:scale-105 transition-all shadow-lg flex items-center gap-2 group">
-                                    New Drops 
-                                    <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                    </svg>
-                                </button>
-                                
-                                <div class="flex -space-x-4">
-                                    <div class="w-12 h-12 rounded-full border-2 border-[#FF6B6B] bg-gray-200 overflow-hidden">
-                                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64" class="w-full h-full object-cover">
-                                    </div>
-                                    <div class="w-12 h-12 rounded-full border-2 border-[#FF6B6B] bg-gray-200 overflow-hidden">
-                                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&h=64" class="w-full h-full object-cover">
-                                    </div>
-                                    <div class="w-12 h-12 rounded-full border-2 border-[#FF6B6B] bg-gray-200 overflow-hidden">
-                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&h=64" class="w-full h-full object-cover">
-                                    </div>
-                                    <div class="h-12 pl-6 flex items-center text-sm font-bold text-white/90">
-                                        Rated 5 Stars by <br/> The Tribe
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Floating Model Image (Right/Center) -->
-                        <div class="hidden md:block absolute bottom-0 right-[10%] w-[45%] h-[115%] z-30 pointer-events-none">
-                             <img 
-                                src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                                alt="Model" 
-                                class="w-full h-full object-cover object-top mask-image-b"
-                                style="mask-image: linear-gradient(to bottom, black 80%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%); mix-blend-mode: normal;" 
-                            />
-                            <!-- Note: Using a standard image here. Efficient 'cutout' requires a transparent PNG. Standard crop will work with mask for now to look integrated. -->
-                        </div>
-
-                        <!-- Abstract Shapes -->
-                        <div class="absolute right-0 top-0 w-full h-full overflow-hidden rounded-[3rem] pointer-events-none z-10">
-                            <div class="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-[#FF8787] rounded-full mix-blend-screen opacity-50 blur-3xl"></div>
-                            <div class="absolute bottom-[-10%] left-[20%] w-[400px] h-[400px] bg-[#FF5252] rounded-full mix-blend-multiply opacity-50 blur-3xl"></div>
-                        </div>
-
-                         <!-- Floating Features (Right Side) -->
-                        <div class="hidden md:flex flex-col gap-6 absolute right-8 top-1/2 transform -translate-y-1/2 z-40">
-                             <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center text-white w-24 hover:bg-white/20 transition-colors cursor-pointer">
-                                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                                <span class="text-xs font-bold leading-tight block">Future Threads</span>
-                             </div>
-                             <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center text-white w-24 hover:bg-white/20 transition-colors cursor-pointer">
-                                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
-                                <span class="text-xs font-bold leading-tight block">Unique Designs</span>
-                             </div>
-                             <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center text-white w-24 hover:bg-white/20 transition-colors cursor-pointer">
-                                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <span class="text-xs font-bold leading-tight block">Limited Drops</span>
-                             </div>
-                        </div>
-
-                         <!-- Featured Product Card (Bottom Right Floating) -->
-                        <div class="hidden lg:block absolute bottom-8 right-8 z-40 bg-white p-4 rounded-2xl shadow-xl w-64 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                             <div class="aspect-square bg-gray-100 rounded-xl mb-3 overflow-hidden">
-                                  <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-                             </div>
-                             <h4 class="font-bold text-gray-900">Urban Vanguard Tee</h4>
-                             <p class="text-xs text-gray-500 mb-3">Unmatched comfort</p>
-                             <button class="w-full py-2 bg-[#FF6B6B] text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#ff5252]">
-                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                                 $26.72
-                             </button>
-                        </div>
-                    </div>
+                <div class="max-w-[1440px] mx-auto relative z-10 flex flex-col items-center text-center mt-12 md:mt-24">
+                     <!-- Top Heading -->
+                     <h1 class="text-7xl md:text-9xl font-black uppercase tracking-tighter leading-[0.85] mb-8">
+                         Raw <br/>
+                         <span class="bg-black text-white px-4">Aesthetics</span>
+                     </h1>
+                     <p class="text-xl md:text-2xl font-bold max-w-2xl mb-12 uppercase tracking-widest border-4 border-black p-4 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                         No compromises. No fake curves. <br/> Pure streetwear essentials.
+                     </p>
                 </div>
             </div>
 
             <!-- Categories Marquee / Strip -->
-            <div class="overflow-hidden bg-black py-4 -rotate-1 mb-20 transform translate-y-[-2rem] z-30 relative shadow-2xl">
-                <div class="flex items-center gap-8 text-white font-black text-2xl uppercase tracking-widest whitespace-nowrap animate-marquee">
+            <div class="overflow-hidden bg-black py-6 border-b-4 border-black relative z-30">
+                <div class="flex items-center gap-8 text-white font-black text-3xl uppercase tracking-widest whitespace-nowrap animate-marquee">
                     <span>Streetwear</span> • <span>Urban</span> • <span>Vintage</span> • <span>Limited</span> • <span>Accessories</span> • <span>Denim</span> •
                     <span>Streetwear</span> • <span>Urban</span> • <span>Vintage</span> • <span>Limited</span> • <span>Accessories</span> • <span>Denim</span>
                 </div>
             </div>
 
             <!-- Categories Section (Visual) -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-32">
-                <div class="flex justify-between items-end mb-10">
-                    <h2 class="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter">Explore <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B6B] to-[#FFD93D]">Vibe</span></h2>
+            <div class="max-w-[1440px] mx-auto px-6 lg:px-12 py-24 border-b-4 border-black">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+                    <h2 class="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+                        The <br/> <span class="bg-black text-white px-2">Grid</span>
+                    </h2>
                     
-                    <div class="flex gap-2">
+                    <div class="flex gap-4">
                          <button 
-                            @click="scroll(-300)"
-                            class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-black hover:text-white transition-colors"
+                            @click="scroll(-400)"
+                            class="w-16 h-16 border-4 border-black flex items-center justify-center hover:bg-black hover:text-white transition-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]"
                         >
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" /></svg>
                         </button>
                          <button 
-                            @click="scroll(300)"
-                            class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-black hover:text-white transition-colors"
+                            @click="scroll(400)"
+                            class="w-16 h-16 border-4 border-black flex items-center justify-center hover:bg-black hover:text-white transition-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]"
                         >
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
                         </button>
                     </div>
                 </div>
 
                 <div 
                     ref="scrollContainer"
-                    class="flex gap-6 overflow-x-auto pb-8 snap-x no-scrollbar"
+                    class="flex gap-8 overflow-x-auto pb-12 snap-x no-scrollbar"
                 >
                     <div 
                         v-for="category in categories" 
                         :key="category.name"
-                        class="min-w-[280px] md:min-w-[320px] aspect-[3/4] rounded-3xl overflow-hidden relative group cursor-pointer snap-start"
+                        class="min-w-[300px] md:min-w-[400px] aspect-square border-4 border-black relative group cursor-crosshair snap-start bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-shadow"
                     >
                         <img 
                             :src="category.image" 
                             :alt="category.name"
-                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                         />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
                         
-                        <div class="absolute bottom-6 left-6">
-                            <span class="text-[#FFD93D] font-bold text-sm tracking-wider uppercase mb-1 block">{{ category.count }}</span>
-                            <h3 class="text-white font-black text-3xl uppercase tracking-tighter">{{ category.name }}</h3>
-                        </div>
+                        <div class="absolute inset-0 border-4 border-transparent group-hover:border-black transition-colors pointer-events-none"></div>
 
-                        <!-- Arrow Icon -->
-                        <div class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                        <div class="absolute bottom-0 left-0 w-full bg-white border-t-4 border-black p-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-black text-3xl uppercase tracking-tighter">{{ category.name }}</h3>
+                                <span class="font-bold text-sm tracking-widest uppercase bg-black text-white px-2 py-1">{{ category.count }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Products Grid Section -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
-                <div class="flex items-end justify-between mb-16">
+            <div class="max-w-[1440px] mx-auto px-6 lg:px-12 py-24">
+                <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-20 gap-8">
                      <div>
-                        <span class="text-[#FF6B6B] font-bold tracking-widest uppercase text-sm mb-2 block">New Season</span>
-                        <h2 class="text-4xl md:text-6xl font-black text-gray-900 uppercase tracking-tighter leading-none">
-                            Latest <br/> <span class="text-gray-200">Drops</span>
+                        <span class="bg-black text-white px-3 py-1 font-black tracking-widest uppercase text-sm mb-4 inline-block">New Season</span>
+                        <h2 class="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+                            Drop <br/> <span>01</span>
                         </h2>
                      </div>
-                     <Link href="#" class="hidden sm:inline-flex items-center gap-2 group font-bold uppercase tracking-wider text-sm">
-                        View All Products
-                        <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                        </span>
+                     <Link href="#" class="inline-flex items-center gap-4 border-4 border-black px-8 py-4 font-black uppercase tracking-widest text-sm hover:bg-black hover:text-white transition-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">
+                        View All
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                      </Link>
                 </div>
                 
-                <div v-if="products.data.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+                <div v-if="products.data.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <div 
                         v-for="product in products.data" 
                         :key="product.id"
-                        class="group cursor-pointer"
+                        class="group cursor-crosshair border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col"
                     >
                         <!-- Card Image -->
-                        <Link :href="route('products.show', product.id)" class="block relative aspect-[3/4] bg-gray-100 rounded-[2rem] overflow-hidden mb-6">
+                        <Link :href="route('products.show', product.id)" class="block relative aspect-[4/5] border-b-4 border-black overflow-hidden bg-gray-100">
                             <img 
                                 :src="product.image || 'https://via.placeholder.com/400'" 
                                 :alt="product.name"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                             />
+                            
                             <!-- Overlay Action -->
-                            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-none flex items-center justify-center backdrop-blur-sm">
                                 <button 
                                     @click.prevent="addToCart(product.id)"
-                                    class="bg-white text-black px-8 py-4 rounded-full font-black uppercase tracking-wider transform translate-y-8 group-hover:translate-y-0 transition-all duration-300 hover:scale-105 shadow-xl"
+                                    class="bg-white text-black border-4 border-black px-8 py-4 font-black uppercase tracking-widest transform translate-y-8 group-hover:translate-y-0 transition-all duration-200 hover:bg-black hover:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                                 >
-                                    Add to Cart
+                                    Add To Cart
                                 </button>
                             </div>
                             <!-- Tags -->
-                            <div class="absolute top-4 left-4 flex gap-2">
-                                <span v-if="product.stock < 5" class="px-3 py-1 bg-black text-white text-[10px] font-bold uppercase tracking-widest rounded-full">Low Stock</span>
+                            <div class="absolute top-4 left-4 flex gap-2 z-10">
+                                <span v-if="product.stock < 5" class="px-3 py-1 bg-white border-2 border-black text-black text-xs font-black uppercase tracking-widest">Low Stock</span>
                             </div>
                         </Link>
                         
                         <!-- Card Info -->
-                        <div class="text-center group-hover:translate-y-[-5px] transition-transform duration-300">
-                            <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#FF6B6B] transition-colors mb-2 uppercase tracking-tight">{{ product.name }}</h3>
-                             <p class="text-sm text-gray-500 mb-3 line-clamp-1 max-w-[200px] mx-auto">{{ product.description }}</p>
-                            <span class="inline-block px-4 py-1 bg-gray-50 rounded-full font-black text-lg text-black">{{ formatCurrency(product.price) }}</span>
+                        <div class="p-6 flex flex-col flex-grow justify-between group-hover:bg-black group-hover:text-white transition-none">
+                            <div>
+                                <h3 class="font-black text-2xl uppercase tracking-tighter mb-2 line-clamp-2">{{ product.name }}</h3>
+                                <p class="text-sm font-bold uppercase tracking-widest text-gray-500 group-hover:text-gray-400 mb-4 line-clamp-1">{{ product.description }}</p>
+                            </div>
+                            <span class="inline-block font-black text-2xl">{{ formatCurrency(product.price) }}</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Empty State -->
-                <div v-else class="text-center py-24 bg-gray-50 rounded-3xl">
-                    <p class="text-gray-400 text-lg">No products found.</p>
+                <div v-else class="text-center py-32 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <p class="font-black uppercase tracking-widest text-2xl">No Drops Available.</p>
                 </div>
 
                 <!-- Pagination -->
-                <div v-if="products.data.length > 0" class="mt-12 flex justify-center gap-2">
+                <div v-if="products.data.length > 0" class="mt-20 flex justify-center gap-4">
                     <template v-for="link in products.links" :key="link.label">
                         <Link
                             v-if="link.url"
                             :href="link.url"
-                            class="w-10 h-10 flex items-center justify-center rounded-full text-sm font-bold transition-all"
+                            class="w-12 h-12 flex items-center justify-center border-4 border-black font-black transition-none"
                             :class="link.active 
-                                ? 'bg-[#FF6B6B] text-white' 
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                                ? 'bg-black text-white' 
+                                : 'bg-white text-black hover:bg-black hover:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]'"
                         >
                             <span v-html="link.label"></span>
                         </Link>
@@ -306,22 +211,11 @@ const addToCart = (productId) => {
 </template>
 
 <style scoped>
-.mask-image-b {
-    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-}
-
 .animate-marquee {
     display: flex;
     white-space: nowrap;
     animation: marquee 20s linear infinite;
 }
-
-/* Pause animation on hover if desired
-.animate-marquee:hover {
-    animation-play-state: paused;
-}
-*/
 
 @keyframes marquee {
     0% { transform: translateX(0); }
