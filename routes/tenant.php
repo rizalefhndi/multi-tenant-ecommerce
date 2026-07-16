@@ -125,10 +125,39 @@ Route::middleware([
         // ==========================================
         // DASHBOARD - Redirect based on role
         // ==========================================
-        Route::get('/dashboard', function () {
+        $getDashboardData = function () {
+            $stats = [
+                'totalProducts' => \App\Models\Product::count(),
+                'totalOrders' => \App\Models\Order::count(),
+                'totalRevenue' => \App\Models\Order::paid()->sum('total'),
+                'pendingOrders' => \App\Models\Order::where('status', \App\Models\Order::STATUS_PAYMENT_RECEIVED)->count(),
+            ];
+
+            $recentOrders = \App\Models\Order::with('user:id,name')
+                ->latest()
+                ->take(5)
+                ->get()
+                ->map(function ($order) {
+                    return [
+                        'id' => $order->id,
+                        'order_number' => $order->order_number,
+                        'customer' => $order->user->name ?? 'Guest',
+                        'total' => $order->total,
+                        'status' => $order->status,
+                        'created_at' => $order->created_at->format('Y-m-d H:i:s'),
+                    ];
+                });
+
+            return [
+                'stats' => $stats,
+                'recentOrders' => $recentOrders,
+            ];
+        };
+
+        Route::get('/dashboard', function () use ($getDashboardData) {
             $user = auth()->user();
             if ($user->isAdmin()) {
-                return Inertia::render('Dashboard');
+                return Inertia::render('Dashboard', $getDashboardData());
             }
             // Customer goes to storefront/shop
             return redirect()->route('customer.home');
@@ -143,8 +172,8 @@ Route::middleware([
             return redirect()->route('admin.dashboard');
         })->middleware('role:admin')->name('admin.index');
         
-        Route::get('/admin/dashboard', function () {
-            return Inertia::render('Dashboard');
+        Route::get('/admin/dashboard', function () use ($getDashboardData) {
+            return Inertia::render('Dashboard', $getDashboardData());
         })->middleware('role:admin')->name('admin.dashboard');
 
         // ==========================================
