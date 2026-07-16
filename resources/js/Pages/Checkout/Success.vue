@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StoreLayout from '@/Layouts/StoreLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
@@ -96,13 +96,13 @@ const copyToClipboard = (text) => {
 <template>
     <Head title="Pesanan Berhasil" />
 
-    <AuthenticatedLayout>
-        <div class="py-12">
-            <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+    <StoreLayout>
+        <div class="py-12 bg-white min-h-screen text-black">
+            <div class="max-w-3xl mx-auto px-6 lg:px-8">
                 <!-- Success Card -->
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-white border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative">
                     <!-- Success Header -->
-                    <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-12 text-center text-white relative overflow-hidden">
+                    <div class="bg-black border-b-4 border-black px-6 py-16 text-center text-white relative overflow-hidden">
                         <!-- Confetti Animation -->
                         <div v-if="showConfetti" class="absolute inset-0 pointer-events-none">
                             <div class="confetti-piece" v-for="i in 20" :key="i" :style="{ left: `${i * 5}%`, animationDelay: `${i * 0.1}s` }"></div>
@@ -110,87 +110,87 @@ const copyToClipboard = (text) => {
 
                         <!-- Success Icon -->
                         <div v-if="order.status === 'pending_payment'" class="relative z-10">
-                            <div class="mx-auto w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4">
-                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <div class="mx-auto w-24 h-24 bg-white border-4 border-white flex items-center justify-center mb-6 shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)]">
+                                <svg class="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h1 class="text-3xl font-bold mb-2">Menunggu Pembayaran</h1>
-                            <p class="text-green-100">Silakan selesaikan pembayaran Anda</p>
+                            <h1 class="text-4xl md:text-5xl font-black mb-2 uppercase tracking-tighter">Waiting for Payment</h1>
+                            <p class="text-white font-bold uppercase tracking-widest text-sm">Please complete your payment</p>
                         </div>
                         <div v-else class="relative z-10">
-                            <div class="mx-auto w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 animate-bounce-once">
-                                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            <div class="mx-auto w-24 h-24 bg-white border-4 border-white flex items-center justify-center mb-6 animate-bounce-once shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)]">
+                                <svg class="w-16 h-16 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h1 class="text-3xl font-bold mb-2">Pesanan Berhasil!</h1>
-                            <p class="text-green-100">Terima kasih atas pesanan Anda</p>
+                            <h1 class="text-4xl md:text-5xl font-black mb-2 uppercase tracking-tighter">Order Successful!</h1>
+                            <p class="text-white font-bold uppercase tracking-widest text-sm">Thank you for your order</p>
                         </div>
                     </div>
 
                     <!-- Order Info -->
-                    <div class="p-6 border-b border-gray-100">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="p-8 border-b-4 border-black bg-gray-100">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
                             <div>
-                                <p class="text-sm text-gray-500">Nomor Pesanan</p>
-                                <p class="text-lg font-semibold text-gray-900 font-mono">{{ order.order_number }}</p>
+                                <p class="text-sm font-black uppercase tracking-widest text-black mb-1">Order Number</p>
+                                <p class="text-3xl font-black text-black uppercase">{{ order.order_number }}</p>
                             </div>
                             <div class="text-left sm:text-right">
-                                <p class="text-sm text-gray-500">Tanggal Pesanan</p>
-                                <p class="text-gray-900">{{ order.created_at }}</p>
+                                <p class="text-sm font-black uppercase tracking-widest text-black mb-1">Order Date</p>
+                                <p class="text-xl font-bold text-black">{{ order.created_at }}</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Payment Info (for bank transfer) -->
-                    <div v-if="transaction && transaction.payment_method === 'bank_transfer'" class="p-6 bg-amber-50 border-b border-amber-100">
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <div v-if="transaction && transaction.payment_method === 'bank_transfer'" class="p-8 border-b-4 border-black bg-white">
+                        <div class="flex items-start gap-6">
+                            <div class="w-16 h-16 border-4 border-black flex items-center justify-center flex-shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-gray-100">
+                                <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <h4 class="font-semibold text-amber-800">Menunggu Pembayaran</h4>
-                                <p class="text-sm text-amber-700 mt-1">
-                                    Silakan transfer ke rekening berikut sebelum <span class="font-medium">{{ transaction.expires_at }}</span>
+                                <h4 class="text-2xl font-black uppercase tracking-tighter">Waiting for Payment</h4>
+                                <p class="text-base font-bold mt-2">
+                                    Please transfer to the following account before <br/> <span class="bg-black text-white px-2 py-1 mt-2 inline-block">{{ transaction.expires_at }}</span>
                                 </p>
 
-                                <div v-if="transaction.bank_transfer_info" class="mt-4 bg-white rounded-lg p-4 border border-amber-200">
-                                    <div class="space-y-3">
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-sm text-gray-600">Bank</span>
-                                            <span class="font-medium text-gray-900">{{ transaction.bank_transfer_info.bank_name }}</span>
+                                <div v-if="transaction.bank_transfer_info" class="mt-6 border-4 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-gray-100">
+                                    <div class="space-y-4">
+                                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                                            <span class="text-sm font-black uppercase tracking-widest">Bank</span>
+                                            <span class="text-xl font-black uppercase">{{ transaction.bank_transfer_info.bank_name }}</span>
                                         </div>
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-sm text-gray-600">Nomor Rekening</span>
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-mono font-medium text-gray-900">{{ transaction.bank_transfer_info.account_number }}</span>
+                                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                                            <span class="text-sm font-black uppercase tracking-widest">Account Number</span>
+                                            <div class="flex items-center gap-4">
+                                                <span class="text-2xl font-black uppercase">{{ transaction.bank_transfer_info.account_number }}</span>
                                                 <button 
                                                     @click="copyToClipboard(transaction.bank_transfer_info.account_number)"
-                                                    class="text-indigo-600 hover:text-indigo-800"
+                                                    class="border-2 border-black p-1 hover:bg-black hover:text-white transition-none"
                                                 >
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                                     </svg>
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-sm text-gray-600">Atas Nama</span>
-                                            <span class="font-medium text-gray-900">{{ transaction.bank_transfer_info.account_holder }}</span>
+                                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                                            <span class="text-sm font-black uppercase tracking-widest">Account Name</span>
+                                            <span class="text-xl font-black uppercase">{{ transaction.bank_transfer_info.account_holder }}</span>
                                         </div>
-                                        <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                                            <span class="text-sm text-gray-600">Jumlah Transfer</span>
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-bold text-lg text-indigo-600">{{ transaction.formatted_amount }}</span>
+                                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 pt-4 border-t-4 border-black">
+                                            <span class="text-sm font-black uppercase tracking-widest">Transfer Amount</span>
+                                            <div class="flex items-center gap-4">
+                                                <span class="text-3xl font-black bg-black text-white px-2">{{ transaction.formatted_amount }}</span>
                                                 <button 
                                                     @click="copyToClipboard(transaction.amount.toString())"
-                                                    class="text-indigo-600 hover:text-indigo-800"
+                                                    class="border-2 border-black p-1 hover:bg-black hover:text-white transition-none"
                                                 >
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                                     </svg>
                                                 </button>
                                             </div>
@@ -198,118 +198,120 @@ const copyToClipboard = (text) => {
                                     </div>
                                 </div>
 
-                                <p class="text-xs text-amber-600 mt-3">
-                                    * Transfer dengan jumlah yang tepat agar pembayaran terverifikasi lebih cepat
+                                <p class="text-sm font-bold uppercase mt-6">
+                                    * Transfer the exact amount to speed up verification
                                 </p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Midtrans Payment CTA -->
-                    <div v-if="isMidtransPayment && order.status === 'pending_payment'" class="p-6 bg-indigo-50 border-b border-indigo-100 text-center">
-                        <h4 class="font-semibold text-indigo-900 mb-2">Lanjutkan Pembayaran</h4>
-                        <p class="text-sm text-indigo-700 mb-4">Selesaikan pembayaran Anda menggunakan {{ transaction.payment_method_label || 'Midtrans' }}</p>
+                    <div v-if="isMidtransPayment && order.status === 'pending_payment'" class="p-8 border-b-4 border-black bg-gray-100 text-center">
+                        <h4 class="text-2xl font-black uppercase tracking-tighter mb-4">Complete Payment</h4>
+                        <p class="text-lg font-bold mb-8">Complete your payment using {{ transaction.payment_method_label || 'Midtrans' }}</p>
                         <button 
                             @click="payNow" 
                             :disabled="isPaying"
-                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-sm transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
+                            class="bg-black hover:bg-white hover:text-black text-white font-black py-4 px-12 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[8px] hover:translate-y-[8px] transition-none uppercase tracking-widest text-xl disabled:opacity-50"
                         >
-                            {{ isPaying ? 'Memuat...' : 'Bayar Sekarang' }}
+                            {{ isPaying ? 'LOADING...' : 'PAY NOW' }}
                         </button>
                     </div>
 
                     <!-- Order Items -->
-                    <div class="p-6 border-b border-gray-100">
-                        <h4 class="font-semibold text-gray-900 mb-4">Item Pesanan ({{ items.length }})</h4>
-                        <div class="space-y-3">
+                    <div class="p-8 border-b-4 border-black">
+                        <h4 class="text-xl font-black uppercase tracking-widest mb-6 border-b-4 border-black pb-2 inline-block">Order Items ({{ items.length }})</h4>
+                        <div class="space-y-6">
                             <div 
                                 v-for="item in items" 
                                 :key="item.id"
-                                class="flex gap-4 p-3 bg-gray-50 rounded-lg"
+                                class="flex gap-6 p-4 border-4 border-black bg-gray-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                             >
-                                <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                                <div class="w-24 h-24 border-4 border-black bg-white flex-shrink-0 relative overflow-hidden group">
                                     <img 
                                         v-if="item.product_image"
                                         :src="item.product_image" 
                                         :alt="item.product_name"
-                                        class="w-full h-full object-cover"
+                                        class="w-full h-full object-cover grayscale"
                                     />
                                     <div v-else class="w-full h-full flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
                                     </div>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="font-medium text-gray-900">{{ item.product_name }}</p>
-                                    <p class="text-sm text-gray-500">{{ item.quantity }}x {{ item.formatted_price }}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-medium text-gray-900">{{ item.formatted_subtotal }}</p>
+                                <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
+                                    <div>
+                                        <p class="font-black text-xl uppercase tracking-tighter leading-none mb-2">{{ item.product_name }}</p>
+                                        <p class="text-sm font-bold uppercase tracking-widest bg-white border-2 border-black px-2 inline-block">QTY: {{ item.quantity }}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-black text-xl">{{ item.formatted_subtotal }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Shipping Address -->
-                    <div v-if="order.shipping_address" class="p-6 border-b border-gray-100">
-                        <h4 class="font-semibold text-gray-900 mb-2">Alamat Pengiriman</h4>
-                        <div class="text-gray-600">
-                            <p class="font-medium text-gray-900">{{ order.shipping_address.recipient_name }}</p>
-                            <p>{{ order.shipping_address.phone }}</p>
-                            <p class="mt-1">{{ order.shipping_address.full_address || order.shipping_address.address }}</p>
+                    <div v-if="order.shipping_address" class="p-8 border-b-4 border-black">
+                        <h4 class="text-xl font-black uppercase tracking-widest mb-4 bg-black text-white px-3 py-1 inline-block">Shipping Address</h4>
+                        <div class="text-black border-4 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-gray-100">
+                            <p class="font-black text-2xl uppercase tracking-tighter mb-2">{{ order.shipping_address.recipient_name }}</p>
+                            <p class="font-bold mb-2">{{ order.shipping_address.phone }}</p>
+                            <p class="font-bold uppercase">{{ order.shipping_address.full_address || order.shipping_address.address }}</p>
                         </div>
                     </div>
 
                     <!-- Price Summary -->
-                    <div class="p-6 border-b border-gray-100 bg-gray-50">
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-gray-600">
+                    <div class="p-8 border-b-4 border-black bg-gray-100">
+                        <div class="space-y-4 font-bold text-lg uppercase tracking-widest">
+                            <div class="flex justify-between">
                                 <span>Subtotal</span>
-                                <span>{{ order.formatted_subtotal }}</span>
+                                <span class="font-black">{{ order.formatted_subtotal }}</span>
                             </div>
-                            <div v-if="order.shipping_cost > 0" class="flex justify-between text-gray-600">
-                                <span>Ongkos Kirim</span>
-                                <span>{{ order.formatted_shipping_cost }}</span>
+                            <div v-if="order.shipping_cost > 0" class="flex justify-between">
+                                <span>Shipping</span>
+                                <span class="font-black">{{ order.formatted_shipping_cost }}</span>
                             </div>
-                            <div class="flex justify-between text-lg font-semibold text-gray-900 pt-2 border-t border-gray-200">
+                            <div class="flex justify-between text-2xl font-black pt-4 border-t-4 border-black">
                                 <span>Total</span>
-                                <span class="text-indigo-600">{{ order.formatted_total }}</span>
+                                <span class="bg-black text-white px-2 py-1">{{ order.formatted_total }}</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Actions -->
-                    <div class="p-6 flex flex-col sm:flex-row gap-4">
+                    <div class="p-8 flex flex-col sm:flex-row gap-6">
                         <Link
                             :href="route('orders.show', order.id)"
-                            class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors"
+                            class="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-black text-white hover:bg-white hover:text-black border-4 border-black font-black uppercase tracking-widest transition-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[8px] hover:translate-y-[8px]"
                         >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
-                            Lihat Pesanan
+                            VIEW ORDER
                         </Link>
                         <Link
                             :href="route('products.index')"
-                            class="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-xl transition-colors"
+                            class="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-white text-black hover:bg-black hover:text-white border-4 border-black font-black uppercase tracking-widest transition-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[8px] hover:translate-y-[8px]"
                         >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
-                            Lanjut Belanja
+                            CONTINUE SHOPPING
                         </Link>
                     </div>
                 </div>
 
                 <!-- Help Section -->
-                <div class="mt-6 text-center text-sm text-gray-500">
-                    <p>Ada pertanyaan? <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">Hubungi kami</a></p>
+                <div class="mt-8 text-center text-sm font-black uppercase tracking-widest text-black">
+                    <p>Have questions? <a href="#" class="border-b-2 border-black hover:bg-black hover:text-white transition-none">Contact Us</a></p>
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </StoreLayout>
 </template>
 
 <style scoped>
